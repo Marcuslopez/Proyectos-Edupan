@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Donantes - Donación Conectada Panamá</title>
+    <style>
+        :root {
+            --primary: #1d1b84;
+            --primary-light: #5b87e6;
+            --bg: #f3f7fc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #dbe4f0;
+            --success: #047857;
+            --success-bg: #ecfdf5;
+            --danger: #be123c;
+            --danger-bg: #fff1f2;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--text); font-family: "Segoe UI", system-ui, sans-serif; min-height: 100vh; }
+        button, input, select { font: inherit; }
+
+        .admin-header {
+            align-items: center; background: linear-gradient(135deg, #171568, var(--primary));
+            color: white; display: flex; justify-content: space-between; min-height: 78px;
+            padding: 16px max(24px, calc((100vw - 1400px) / 2));
+        }
+        .brand small { color: #bfdbfe; display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; margin-bottom: 4px; text-transform: uppercase; }
+        .brand strong { font-size: 1.15rem; }
+        .header-actions { align-items: center; display: flex; gap: 14px; }
+        .admin-user { color: #dbeafe; font-size: 0.9rem; }
+        .btn-logout { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.35); border-radius: 50px; color: white; cursor: pointer; padding: 9px 16px; }
+        .btn-logout:hover { background: rgba(255,255,255,0.22); }
+
+        main { margin: 0 auto; max-width: 1450px; padding: 38px 24px 60px; }
+        .page-heading { align-items: end; display: flex; justify-content: space-between; margin-bottom: 26px; }
+        .page-heading h1 { color: var(--primary); font-size: clamp(1.8rem, 3vw, 2.5rem); margin-bottom: 7px; }
+        .page-heading p { color: var(--muted); }
+        .btn-metrics {
+            align-items: center; background: var(--primary); border-radius: 50px; color: white;
+            display: inline-flex; font-weight: 750; gap: 9px; padding: 12px 22px; text-decoration: none;
+        }
+        .btn-metrics:hover { background: var(--primary-light); }
+
+        .filters {
+            background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(29,27,132,0.06); display: grid; gap: 14px;
+            grid-template-columns: 1.2fr 1fr 0.85fr 0.75fr 0.85fr auto auto; margin-bottom: 20px; padding: 20px;
+        }
+        .filter-group label { color: #475569; display: block; font-size: 0.78rem; font-weight: 750; margin-bottom: 6px; }
+        .filter-group input, .filter-group select {
+            background: white; border: 2px solid var(--border); border-radius: 11px; outline: none;
+            padding: 10px 12px; transition: border 0.2s; width: 100%;
+        }
+        .filter-group input:focus, .filter-group select:focus { border-color: var(--primary-light); }
+        .btn-clear { align-self: end; background: #eef2ff; border: 0; border-radius: 11px; color: var(--primary); cursor: pointer; font-weight: 750; padding: 12px 16px; }
+        .btn-search { align-self: end; background: var(--primary); border: 0; border-radius: 11px; color: white; cursor: pointer; font-weight: 750; padding: 12px 20px; }
+        .btn-search:hover { background: var(--primary-light); }
+
+        .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 10px 30px rgba(29,27,132,0.06); overflow: hidden; }
+        .table-scroll { overflow-x: auto; }
+        table { border-collapse: collapse; min-width: 1120px; width: 100%; }
+        thead { background: #eef3fb; }
+        th { color: #475569; font-size: 0.76rem; letter-spacing: 0.04em; padding: 14px 16px; text-align: left; text-transform: uppercase; white-space: nowrap; }
+        td { border-top: 1px solid #edf1f7; font-size: 0.9rem; padding: 15px 16px; vertical-align: middle; }
+        tbody tr:hover { background: #f8fbff; }
+        .donor-name { color: var(--primary); font-weight: 750; }
+        .badge { border-radius: 50px; display: inline-block; font-size: 0.76rem; font-weight: 750; padding: 6px 10px; }
+        .badge-active { background: var(--success-bg); color: var(--success); }
+        .badge-inactive { background: var(--danger-bg); color: var(--danger); }
+        .badge-pending { background: #fff7d6; color: #8a5a00; }
+        .btn-view { background: var(--primary); border: 0; border-radius: 50px; color: white; cursor: pointer; font-size: 0.84rem; font-weight: 750; padding: 8px 17px; }
+        .btn-view:hover { background: var(--primary-light); }
+        .empty-state { color: var(--muted); padding: 42px !important; text-align: center; }
+
+        .pagination-bar { align-items: center; border-top: 1px solid var(--border); display: flex; justify-content: space-between; padding: 16px 20px; }
+        .page-info { color: var(--muted); font-size: 0.86rem; }
+        .pagination { align-items: center; display: flex; gap: 7px; }
+        .pagination button {
+            background: white; border: 1px solid var(--border); border-radius: 9px; color: var(--primary);
+            cursor: pointer; height: 36px; min-width: 36px; padding: 0 9px;
+        }
+        .pagination button.active { background: var(--primary); border-color: var(--primary); color: white; }
+        .pagination button:disabled { color: #a8b2c1; cursor: not-allowed; }
+
+        .detail-dialog {
+            border: 0; border-radius: 24px; box-shadow: 0 24px 70px rgba(15,23,42,0.3);
+            margin: auto; max-height: 90vh; max-width: 780px; overflow-y: auto; padding: 0; width: calc(100% - 32px);
+        }
+        .detail-dialog::backdrop { background: rgba(15,23,42,0.62); backdrop-filter: blur(3px); }
+        .detail-header { align-items: center; background: linear-gradient(135deg, #eef4ff, #f7fbff); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; padding: 24px 28px; }
+        .detail-header h2 { color: var(--primary); font-size: 1.45rem; }
+        .dialog-close { background: white; border: 1px solid var(--border); border-radius: 50%; color: #475569; cursor: pointer; font-size: 1.2rem; height: 38px; width: 38px; }
+        .detail-body { padding: 28px; }
+        .detail-section + .detail-section { border-top: 1px solid var(--border); margin-top: 24px; padding-top: 24px; }
+        .detail-section h3 { color: var(--primary); font-size: 1rem; margin-bottom: 15px; }
+        .detail-grid { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0,1fr)); }
+        .detail-field { background: #f8fafc; border: 1px solid #e5ebf3; border-radius: 12px; padding: 12px 14px; }
+        .detail-field span { color: var(--muted); display: block; font-size: 0.72rem; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; }
+        .detail-field strong { font-size: 0.94rem; font-weight: 650; overflow-wrap: anywhere; }
+        .rejection-summary {
+            background: linear-gradient(145deg, #fff1f2, #fff7f7); border: 1px solid #f4a7ad;
+            border-radius: 16px; box-shadow: 0 8px 22px rgba(190, 24, 40, 0.08); margin-bottom: 24px; padding: 20px;
+        }
+        .rejection-summary-header { align-items: center; display: flex; gap: 13px; margin-bottom: 16px; }
+        .rejection-summary-header small { color: #b42331; display: block; font-size: 0.7rem; font-weight: 850; letter-spacing: 0.09em; margin-bottom: 3px; }
+        .rejection-summary-header h3 { color: #991b2b; font-size: 1.08rem; margin: 0; }
+        .rejection-icon {
+            align-items: center; background: #dc3545; border-radius: 50%; color: white;
+            display: inline-flex; flex: 0 0 42px; height: 42px; justify-content: center; width: 42px;
+        }
+        .rejection-icon svg { fill: none; height: 23px; stroke: currentColor; stroke-linecap: round; stroke-width: 2.4; width: 23px; }
+        .rejection-summary .detail-field { background: rgba(255,255,255,0.78); border-color: #f2c6ca; }
+        .rejection-summary .detail-field span { color: #9f3640; }
+        .detail-footer { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; padding: 0 28px 28px; }
+        .btn-close-detail { background: var(--primary); border: 0; border-radius: 50px; color: white; cursor: pointer; font-weight: 750; padding: 11px 24px; }
+        .btn-review { border: 0; border-radius: 50px; color: white; cursor: pointer; font-weight: 750; padding: 11px 24px; }
+        .btn-accept { background: #159a70; }
+        .btn-reject { background: #dc4c4c; }
+        .btn-review:hover, .btn-close-detail:hover { filter: brightness(0.94); }
+        .btn-review:disabled { background: #cbd5e1; color: #64748b; cursor: not-allowed; filter: none; opacity: 0.75; }
+        .confirm-dialog {
+            border: 0; border-radius: 22px; box-shadow: 0 24px 70px rgba(15,23,42,0.3);
+            margin: auto; max-width: 440px; padding: 30px; width: calc(100% - 32px);
+        }
+        .confirm-dialog::backdrop { background: rgba(15,23,42,0.62); backdrop-filter: blur(3px); }
+        #dialogoDecision { max-height: 90vh; max-width: 620px; overflow-y: auto; }
+        .confirm-dialog h2 { color: var(--primary); font-size: 1.4rem; margin-bottom: 12px; }
+        .confirm-dialog p { color: var(--muted); line-height: 1.55; margin-bottom: 24px; }
+        .confirm-actions { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+        .confirm-actions button { border: 0; border-radius: 50px; cursor: pointer; font-weight: 750; padding: 12px; }
+        .btn-confirm-exit { background: var(--primary); color: white; }
+        .btn-confirm-decision { color: white; }
+        .btn-confirm-cancel { background: #e2e8f0; color: #334155; }
+        .rejection-reasons { border-top: 1px solid var(--border); margin: -6px 0 22px; padding-top: 18px; }
+        .rejection-reasons > strong { color: var(--text); display: block; font-size: 0.92rem; margin-bottom: 12px; }
+        .reason-option {
+            align-items: flex-start; border: 1px solid var(--border); border-radius: 11px; cursor: pointer;
+            display: flex; gap: 10px; line-height: 1.35; margin-bottom: 9px; padding: 10px 12px;
+        }
+        .reason-option:has(input:checked) { background: #fff5f5; border-color: #dc4c4c; }
+        .reason-option input { accent-color: #dc4c4c; flex: 0 0 auto; margin-top: 2px; }
+        .other-reason { margin-top: 12px; }
+        .other-reason label { display: block; font-size: 0.84rem; font-weight: 700; margin-bottom: 7px; }
+        .other-reason textarea {
+            border: 1px solid var(--border); border-radius: 11px; font: inherit; min-height: 82px;
+            padding: 11px 12px; resize: vertical; width: 100%;
+        }
+        .confirm-actions button:disabled { cursor: not-allowed; opacity: 0.5; }
+
+        @media (max-width: 900px) {
+            .page-heading { align-items: start; flex-direction: column; gap: 18px; }
+            .filters { grid-template-columns: repeat(2, 1fr); }
+            .btn-clear { width: 100%; }
+        }
+        @media (max-width: 600px) {
+            .admin-user { display: none; }
+            main { padding: 28px 14px 50px; }
+            .filters { grid-template-columns: 1fr; }
+            .btn-metrics { justify-content: center; width: 100%; }
+            .pagination-bar { align-items: flex-start; flex-direction: column; gap: 13px; }
+            .detail-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <div class="brand">
+            <small>Donación Conectada Panamá</small>
+            <strong>Administración de donantes</strong>
+        </div>
+        <div class="header-actions">
+            <span class="admin-user">Administrador1</span>
+            <button type="button" class="btn-logout" onclick="abrirSalidaAdmin()">Cerrar sesión</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="page-heading">
+            <div>
+                <h1>Registro de donantes</h1>
+                <p>Consulta y revisa las voluntades registradas en el sistema.</p>
+            </div>
+            <a href="metricas.html" class="btn-metrics"><span aria-hidden="true">▥</span> Métricas</a>
+        </div>
+
+        <section class="filters" aria-label="Filtros de donantes">
+            <div class="filter-group">
+                <label for="filtroNombre">Nombre contiene</label>
+                <input type="search" id="filtroNombre" placeholder="Buscar por nombre">
+            </div>
+            <div class="filter-group">
+                <label for="filtroCedula">Cédula contiene</label>
+                <input type="search" id="filtroCedula" placeholder="Buscar por cédula">
+            </div>
+            <div class="filter-group">
+                <label for="filtroProvincia">Provincia</label>
+                <select id="filtroProvincia"><option value="">Todas</option></select>
+            </div>
+            <div class="filter-group">
+                <label for="filtroEstado">Consentimiento</label>
+                <select id="filtroEstado">
+                    <option value="">Todos</option>
+                    <option value="activo" selected>Activos</option>
+                    <option value="baja">Bajas</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filtroEstadoRegistro">Estado del registro</label>
+                <select id="filtroEstadoRegistro">
+                    <option value="">Todos</option>
+                    <option value="Aceptado">Aceptado</option>
+                    <option value="Por validar">Por validar</option>
+                    <option value="Rechazado">Rechazado</option>
+                </select>
+            </div>
+            <button type="button" class="btn-search" onclick="aplicarFiltros()">Buscar</button>
+            <button type="button" class="btn-clear" onclick="limpiarFiltros()">Limpiar</button>
+        </section>
+
+        <section class="table-card" aria-label="Listado de donantes">
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Cédula</th>
+                            <th>Correo</th>
+                            <th>Provincia</th>
+                            <th>Contacto</th>
+                            <th>Correo contacto</th>
+                            <th>Estado</th>
+                            <th>Consentimiento</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaDonantes"></tbody>
+                </table>
+            </div>
+            <div class="pagination-bar">
+                <div class="filter-group">
+                    <label for="tamanoPagina">Registros por página</label>
+                    <select id="tamanoPagina">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                    </select>
+                </div>
+                <span id="infoPagina" class="page-info"></span>
+                <div id="paginacion" class="pagination" aria-label="Paginación"></div>
+            </div>
+        </section>
+    </main>
+
+    <dialog id="detalleDonante" class="detail-dialog" aria-labelledby="tituloDetalle">
+        <div class="detail-header">
+            <h2 id="tituloDetalle">Detalle del donante</h2>
+            <button type="button" class="dialog-close" onclick="cerrarDetalle()" aria-label="Cerrar">×</button>
+        </div>
+        <div id="contenidoDetalle" class="detail-body"></div>
+        <div class="detail-footer">
+            <button id="botonAceptarRegistro" type="button" class="btn-review btn-accept" onclick="abrirDecision('Aceptado')">Aceptar</button>
+            <button id="botonRechazarRegistro" type="button" class="btn-review btn-reject" onclick="abrirDecision('Rechazado')">Rechazar</button>
+            <button type="button" class="btn-close-detail" onclick="cerrarDetalle()">Cerrar</button>
+        </div>
+    </dialog>
+
+    <dialog id="dialogoDecision" class="confirm-dialog" aria-labelledby="tituloDecision">
+        <h2 id="tituloDecision">Confirmar decisión</h2>
+        <p id="mensajeDecision"></p>
+        <div id="motivosRechazo" class="rejection-reasons" hidden>
+            <strong>Selecciona un motivo de rechazo</strong>
+            <label class="reason-option"><input type="radio" name="motivoRechazo" value="Antecedente declarado de VIH, hepatitis B/C o sífilis"> <span>VIH, hepatitis B/C o sífilis declarado.</span></label>
+            <label class="reason-option"><input type="radio" name="motivoRechazo" value="Antecedente declarado de cáncer sistémico o leucemia"> <span>Cáncer sistémico o leucemia declarado.</span></label>
+            <label class="reason-option"><input type="radio" name="motivoRechazo" value="Antecedente declarado de glaucoma avanzado, infección corneal previa o queratocono"> <span>Condición ocular relevante declarada.</span></label>
+            <label class="reason-option"><input type="radio" name="motivoRechazo" value="Antecedente declarado de cirugía ocular previa, como LASIK o cataratas"> <span>Cirugía ocular previa declarada.</span></label>
+            <label class="reason-option"><input type="radio" name="motivoRechazo" value="Datos suministrados inconsistentes o no comprobables"> <span>Datos inconsistentes o no comprobables.</span></label>
+            <label class="reason-option"><input type="radio" name="motivoRechazo" value="Otro"> <span>Otro.</span></label>
+            <div id="campoOtroMotivo" class="other-reason" hidden>
+                <label for="detalleOtroMotivo">Explica el motivo</label>
+                <textarea id="detalleOtroMotivo" maxlength="500" placeholder="Describe el motivo del rechazo"></textarea>
+            </div>
+            <div class="other-reason">
+                <label for="observacionesRechazo">Observaciones de rechazo <span style="font-weight:400;color:#64748b">(opcional)</span></label>
+                <textarea id="observacionesRechazo" maxlength="800" placeholder="Agrega información complementaria sobre la decisión"></textarea>
+            </div>
+        </div>
+        <div class="confirm-actions">
+            <button id="botonConfirmarDecision" type="button" class="btn-confirm-decision" onclick="confirmarDecision()">Confirmar</button>
+            <button type="button" class="btn-confirm-cancel" onclick="cancelarDecision()">Cancelar</button>
+        </div>
+    </dialog>
+
+    <dialog id="dialogoResultadoDecision" class="confirm-dialog" aria-labelledby="tituloResultadoDecision">
+        <h2 id="tituloResultadoDecision">Estado actualizado</h2>
+        <p id="mensajeResultadoDecision"></p>
+        <div class="confirm-actions" style="grid-template-columns:1fr">
+            <button type="button" class="btn-confirm-exit" onclick="cerrarResultadoDecision()">Aceptar</button>
+        </div>
+    </dialog>
+
+    <dialog id="dialogoSalidaAdmin" class="confirm-dialog" aria-labelledby="tituloSalidaAdmin">
+        <h2 id="tituloSalidaAdmin">¿Deseas salir de administración?</h2>
+        <p>La sesión administrativa se cerrará y regresarás a la página principal del sistema.</p>
+        <div class="confirm-actions">
+            <button type="button" class="btn-confirm-exit" onclick="cerrarSesion()">Salir</button>
+            <button type="button" class="btn-confirm-cancel" onclick="cerrarSalidaAdmin()">Cancelar</button>
+        </div>
+    </dialog>
+
+    <script>
+        if (sessionStorage.getItem("admin_mock_authenticated") !== "true") {
+            window.location.replace("index.html");
+        }
+
+        const DONANTES_SEMILLA = [
+            { id: 1, nombre: "Carlos Mendoza", cedula: "8-123-1234", codigo: "88NNNN0001", fechaNacimiento: "1985-03-14", genero: "Masculino", correo: "carlos.mendoza@email.com", telefono: "+50760001234", provincia: "Panamá", distrito: "Panamá", corregimiento: "San Francisco", contacto: "María Mendoza", correoContacto: "maria.mendoza@email.com", telefonoContacto: "+50761001122", relacion: "Cónyuge", activo: true, estadoRegistro: "Aceptado" },
+            { id: 2, nombre: "Ana Rodríguez", cedula: "4-765-2310", codigo: "42ABCD0912", fechaNacimiento: "1992-07-22", genero: "Femenino", correo: "ana.rodriguez@email.com", telefono: "+50766772211", provincia: "Chiriquí", distrito: "David", corregimiento: "David", contacto: "Luis Rodríguez", correoContacto: "luis.rodriguez@email.com", telefonoContacto: "+50765554433", relacion: "Hermano(a)", activo: true, estadoRegistro: "Por validar" },
+            { id: 3, nombre: "José Martínez", cedula: "3-412-9981", codigo: "31KLMN7740", fechaNacimiento: "1978-11-02", genero: "Masculino", correo: "jose.martinez@email.com", telefono: "+50762223344", provincia: "Colón", distrito: "Colón", corregimiento: "Cristóbal", contacto: "Elena Martínez", correoContacto: "elena.martinez@email.com", telefonoContacto: "+50763334455", relacion: "Cónyuge", activo: true, estadoRegistro: "Aceptado" },
+            { id: 4, nombre: "Lucía González", cedula: "8-901-4567", codigo: "80PQRS3145", fechaNacimiento: "2001-01-19", genero: "Femenino", correo: "lucia.gonzalez@email.com", telefono: "+50767778899", provincia: "Panamá", distrito: "San Miguelito", corregimiento: "Rufina Alfaro", contacto: "Pedro González", correoContacto: "pedro.gonzalez@email.com", telefonoContacto: "+50769990011", relacion: "Padre/Madre", activo: true, estadoRegistro: "Rechazado" },
+            { id: 5, nombre: "Miguel Castillo", cedula: "6-223-7814", codigo: "62TUVW8803", fechaNacimiento: "1988-09-08", genero: "Masculino", correo: "miguel.castillo@email.com", telefono: "+50761112233", provincia: "Herrera", distrito: "Chitré", corregimiento: "Monagrillo", contacto: "Rosa Castillo", correoContacto: "rosa.castillo@email.com", telefonoContacto: "+50764445566", relacion: "Cónyuge", activo: true, estadoRegistro: "Por validar" },
+            { id: 6, nombre: "Sofía Herrera", cedula: "7-541-3902", codigo: "75XYZA0461", fechaNacimiento: "1994-05-27", genero: "Femenino", correo: "sofia.herrera@email.com", telefono: "+50765556677", provincia: "Los Santos", distrito: "Las Tablas", corregimiento: "Las Tablas", contacto: "Daniel Herrera", correoContacto: "daniel.herrera@email.com", telefonoContacto: "+50768889900", relacion: "Hermano(a)", activo: true, estadoRegistro: "Aceptado" },
+            { id: 7, nombre: "Ricardo Sánchez", cedula: "9-334-1208", codigo: "93BCDE5520", fechaNacimiento: "1981-12-10", genero: "Masculino", correo: "ricardo.sanchez@email.com", telefono: "+50760009988", provincia: "Veraguas", distrito: "Santiago", corregimiento: "Santiago", contacto: "Carmen Sánchez", correoContacto: "carmen.sanchez@email.com", telefonoContacto: "+50767776655", relacion: "Cónyuge", activo: true, estadoRegistro: "Rechazado" },
+            { id: 8, nombre: "Elena Morales", cedula: "2-882-6401", codigo: "28FGHI9034", fechaNacimiento: "1990-04-16", genero: "Femenino", correo: "elena.morales@email.com", telefono: "+50763332211", provincia: "Coclé", distrito: "Penonomé", corregimiento: "Penonomé", contacto: "Tomás Morales", correoContacto: "tomas.morales@email.com", telefonoContacto: "+50762221100", relacion: "Padre/Madre", activo: true, estadoRegistro: "Aceptado" },
+            { id: 9, nombre: "Andrés Vega", cedula: "1-678-3029", codigo: "16JKLM4812", fechaNacimiento: "1983-06-30", genero: "Masculino", correo: "andres.vega@email.com", telefono: "+50768887766", provincia: "Bocas del Toro", distrito: "Changuinola", corregimiento: "Changuinola", contacto: "Julio Vega", correoContacto: "julio.vega@email.com", telefonoContacto: "+50761110022", relacion: "Hermano(a)", activo: true, estadoRegistro: "Rechazado" },
+            { id: 10, nombre: "Patricia Ríos", cedula: "8-745-6120", codigo: "87NOPQ1509", fechaNacimiento: "1975-10-12", genero: "Femenino", correo: "patricia.rios@email.com", telefono: "+50769998877", provincia: "Panamá Oeste", distrito: "La Chorrera", corregimiento: "Barrio Balboa", contacto: "Marta Ríos", correoContacto: "marta.rios@email.com", telefonoContacto: "+50765550011", relacion: "Amistad", activo: true, estadoRegistro: "Por validar" },
+            { id: 11, nombre: "Fernando López", cedula: "5-390-4472", codigo: "53RSTU6274", fechaNacimiento: "1987-02-25", genero: "Masculino", correo: "fernando.lopez@email.com", telefono: "+50764443322", provincia: "Darién", distrito: "Pinogana", corregimiento: "Metetí", contacto: "Iván López", correoContacto: "ivan.lopez@email.com", telefonoContacto: "+50763330022", relacion: "Hermano(a)", activo: true, estadoRegistro: "Aceptado" },
+            { id: 12, nombre: "Gabriela Pérez", cedula: "PE-1023-4598", codigo: "PEVWXY7201", fechaNacimiento: "1991-08-03", genero: "Femenino", correo: "gabriela.perez@email.com", telefono: "+50767770088", provincia: "Panamá", distrito: "Panamá", corregimiento: "Bella Vista", contacto: "Raúl Pérez", correoContacto: "raul.perez@email.com", telefonoContacto: "+50769991122", relacion: "Padre/Madre", activo: true, estadoRegistro: "Por validar" },
+            { id: 13, nombre: "Roberto Díaz", cedula: "8-551-7840", codigo: "85ZABC3308", fechaNacimiento: "1960-03-21", genero: "Masculino", correo: "roberto.diaz@email.com", telefono: "+50761113355", provincia: "Panamá", distrito: "Panamá", corregimiento: "Bethania", contacto: "Laura Díaz", correoContacto: "laura.diaz@email.com", telefonoContacto: "+50762224466", relacion: "Cónyuge", activo: false, estadoRegistro: "Aceptado" },
+            { id: 14, nombre: "Mónica Salazar", cedula: "4-330-9821", codigo: "43DEFG8142", fechaNacimiento: "1980-07-07", genero: "Femenino", correo: "monica.salazar@email.com", telefono: "+50765557799", provincia: "Chiriquí", distrito: "Boquete", corregimiento: "Bajo Boquete", contacto: "Rafael Salazar", correoContacto: "rafael.salazar@email.com", telefonoContacto: "+50766668800", relacion: "Cónyuge", activo: false, estadoRegistro: "Aceptado" },
+            { id: 15, nombre: "Julio Espinosa", cedula: "3-708-1165", codigo: "37HIJK0956", fechaNacimiento: "1973-11-29", genero: "Masculino", correo: "julio.espinosa@email.com", telefono: "+50763335577", provincia: "Colón", distrito: "Portobelo", corregimiento: "Portobelo", contacto: "Silvia Espinosa", correoContacto: "silvia.espinosa@email.com", telefonoContacto: "+50764446688", relacion: "Amistad", activo: false, estadoRegistro: "Rechazado" },
+            { id: 16, nombre: "Teresa Navarro", cedula: "6-487-2250", codigo: "64LMNO5713", fechaNacimiento: "1986-05-15", genero: "Femenino", correo: "teresa.navarro@email.com", telefono: "+50768880099", provincia: "Herrera", distrito: "Ocú", corregimiento: "Ocú", contacto: "Marco Navarro", correoContacto: "marco.navarro@email.com", telefonoContacto: "+50769992233", relacion: "Hermano(a)", activo: false, estadoRegistro: "Aceptado" },
+            { id: 17, nombre: "Daniela Torres", cedula: "8-620-1843", codigo: "86QWERT2047", fechaNacimiento: "1996-04-18", genero: "Femenino", correo: "daniela.torres@email.com", telefono: "+50761234567", provincia: "Panamá", distrito: "Panamá", corregimiento: "Juan Díaz", contacto: "Adriana Torres", correoContacto: "adriana.torres@email.com", telefonoContacto: "+50762345678", relacion: "Hermano(a)", activo: true, estadoRegistro: "Por validar" },
+            { id: 18, nombre: "Samuel Batista", cedula: "4-812-3905", codigo: "49ZXCVB7316", fechaNacimiento: "1989-09-26", genero: "Masculino", correo: "samuel.batista@email.com", telefono: "+50763456789", provincia: "Chiriquí", distrito: "David", corregimiento: "David", contacto: "Rebeca Batista", correoContacto: "rebeca.batista@email.com", telefonoContacto: "+50764567890", relacion: "Cónyuge", activo: true, estadoRegistro: "Por validar" }
+        ];
+
+        let donantes = DONANTES_SEMILLA.map((donante, indice) => ({
+            ...donante,
+            folio: `DC-2026-${String(indice + 1).padStart(5, "0")}`,
+            fechaRegistro: new Date(2025, indice % 12, 3 + (indice % 24), 8 + (indice % 9), 15).toISOString(),
+            fechaRevocacion: donante.activo ? null : new Date(2026, (indice + 2) % 7, 10 + (indice % 12), 10, 30).toISOString(),
+            estadoConsentimiento: donante.activo ? "Activo" : "Revocado",
+            estadoRegistro: donante.estadoRegistro || (indice % 8 === 6 ? "Rechazado" : (indice % 5 === 4 ? "Por validar" : "Aceptado")),
+            motivoRechazo: donante.estadoRegistro === "Rechazado" ? "Datos suministrados inconsistentes o no comprobables" : null,
+            detalleMotivoRechazo: "",
+            observacionesRechazo: "",
+            fechaDecision: donante.estadoRegistro === "Por validar" ? null : new Date(2026, indice % 7, 5 + (indice % 20), 9, 45).toISOString(),
+            administradorDecision: donante.estadoRegistro === "Por validar" ? null : "Administrador1",
+            conversado: indice % 3 !== 0,
+            consentimientoVoluntario: true,
+            consentimientoNoDesfigura: indice % 4 !== 0,
+            firmaDigital: donante.nombre,
+            aceptacionElectronica: true,
+            saludInfecciosas: indice % 7 === 0 ? "No sé" : "No",
+            saludCancer: indice % 9 === 0 ? "Sí" : "No",
+            saludOcular: indice % 4 === 0 ? "Sí" : "No",
+            cirugiasOculares: indice % 3 === 0 ? "Sí" : "No",
+            alcanceDonacion: indice % 3 === 0 ? "Solo córneas" : "Órganos y tejidos",
+            autorizaInvestigacion: indice % 4 !== 0,
+            autorizaDatosSensibles: true,
+            autorizaConsultaInstitucional: true
+        }));
+        let paginaActual = 1;
+        let filtrosAplicados = { nombre: "", cedula: "", provincia: "", estado: "activo", estadoRegistro: "" };
+        let donanteSeleccionadoId = null;
+        let decisionPendiente = null;
+        const DECISIONES_ADMIN_KEY = "decisiones_registros_admin_mock";
+
+        function sincronizarDonantePrueba() {
+            try {
+                const registros = JSON.parse(localStorage.getItem("registros_donacion_mock"));
+                if (!Array.isArray(registros)) return;
+                const prueba = registros.find(registro => registro.cedula === "8-123-1234" && registro.codigo === "88NNNN0001");
+                if (prueba) {
+                    donantes[0].activo = prueba.activo === true;
+                    donantes[0].estadoConsentimiento = prueba.estadoConsentimiento || (prueba.activo ? "Activo" : "Revocado");
+                    donantes[0].folio = prueba.folio || donantes[0].folio;
+                    donantes[0].fechaRegistro = prueba.fechaRegistro || donantes[0].fechaRegistro;
+                    donantes[0].fechaRevocacion = prueba.fechaRevocacion || null;
+                    donantes[0].estadoRegistro = prueba.estadoRegistro || donantes[0].estadoRegistro;
+                }
+            } catch (error) {
+                // Los datos semilla permanecen disponibles si el almacenamiento local no es válido.
+            }
+        }
+
+        function normalizar(texto) {
+            return String(texto || "").toLocaleLowerCase("es").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
+
+        function obtenerFiltrados() {
+            return donantes.filter(donante =>
+                normalizar(donante.nombre).includes(filtrosAplicados.nombre) &&
+                normalizar(donante.cedula).includes(filtrosAplicados.cedula) &&
+                (!filtrosAplicados.provincia || donante.provincia === filtrosAplicados.provincia) &&
+                (!filtrosAplicados.estado || (filtrosAplicados.estado === "activo" ? donante.activo : !donante.activo)) &&
+                (!filtrosAplicados.estadoRegistro || donante.estadoRegistro === filtrosAplicados.estadoRegistro)
+            );
+        }
+
+        function aplicarFiltros() {
+            filtrosAplicados = {
+                nombre: normalizar(document.getElementById("filtroNombre").value),
+                cedula: normalizar(document.getElementById("filtroCedula").value),
+                provincia: document.getElementById("filtroProvincia").value,
+                estado: document.getElementById("filtroEstado").value,
+                estadoRegistro: document.getElementById("filtroEstadoRegistro").value
+            };
+            paginaActual = 1;
+            renderTabla();
+        }
+
+        function renderTabla() {
+            const filtrados = obtenerFiltrados();
+            const tamano = Number(document.getElementById("tamanoPagina").value);
+            const totalPaginas = Math.max(1, Math.ceil(filtrados.length / tamano));
+            if (paginaActual > totalPaginas) paginaActual = totalPaginas;
+            const inicio = (paginaActual - 1) * tamano;
+            const pagina = filtrados.slice(inicio, inicio + tamano);
+            const tbody = document.getElementById("tablaDonantes");
+
+            if (!pagina.length) {
+                tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No se encontraron donantes con los filtros seleccionados.</td></tr>';
+            } else {
+                tbody.innerHTML = pagina.map(donante => `
+                    <tr>
+                        <td class="donor-name">${donante.nombre}</td>
+                        <td>${donante.cedula}</td>
+                        <td>${donante.correo}</td>
+                        <td>${donante.provincia}</td>
+                        <td>${donante.contacto}</td>
+                        <td>${donante.correoContacto}</td>
+                        <td><span class="badge ${donante.estadoRegistro === "Aceptado" ? "badge-active" : (donante.estadoRegistro === "Rechazado" ? "badge-inactive" : "badge-pending")}">${donante.estadoRegistro}</span></td>
+                        <td><span class="badge ${donante.activo ? "badge-active" : "badge-inactive"}">${donante.activo ? "Activo" : "Baja"}</span></td>
+                        <td><button type="button" class="btn-view" onclick="verDonante(${donante.id})">Ver</button></td>
+                    </tr>
+                `).join("");
+            }
+
+            const desde = filtrados.length ? inicio + 1 : 0;
+            const hasta = Math.min(inicio + tamano, filtrados.length);
+            document.getElementById("infoPagina").textContent = `Mostrando ${desde}-${hasta} de ${filtrados.length} registros`;
+            renderPaginacion(totalPaginas);
+        }
+
+        function renderPaginacion(totalPaginas) {
+            const contenedor = document.getElementById("paginacion");
+            let html = `<button type="button" ${paginaActual === 1 ? "disabled" : ""} onclick="cambiarPagina(${paginaActual - 1})" aria-label="Página anterior">‹</button>`;
+            for (let pagina = 1; pagina <= totalPaginas; pagina++) {
+                html += `<button type="button" class="${pagina === paginaActual ? "active" : ""}" onclick="cambiarPagina(${pagina})" aria-label="Página ${pagina}">${pagina}</button>`;
+            }
+            html += `<button type="button" ${paginaActual === totalPaginas ? "disabled" : ""} onclick="cambiarPagina(${paginaActual + 1})" aria-label="Página siguiente">›</button>`;
+            contenedor.innerHTML = html;
+        }
+
+        function cambiarPagina(pagina) {
+            paginaActual = pagina;
+            renderTabla();
+        }
+
+        function limpiarFiltros() {
+            document.getElementById("filtroNombre").value = "";
+            document.getElementById("filtroCedula").value = "";
+            document.getElementById("filtroProvincia").value = "";
+            document.getElementById("filtroEstado").value = "";
+            document.getElementById("filtroEstadoRegistro").value = "";
+            filtrosAplicados = { nombre: "", cedula: "", provincia: "", estado: "", estadoRegistro: "" };
+            paginaActual = 1;
+            renderTabla();
+        }
+
+        function campoDetalle(etiqueta, valor) {
+            return `<div class="detail-field"><span>${etiqueta}</span><strong>${valor}</strong></div>`;
+        }
+
+        function verDonante(id) {
+            const donante = donantes.find(registro => registro.id === id);
+            if (!donante) return;
+            donanteSeleccionadoId = id;
+            const permiteDecision = donante.estadoRegistro === "Por validar";
+            document.getElementById("botonAceptarRegistro").disabled = !permiteDecision;
+            document.getElementById("botonRechazarRegistro").disabled = !permiteDecision;
+            const motivoMostrado = donante.motivoRechazo === "Otro" && donante.detalleMotivoRechazo
+                ? `Otro: ${donante.detalleMotivoRechazo}`
+                : (donante.motivoRechazo || "Motivo no registrado");
+            const seccionRechazo = donante.estadoRegistro === "Rechazado" ? `
+                <section class="rejection-summary" aria-label="Información del rechazo">
+                    <div class="rejection-summary-header">
+                        <span class="rejection-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></svg>
+                        </span>
+                        <div>
+                            <small>DONANTE RECHAZADO</small>                            
+                        </div>
+                    </div>
+                    <div class="detail-grid">
+                        ${campoDetalle("Motivo del rechazo", motivoMostrado)}
+                        ${donante.observacionesRechazo ? campoDetalle("Observaciones", donante.observacionesRechazo) : ""}
+                        ${campoDetalle("Rechazado por", donante.administradorDecision || "Usuario no registrado")}
+                        ${campoDetalle("Fecha del rechazo", donante.fechaDecision ? new Date(donante.fechaDecision).toLocaleString("es-PA") : "Fecha no registrada")}
+                    </div>
+                </section>
+            ` : "";
+
+            document.getElementById("contenidoDetalle").innerHTML = `
+                ${seccionRechazo}
+                <section class="detail-section">
+                    <h3>Datos del donante</h3>
+                    <div class="detail-grid">
+                        ${campoDetalle("Nombre completo", donante.nombre)}
+                        ${campoDetalle("Estado", donante.activo ? "Activo" : "Baja")}
+                        ${campoDetalle("Cédula", donante.cedula)}
+                        ${campoDetalle("Código posterior", donante.codigo)}
+                        ${campoDetalle("Fecha de nacimiento", donante.fechaNacimiento)}
+                        ${campoDetalle("Género", donante.genero)}
+                        ${campoDetalle("Provincia", donante.provincia)}
+                        ${campoDetalle("Distrito", donante.distrito)}
+                        ${campoDetalle("Corregimiento", donante.corregimiento)}
+                        ${campoDetalle("Correo electrónico", donante.correo)}
+                        ${campoDetalle("Teléfono", donante.telefono)}
+                    </div>
+                </section>
+                <section class="detail-section">
+                    <h3>Aspectos administrativos y trazabilidad</h3>
+                    <div class="detail-grid">
+                        ${campoDetalle("Número de folio", donante.folio)}
+                        ${campoDetalle("Fecha y hora de registro", new Date(donante.fechaRegistro).toLocaleString("es-PA"))}
+                        ${campoDetalle("Estado del registro", donante.estadoRegistro)}
+                        ${campoDetalle("Estado del consentimiento", donante.estadoConsentimiento)}
+                        ${campoDetalle("Fecha de revocación", donante.fechaRevocacion ? new Date(donante.fechaRevocacion).toLocaleString("es-PA") : "No aplica")}
+                        ${donante.estadoRegistro !== "Rechazado" ? campoDetalle("Decisión registrada por", donante.administradorDecision || "Pendiente") : ""}
+                        ${donante.estadoRegistro !== "Rechazado" ? campoDetalle("Fecha de decisión", donante.fechaDecision ? new Date(donante.fechaDecision).toLocaleString("es-PA") : "Pendiente") : ""}
+                    </div>
+                </section>
+                <section class="detail-section">
+                    <h3>Consentimiento informado</h3>
+                    <div class="detail-grid">
+                        ${campoDetalle("Voluntad libre y expresa", donante.consentimientoVoluntario ? "Aceptado" : "No aceptado")}
+                        ${campoDetalle("Comprende que no desfigura", donante.consentimientoNoDesfigura ? "Sí" : "No")}
+                        ${campoDetalle("Firma electrónica", donante.firmaDigital)}
+                        ${campoDetalle("Aceptación electrónica", donante.aceptacionElectronica ? "Aceptada" : "No aceptada")}
+                    </div>
+                </section>
+                <section class="detail-section">
+                    <h3>Datos de salud relevantes</h3>
+                    <div class="detail-grid">
+                        ${campoDetalle("VIH, hepatitis B/C o sífilis", donante.saludInfecciosas)}
+                        ${campoDetalle("Cáncer sistémico o leucemia", donante.saludCancer)}
+                        ${campoDetalle("Condiciones oculares previas", donante.saludOcular)}
+                        ${campoDetalle("Cirugías oculares previas", donante.cirugiasOculares)}
+                    </div>
+                </section>
+                <section class="detail-section">
+                    <h3>Preferencias y alcance de la donación</h3>
+                    <div class="detail-grid">
+                        ${campoDetalle("Desea donar", donante.alcanceDonacion)}
+                        ${campoDetalle("Uso científico o docente", donante.autorizaInvestigacion ? "Autorizado" : "No autorizado")}
+                    </div>
+                </section>
+                <section class="detail-section">
+                    <h3>Protección de datos personales</h3>
+                    <div class="detail-grid">
+                        ${campoDetalle("Tratamiento de datos sensibles", donante.autorizaDatosSensibles ? "Autorizado" : "No autorizado")}
+                        ${campoDetalle("Consulta por OPT, MINSA y CSS", donante.autorizaConsultaInstitucional ? "Autorizada" : "No autorizada")}
+                    </div>
+                </section>
+                <section class="detail-section">
+                    <h3>Información de contacto</h3>
+                    <div class="detail-grid">
+                        ${campoDetalle("Nombre", donante.contacto)}
+                        ${campoDetalle("Parentesco", donante.relacion)}
+                        ${campoDetalle("Correo electrónico", donante.correoContacto)}
+                        ${campoDetalle("Teléfono", donante.telefonoContacto)}
+                        ${campoDetalle("Conversó sobre su decisión", donante.conversado === false ? "No" : "Sí")}
+                    </div>
+                </section>
+            `;
+            document.getElementById("detalleDonante").showModal();
+        }
+
+        function cerrarDetalle() {
+            document.getElementById("detalleDonante").close();
+        }
+
+        function abrirDecision(estado) {
+            const donante = donantes.find(registro => registro.id === donanteSeleccionadoId);
+            if (!donante || donante.estadoRegistro !== "Por validar") return;
+
+            decisionPendiente = estado;
+            const accion = estado === "Aceptado" ? "aceptar" : "rechazar";
+            document.getElementById("tituloDecision").textContent = `¿Deseas ${accion} este registro?`;
+            document.getElementById("mensajeDecision").textContent =
+                `Se cambiará el estado del registro de ${donante.nombre} a “${estado}”.`;
+
+            const boton = document.getElementById("botonConfirmarDecision");
+            boton.textContent = estado === "Aceptado" ? "Sí, aceptar" : "Sí, rechazar";
+            boton.className = `btn-confirm-decision ${estado === "Aceptado" ? "btn-accept" : "btn-reject"}`;
+            document.querySelectorAll('input[name="motivoRechazo"]').forEach(opcion => opcion.checked = false);
+            document.getElementById("detalleOtroMotivo").value = "";
+            document.getElementById("observacionesRechazo").value = "";
+            document.getElementById("campoOtroMotivo").hidden = true;
+            document.getElementById("motivosRechazo").hidden = estado !== "Rechazado";
+            boton.disabled = estado === "Rechazado";
+            document.getElementById("dialogoDecision").showModal();
+        }
+
+        function actualizarMotivoRechazo() {
+            const seleccionado = document.querySelector('input[name="motivoRechazo"]:checked');
+            const esOtro = seleccionado?.value === "Otro";
+            const campoOtro = document.getElementById("campoOtroMotivo");
+            campoOtro.hidden = !esOtro;
+            if (!esOtro) document.getElementById("detalleOtroMotivo").value = "";
+
+            const explicacionCompleta = !esOtro || document.getElementById("detalleOtroMotivo").value.trim().length > 0;
+            document.getElementById("botonConfirmarDecision").disabled = !seleccionado || !explicacionCompleta;
+        }
+
+        function cancelarDecision() {
+            decisionPendiente = null;
+            document.getElementById("dialogoDecision").close();
+        }
+
+        function guardarDecisionesAdministrativas() {
+            const decisiones = Object.fromEntries(donantes.map(donante => [donante.id, {
+                estadoRegistro: donante.estadoRegistro,
+                motivoRechazo: donante.motivoRechazo,
+                detalleMotivoRechazo: donante.detalleMotivoRechazo,
+                observacionesRechazo: donante.observacionesRechazo,
+                fechaDecision: donante.fechaDecision,
+                administradorDecision: donante.administradorDecision
+            }]));
+            localStorage.setItem(DECISIONES_ADMIN_KEY, JSON.stringify(decisiones));
+        }
+
+        function cargarDecisionesAdministrativas() {
+            try {
+                const decisiones = JSON.parse(localStorage.getItem(DECISIONES_ADMIN_KEY));
+                if (!decisiones || typeof decisiones !== "object") return;
+                donantes.forEach(donante => {
+                    const decision = decisiones[donante.id];
+                    const estadoGuardado = typeof decision === "string" ? decision : decision?.estadoRegistro;
+                    if (["Aceptado", "Rechazado", "Por validar"].includes(estadoGuardado)) {
+                        donante.estadoRegistro = estadoGuardado;
+                        if (typeof decision === "object") {
+                            donante.motivoRechazo = decision.motivoRechazo || null;
+                            donante.detalleMotivoRechazo = decision.detalleMotivoRechazo || "";
+                            donante.observacionesRechazo = decision.observacionesRechazo || "";
+                            donante.fechaDecision = decision.fechaDecision || null;
+                            donante.administradorDecision = decision.administradorDecision || null;
+                        }
+                    }
+                });
+            } catch (error) {
+                // Se conservan los estados semilla si el almacenamiento local no es válido.
+            }
+        }
+
+        function confirmarDecision() {
+            const donante = donantes.find(registro => registro.id === donanteSeleccionadoId);
+            if (!donante || !decisionPendiente) return;
+
+            const motivoSeleccionado = document.querySelector('input[name="motivoRechazo"]:checked');
+            const detalleOtro = document.getElementById("detalleOtroMotivo").value.trim();
+            const observaciones = document.getElementById("observacionesRechazo").value.trim();
+            if (decisionPendiente === "Rechazado" && (!motivoSeleccionado || (motivoSeleccionado.value === "Otro" && !detalleOtro))) {
+                actualizarMotivoRechazo();
+                return;
+            }
+
+            donante.estadoRegistro = decisionPendiente;
+            donante.motivoRechazo = decisionPendiente === "Rechazado" ? motivoSeleccionado.value : null;
+            donante.detalleMotivoRechazo = decisionPendiente === "Rechazado" && motivoSeleccionado.value === "Otro" ? detalleOtro : "";
+            donante.observacionesRechazo = decisionPendiente === "Rechazado" ? observaciones : "";
+            donante.fechaDecision = new Date().toISOString();
+            donante.administradorDecision = "Administrador1";
+            guardarDecisionesAdministrativas();
+            document.getElementById("dialogoDecision").close();
+            document.getElementById("detalleDonante").close();
+            renderTabla();
+
+            document.getElementById("mensajeResultadoDecision").textContent =
+                `El registro de ${donante.nombre} fue ${decisionPendiente.toLowerCase()} correctamente.`;
+            decisionPendiente = null;
+            document.getElementById("dialogoResultadoDecision").showModal();
+        }
+
+        function cerrarResultadoDecision() {
+            document.getElementById("dialogoResultadoDecision").close();
+        }
+
+        function abrirSalidaAdmin() {
+            document.getElementById("dialogoSalidaAdmin").showModal();
+        }
+
+        function cerrarSalidaAdmin() {
+            document.getElementById("dialogoSalidaAdmin").close();
+        }
+
+        function cerrarSesion() {
+            sessionStorage.removeItem("admin_mock_authenticated");
+            window.location.href = "index.html";
+        }
+
+        function inicializar() {
+            sincronizarDonantePrueba();
+            cargarDecisionesAdministrativas();
+            const provincias = [...new Set(donantes.map(donante => donante.provincia))].sort((a, b) => a.localeCompare(b, "es"));
+            document.getElementById("filtroProvincia").insertAdjacentHTML("beforeend", provincias.map(provincia => `<option value="${provincia}">${provincia}</option>`).join(""));
+
+            document.getElementById("tamanoPagina").addEventListener("change", () => {
+                paginaActual = 1;
+                renderTabla();
+            });
+            document.querySelector(".filters").addEventListener("keydown", event => {
+                if (event.key === "Enter" && event.target.matches("input")) aplicarFiltros();
+            });
+            document.querySelectorAll('input[name="motivoRechazo"]').forEach(opcion => {
+                opcion.addEventListener("change", actualizarMotivoRechazo);
+            });
+            document.getElementById("detalleOtroMotivo").addEventListener("input", actualizarMotivoRechazo);
+
+            renderTabla();
+        }
+
+        inicializar();
+    </script>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Métricas del Sistema - Donación Conectada Panamá</title>
+    <style>
+        :root {
+            --primary: #1d1b84;
+            --primary-light: #5b87e6;
+            --teal: #0f9f9a;
+            --coral: #f26b6b;
+            --gold: #e6a93d;
+            --bg: #f3f7fc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #dbe4f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--text); font-family: "Segoe UI", system-ui, sans-serif; min-height: 100vh; }
+        button { font: inherit; }
+        .metrics-header {
+            align-items: center; background: linear-gradient(135deg, #171568, var(--primary)); color: white;
+            display: flex; justify-content: space-between; min-height: 78px;
+            padding: 16px max(24px, calc((100vw - 1300px) / 2));
+        }
+        .brand small { color: #bfdbfe; display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; margin-bottom: 4px; text-transform: uppercase; }
+        .brand strong { font-size: 1.15rem; }
+        .btn-back { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.35); border-radius: 50px; color: white; font-weight: 700; padding: 9px 17px; text-decoration: none; }
+        .btn-back:hover { background: rgba(255,255,255,0.22); }
+
+        main { margin: 0 auto; max-width: 1350px; padding: 40px 24px 64px; }
+        .page-heading { margin-bottom: 30px; }
+        .page-heading span { color: var(--primary-light); font-size: 0.8rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+        .page-heading h1 { color: var(--primary); font-size: clamp(2rem, 4vw, 2.8rem); margin: 7px 0 9px; }
+        .page-heading p { color: var(--muted); line-height: 1.55; }
+
+        .metrics-grid { display: grid; gap: 24px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 22px; box-shadow: 0 12px 34px rgba(29,27,132,0.07); padding: 26px; }
+        .chart-card-wide { grid-column: 1 / -1; }
+        .chart-heading { align-items: flex-start; display: flex; justify-content: space-between; margin-bottom: 24px; }
+        .chart-heading h2 { color: var(--primary); font-size: 1.3rem; margin-bottom: 5px; }
+        .chart-heading p { color: var(--muted); font-size: 0.88rem; }
+        .chart-badge { background: #eef4ff; border-radius: 50px; color: var(--primary); font-size: 0.76rem; font-weight: 800; padding: 7px 11px; white-space: nowrap; }
+
+        .vertical-chart {
+            align-items: flex-end; border-bottom: 1px solid #cfd9e7; display: flex; gap: 14px;
+            height: 300px; justify-content: space-around; padding: 34px 12px 0;
+        }
+        .bar-column { align-items: center; display: flex; flex: 1; flex-direction: column; height: 100%; justify-content: flex-end; min-width: 42px; }
+        .bar-value { color: var(--primary); font-size: 0.82rem; font-weight: 800; margin-bottom: 6px; }
+        .bar-fill {
+            background: linear-gradient(180deg, var(--primary-light), var(--primary)); border-radius: 10px 10px 3px 3px;
+            min-height: 5px; position: relative; transition: height 0.45s ease; width: min(58px, 72%);
+        }
+        .bar-fill.teal { background: linear-gradient(180deg, #48c9c4, var(--teal)); }
+        .bar-label { color: #475569; font-size: 0.77rem; font-weight: 700; margin-top: 10px; text-align: center; }
+
+        .horizontal-chart { display: flex; flex-direction: column; gap: 12px; }
+        .horizontal-row { align-items: center; display: grid; gap: 10px; grid-template-columns: 125px 1fr 30px; }
+        .province-label { color: #475569; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .track { background: #edf2f7; border-radius: 50px; height: 13px; overflow: hidden; }
+        .track-fill { background: linear-gradient(90deg, var(--teal), #5ed5cc); border-radius: inherit; height: 100%; min-width: 5px; }
+        .province-value { color: var(--primary); font-size: 0.8rem; font-weight: 800; text-align: right; }
+
+        .month-chart { align-items: flex-end; border-bottom: 1px solid #cfd9e7; display: flex; gap: 8px; height: 290px; padding: 36px 8px 0; }
+        .month-column { align-items: center; display: flex; flex: 1; flex-direction: column; height: 100%; justify-content: flex-end; min-width: 38px; }
+        .month-fill { background: linear-gradient(180deg, #f8c46b, var(--gold)); border-radius: 8px 8px 2px 2px; min-height: 5px; width: min(44px, 76%); }
+        .month-label { color: #64748b; font-size: 0.7rem; margin-top: 9px; text-transform: capitalize; }
+        .month-value { color: #8a5b08; font-size: 0.75rem; font-weight: 800; margin-bottom: 5px; }
+
+        .status-chart { align-items: center; display: flex; gap: 54px; justify-content: center; min-height: 260px; }
+        .status-donut {
+            align-items: center; background: #e2e8f0;
+            border-radius: 50%; display: flex; flex: 0 0 210px; height: 210px; justify-content: center;
+            position: relative; width: 210px;
+        }
+        .status-donut::after { background: white; border-radius: 50%; content: ""; height: 126px; position: absolute; width: 126px; }
+        .status-total { color: var(--primary); position: relative; text-align: center; z-index: 1; }
+        .status-total strong { display: block; font-size: 2rem; line-height: 1; }
+        .status-total span { color: var(--muted); font-size: 0.78rem; }
+        .status-legend { display: grid; gap: 14px; min-width: 250px; }
+        .status-item {
+            align-items: center; border: 1px solid var(--border); border-radius: 13px;
+            display: grid; gap: 10px; grid-template-columns: 12px 1fr auto; padding: 13px 15px;
+        }
+        .status-dot { border-radius: 50%; height: 12px; width: 12px; }
+        .status-dot.accepted { background: #159a70; }
+        .status-dot.pending { background: var(--gold); }
+        .status-dot.rejected { background: #e25c5c; }
+        .status-label { color: #475569; font-size: 0.88rem; font-weight: 700; }
+        .status-value { color: var(--primary); font-weight: 800; }
+
+        @media (max-width: 900px) {
+            .metrics-grid { grid-template-columns: 1fr; }
+            .chart-card-wide { grid-column: auto; }
+            .month-chart { overflow-x: auto; }
+            .month-column { flex: 0 0 55px; }
+            .status-chart { gap: 30px; }
+        }
+        @media (max-width: 600px) {
+            main { padding: 30px 14px 50px; }
+            .chart-card { padding: 20px 16px; }
+            .vertical-chart { gap: 6px; padding-left: 0; padding-right: 0; }
+            .horizontal-row { grid-template-columns: 95px 1fr 25px; }
+            .chart-badge { display: none; }
+            .status-chart { flex-direction: column; }
+            .status-donut { flex-basis: 190px; height: 190px; width: 190px; }
+            .status-donut::after { height: 114px; width: 114px; }
+            .status-legend { min-width: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <header class="metrics-header">
+        <div class="brand">
+            <small>Donación Conectada Panamá</small>
+            <strong>Métricas del sistema</strong>
+        </div>
+        <a href="administracion.html" class="btn-back">← Volver al dashboard</a>
+    </header>
+
+    <main>
+        <div class="page-heading">
+            <span>Resumen estadístico</span>
+            <h1>Métricas de donantes</h1>
+            <p>Vista demostrativa calculada a partir de los registros semilla del sistema.</p>
+        </div>
+
+        <div class="metrics-grid">
+            <section class="chart-card">
+                <div class="chart-heading">
+                    <div>
+                        <h2>Donantes por edad</h2>
+                        <p>Distribución calculada desde la fecha de nacimiento.</p>
+                    </div>
+                    <span class="chart-badge">Rangos de edad</span>
+                </div>
+                <div id="graficaEdades" class="vertical-chart" aria-label="Gráfica de barras de donantes por edad"></div>
+            </section>
+
+            <section class="chart-card">
+                <div class="chart-heading">
+                    <div>
+                        <h2>Donantes por provincia</h2>
+                        <p>Cantidad de registros agrupados geográficamente.</p>
+                    </div>
+                    <span class="chart-badge">Todas las provincias</span>
+                </div>
+                <div id="graficaProvincias" class="horizontal-chart" aria-label="Gráfica de donantes por provincia"></div>
+            </section>
+
+            <section class="chart-card chart-card-wide">
+                <div class="chart-heading">
+                    <div>
+                        <h2>Registros de los últimos 12 meses</h2>
+                        <p>Evolución mensual de nuevas voluntades registradas.</p>
+                    </div>
+                    <span class="chart-badge">Últimos 12 meses</span>
+                </div>
+                <div id="graficaMeses" class="month-chart" aria-label="Gráfica de registros de los últimos doce meses"></div>
+            </section>
+            <section class="chart-card chart-card-wide">
+                <div class="chart-heading">
+                    <div>
+                        <h2>Estado de los registros</h2>
+                        <p>Distribución de solicitudes aceptadas, pendientes de validación y rechazadas.</p>
+                    </div>
+                    <span class="chart-badge">Estado del trámite</span>
+                </div>
+                <div class="status-chart" aria-label="Gráfica del estado de los registros">
+                    <div id="graficaEstados" class="status-donut"></div>
+                    <div id="leyendaEstados" class="status-legend"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        if (sessionStorage.getItem("admin_mock_authenticated") !== "true") {
+            window.location.replace("index.html");
+        }
+
+        const DATOS_METRICAS = [
+            { fechaNacimiento: "1985-03-14", provincia: "Panamá", mesesAtras: 0 },
+            { fechaNacimiento: "1992-07-22", provincia: "Chiriquí", mesesAtras: 0 },
+            { fechaNacimiento: "1978-11-02", provincia: "Colón", mesesAtras: 1 },
+            { fechaNacimiento: "2001-01-19", provincia: "Panamá", mesesAtras: 2 },
+            { fechaNacimiento: "1988-09-08", provincia: "Herrera", mesesAtras: 2 },
+            { fechaNacimiento: "1994-05-27", provincia: "Los Santos", mesesAtras: 3 },
+            { fechaNacimiento: "1981-12-10", provincia: "Veraguas", mesesAtras: 4 },
+            { fechaNacimiento: "1990-04-16", provincia: "Coclé", mesesAtras: 4 },
+            { fechaNacimiento: "1983-06-30", provincia: "Bocas del Toro", mesesAtras: 5 },
+            { fechaNacimiento: "1975-10-12", provincia: "Panamá Oeste", mesesAtras: 6 },
+            { fechaNacimiento: "1987-02-25", provincia: "Darién", mesesAtras: 7 },
+            { fechaNacimiento: "1991-08-03", provincia: "Panamá", mesesAtras: 8 },
+            { fechaNacimiento: "1960-03-21", provincia: "Panamá", mesesAtras: 8 },
+            { fechaNacimiento: "1980-07-07", provincia: "Chiriquí", mesesAtras: 9 },
+            { fechaNacimiento: "1973-11-29", provincia: "Colón", mesesAtras: 10 },
+            { fechaNacimiento: "1986-05-15", provincia: "Herrera", mesesAtras: 11 }
+        ];
+
+        const ESTADOS_SEMILLA = [
+            "Aceptado", "Por validar", "Aceptado", "Rechazado", "Por validar", "Aceptado",
+            "Rechazado", "Aceptado", "Rechazado", "Por validar", "Aceptado", "Por validar",
+            "Aceptado", "Aceptado", "Rechazado", "Aceptado", "Por validar", "Por validar"
+        ];
+        const DECISIONES_ADMIN_KEY = "decisiones_registros_admin_mock";
+
+        function calcularEdad(fechaNacimiento) {
+            const nacimiento = new Date(fechaNacimiento + "T00:00:00");
+            const hoy = new Date();
+            let edad = hoy.getFullYear() - nacimiento.getFullYear();
+            const diferenciaMes = hoy.getMonth() - nacimiento.getMonth();
+            if (diferenciaMes < 0 || (diferenciaMes === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
+            return edad;
+        }
+
+        function renderEdades() {
+            const rangos = [
+                { etiqueta: "+20", minimo: 20, maximo: 29 },
+                { etiqueta: "+30", minimo: 30, maximo: 39 },
+                { etiqueta: "+40", minimo: 40, maximo: 49 },
+                { etiqueta: "+50", minimo: 50, maximo: 59 },
+                { etiqueta: "+60", minimo: 60, maximo: Infinity }
+            ];
+            const valores = rangos.map(rango => DATOS_METRICAS.filter(item => {
+                const edad = calcularEdad(item.fechaNacimiento);
+                return edad >= rango.minimo && edad <= rango.maximo;
+            }).length);
+            const maximo = Math.max(...valores, 1);
+
+            document.getElementById("graficaEdades").innerHTML = rangos.map((rango, indice) => `
+                <div class="bar-column" title="${rango.etiqueta}: ${valores[indice]} donantes">
+                    <span class="bar-value">${valores[indice]}</span>
+                    <div class="bar-fill" style="height:${(valores[indice] / maximo) * 82}%"></div>
+                    <span class="bar-label">${rango.etiqueta}</span>
+                </div>
+            `).join("");
+        }
+
+        function renderProvincias() {
+            const conteos = {};
+            DATOS_METRICAS.forEach(item => conteos[item.provincia] = (conteos[item.provincia] || 0) + 1);
+            const provincias = Object.entries(conteos).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "es"));
+            const maximo = Math.max(...provincias.map(([, cantidad]) => cantidad), 1);
+
+            document.getElementById("graficaProvincias").innerHTML = provincias.map(([provincia, cantidad]) => `
+                <div class="horizontal-row" title="${provincia}: ${cantidad} donantes">
+                    <span class="province-label">${provincia}</span>
+                    <div class="track"><div class="track-fill" style="width:${(cantidad / maximo) * 100}%"></div></div>
+                    <span class="province-value">${cantidad}</span>
+                </div>
+            `).join("");
+        }
+
+        function renderMeses() {
+            const hoy = new Date();
+            const meses = [];
+            for (let desplazamiento = 11; desplazamiento >= 0; desplazamiento--) {
+                const fecha = new Date(hoy.getFullYear(), hoy.getMonth() - desplazamiento, 1);
+                meses.push({
+                    offset: desplazamiento,
+                    etiqueta: new Intl.DateTimeFormat("es-PA", { month: "short" }).format(fecha).replace(".", ""),
+                    cantidad: DATOS_METRICAS.filter(item => item.mesesAtras === desplazamiento).length
+                });
+            }
+            const maximo = Math.max(...meses.map(mes => mes.cantidad), 1);
+
+            document.getElementById("graficaMeses").innerHTML = meses.map(mes => `
+                <div class="month-column" title="${mes.etiqueta}: ${mes.cantidad} registros">
+                    <span class="month-value">${mes.cantidad}</span>
+                    <div class="month-fill" style="height:${(mes.cantidad / maximo) * 82}%"></div>
+                    <span class="month-label">${mes.etiqueta}</span>
+                </div>
+            `).join("");
+        }
+
+        function renderEstados() {
+            let decisionesGuardadas = {};
+            try {
+                decisionesGuardadas = JSON.parse(localStorage.getItem(DECISIONES_ADMIN_KEY)) || {};
+            } catch (error) {
+                decisionesGuardadas = {};
+            }
+
+            const estadosActuales = ESTADOS_SEMILLA.map((estado, indice) => {
+                const decisionGuardada = decisionesGuardadas[indice + 1];
+                const estadoGuardado = typeof decisionGuardada === "string"
+                    ? decisionGuardada
+                    : decisionGuardada?.estadoRegistro;
+                return ["Aceptado", "Por validar", "Rechazado"].includes(estadoGuardado) ? estadoGuardado : estado;
+            });
+            const estados = [
+                { etiqueta: "Aceptados", cantidad: estadosActuales.filter(estado => estado === "Aceptado").length, clase: "accepted" },
+                { etiqueta: "Por validar", cantidad: estadosActuales.filter(estado => estado === "Por validar").length, clase: "pending" },
+                { etiqueta: "Rechazados", cantidad: estadosActuales.filter(estado => estado === "Rechazado").length, clase: "rejected" }
+            ];
+            const total = estados.reduce((acumulado, estado) => acumulado + estado.cantidad, 0);
+            const porcentajeAceptados = (estados[0].cantidad / total) * 100;
+            const porcentajePendientes = porcentajeAceptados + (estados[1].cantidad / total) * 100;
+            document.getElementById("graficaEstados").style.background =
+                `conic-gradient(#159a70 0 ${porcentajeAceptados}%, #e6a93d ${porcentajeAceptados}% ${porcentajePendientes}%, #e25c5c ${porcentajePendientes}% 100%)`;
+
+            document.getElementById("graficaEstados").innerHTML = `
+                <div class="status-total">
+                    <strong>${total}</strong>
+                    <span>registros</span>
+                </div>
+            `;
+            document.getElementById("leyendaEstados").innerHTML = estados.map(estado => `
+                <div class="status-item">
+                    <span class="status-dot ${estado.clase}"></span>
+                    <span class="status-label">${estado.etiqueta}</span>
+                    <span class="status-value">${estado.cantidad}</span>
+                </div>
+            `).join("");
+        }
+
+        renderEdades();
+        renderProvincias();
+        renderMeses();
+        renderEstados();
+    </script>
+</body>
+</html>

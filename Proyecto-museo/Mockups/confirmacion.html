@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Respuesta de Agenda - Museo del Cuervo</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background-color: #f4f6f7; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+        }
+        .card { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1); 
+            text-align: center; 
+            max-width: 450px; 
+            width: 90%; 
+        }
+        .icon { 
+            font-size: 50px; 
+            margin-bottom: 20px; 
+        }
+        .icon-success { color: #27ae60; }
+        .icon-danger { color: #c0392b; }
+        h2 { color: #1a1a24; margin-top: 0; }
+        p { color: #7f8c8d; line-height: 1.5; margin-bottom: 25px; }
+        .btn { 
+            display: inline-block; 
+            background-color: #1a1a24; 
+            color: white; 
+            text-decoration: none; 
+            padding: 12px 25px; 
+            border-radius: 6px; 
+            font-weight: bold; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div id="status-icon" class="icon">⌛</div>
+        <h2 id="status-title">Procesando Respuesta</h2>
+        <p id="status-desc">Validando tus credenciales de acceso con el servidor del museo...</p>
+        <a href="index.html" class="btn">Ir al Inicio del Museo</a>
+    </div>
+
+    <script>
+        // 1. Capturar los parámetros de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const idSolicitud = urlParams.get('id');
+        const respuestaCliente = urlParams.get('res'); // Puede ser 'si', 'no' o null
+
+        const iconDiv = document.getElementById('status-icon');
+        const titleH2 = document.getElementById('status-title');
+        const descP = document.getElementById('status-desc');
+
+        if (idSolicitud) {
+            let solicitudes = JSON.parse(localStorage.getItem('solicitudes_tour')) || [];
+            const index = solicitudes.findIndex(sol => sol.id === idSolicitud);
+            
+            if (index !== -1) {
+                
+                // CASO 1: El usuario hizo clic explícitamente en RECHAZAR ("no")
+                if (respuestaCliente === 'no') {
+                    solicitudes[index].estado = 'Cancelado';
+                    
+                    iconDiv.innerText = "❌";
+                    iconDiv.className = "icon icon-danger";
+                    titleH2.innerText = "Propuesta Rechazada";
+                    descP.innerHTML = `Has rechazado el cambio de horario. La reserva con código <strong>${idSolicitud}</strong> se ha marcado como <strong>Cancelada</strong>.`;
+                } 
+                
+                // CASO 2: El usuario hizo clic explícitamente en ACEPTAR ("si")
+                else if (respuestaCliente === 'si') {
+                    solicitudes[index].estado = 'Confirmado';
+                    
+                    iconDiv.innerText = "✔";
+                    iconDiv.className = "icon icon-success";
+                    titleH2.innerText = "¡Tour Confirmado!";
+                    descP.innerHTML = `Tu asistencia para la solicitud <strong>${idSolicitud}</strong> ha sido verificada con éxito. ¡Te esperamos!`;
+                } 
+                
+                // CASO 3: Seguridad. El enlace es viejo o no tiene el parámetro 'res'
+                else {
+                    iconDiv.innerText = "⚠️";
+                    iconDiv.className = "icon";
+                    titleH2.innerText = "Respuesta Ambigua";
+                    descP.innerHTML = `El sistema recibió el código <strong>${idSolicitud}</strong>, pero la acción no está clara. Por favor, utiliza los botones del último correo recibido.`;
+                }
+                
+                // Guardar cambios en el navegador si fue 'si' o 'no'
+                if (respuestaCliente === 'si' || respuestaCliente === 'no') {
+                    localStorage.setItem('solicitudes_tour', JSON.stringify(solicitudes));
+                }
+
+            } else {
+                iconDiv.innerText = "🔍";
+                titleH2.innerText = "Registro No Encontrado";
+                descP.innerHTML = `El código <strong>${idSolicitud}</strong> es válido, pero no se encuentra registrado en este navegador de pruebas. Asegúrate de estar usando el mismo navegador donde abriste el panel de administración.`;
+            }
+        } else {
+            iconDiv.innerText = "❌";
+            titleH2.innerText = "Enlace Incompleto";
+            descP.innerText = "Faltan parámetros de identificación para poder procesar la solicitud.";
+        }
+    </script>
+</body>
+</html>

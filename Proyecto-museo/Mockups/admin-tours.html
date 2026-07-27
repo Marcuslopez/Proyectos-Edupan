@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Tours - Museo del Cuervo</title>
+    <style>
+        :root {
+            --primary-color: #1a1a24;
+            --accent-color: #2980b9;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 30px 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color);
+        }
+
+        /* ENCABEZADO */
+        .header-admin {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 25px;
+            margin-bottom: 30px;
+        }
+
+        .header-title h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .header-title p {
+            margin: 5px 0 0 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .actions-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-back {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+
+        .btn-back:hover { background-color: #f1f5f9; }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 11px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-danger:hover { opacity: 0.9; }
+
+        /* BARRA DE BÚSQUEDA Y FILTRADO */
+        .search-container {
+            margin-bottom: 35px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 16px 14px 45px;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-sizing: border-box;
+            background-color: #ffffff;
+            color: var(--text-main);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            pointer-events: none;
+        }
+
+        /* CONTENEDORES DE TABLAS */
+        .section-list-title {
+            font-size: 1.25rem;
+            color: var(--primary-color);
+            margin: 45px 0 15px 0;
+            padding-bottom: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: #ffffff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        /* INFORMACIÓN DE CONTACTO */
+        .visitor-info-box {
+            line-height: 1.4;
+        }
+
+        .contact-details {
+            font-size: 0.85rem;
+            color: #475569;
+            margin-top: 8px;
+            background: #f1f5f9;
+            padding: 10px 14px;
+            border-radius: 6px;
+            display: inline-block;
+            border: 1px solid #e2e8f0;
+        }
+
+        .contact-line {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 3px;
+        }
+
+        /* BADGES */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .badge-pendiente { background-color: #fef3c7; color: #d97706; }
+        .badge-enespera { background-color: #e0f2fe; color: #0369a1; }
+        .badge-confirmado { background-color: #d1fae5; color: #047857; }
+        .badge-cancelado { background-color: #fee2e2; color: #b91c1c; }
+
+        /* CONTENEDOR FLEX PARA BOTONES HORIZONTALES */
+        .actions-container {
+            display: flex;
+            gap: 8px;          
+            flex-wrap: wrap;   
+            align-items: center;
+            min-width: 180px;  
+        }
+
+        .btn-row-action {
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: opacity 0.2s, transform 0.1s;
+            margin: 0;         
+            white-space: nowrap; 
+        }
+
+        .btn-row-create { background-color: var(--success-color); }
+        .btn-row-resched { background-color: var(--warning-color); }
+        .btn-row-delete { background-color: var(--danger-color); }
+        .btn-row-action:hover { opacity: 0.9; }
+        .btn-row-action:active { transform: scale(0.98); }
+
+        input[type="date"], input[type="time"] {
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: inherit;
+            color: var(--text-main);
+            background-color: #fff;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 35px;
+            color: var(--text-muted);
+            font-style: italic;
+            background-color: #fafafa;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-admin">
+            <div class="header-title">
+                <h2>Panel de Control: Gestión de Tours</h2>
+                <p>Ecosistema de control y logística — Museo del Cuervo</p>
+            </div>
+            <div class="actions-wrapper">
+                <button onclick="limpiarHistorial()" class="btn-danger">🗑 Limpiar Historial</button>
+                <a href="index.html" class="btn-back">← Volver al Panel</a>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchFilter" class="search-input" placeholder="Buscar solicitudes por nombre del responsable, institución o ID de propuesta...">
+        </div>
+
+        <div class="section-list-title">📋 1. Solicitudes Pendientes de Revisión (Nuevas)</div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID / Tipo</th>
+                        <th>Responsable, Institución y Contacto</th>
+                        <th>Asistentes (Excel)</th>
+                        <th>Fecha Propuesta</th>
+                        <th>Hora Propuesta</th>
+                        <th>Estado</th>
+                        <th>Acciones de Control</th>
+                    </tr>
+                </thead>
+                <tbody id="listaPendientes"></tbody>
+            </table>
+        </div>
+
+        <div class="section-list-title">📆 2. Tours Programados (Confirmados / En Espera de Cliente)</div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID / Tipo</th>
+                        <th>Responsable, Institución y Contacto</th>
+                        <th>Asistentes (Excel)</th>
+                        <th>Fecha Asignada</th>
+                        <th>Hora Asignada</th>
+                        <th>Estado</th>
+                        <th>Acciones de Control</th>
+                    </tr>
+                </thead>
+                <tbody id="listaActivos"></tbody>
+            </table>
+        </div>
+
+        <div class="section-list-title">🛑 3. Historial de Tours Cancelados</div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID / Tipo</th>
+                        <th>Responsable, Institución y Contacto</th>
+                        <th>Asistentes (Excel)</th>
+                        <th>Fecha Asignada</th>
+                        <th>Hora Asignada</th>
+                        <th>Estado</th>
+                        <th>Acciones de Control</th>
+                    </tr>
+                </thead>
+                <tbody id="listaCancelados"></tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        let solicitudes = JSON.parse(localStorage.getItem('solicitudes_tour')) || [];
+
+        document.getElementById('searchFilter').addEventListener('input', renderTabla);
+
+        function renderTabla() {
+            const tbodyPendientes = document.getElementById('listaPendientes');
+            const tbodyActivos = document.getElementById('listaActivos');
+            const tbodyCancelados = document.getElementById('listaCancelados');
+
+            tbodyPendientes.innerHTML = '';
+            tbodyActivos.innerHTML = '';
+            tbodyCancelados.innerHTML = '';
+
+            let contPendientes = 0;
+            let contActivos = 0;
+            let contCancelados = 0;
+
+            const filtroText = document.getElementById('searchFilter').value.toLowerCase();
+
+            // Ordenamiento cronológico de fechas próximas
+            const solicitudesOrdenadas = [...solicitudes].sort((a, b) => {
+                const dateA = new Date((a.fechaPropuesta || '1970-01-01') + 'T' + (a.horaPropuesta || '00:00'));
+                const dateB = new Date((b.fechaPropuesta || '1970-01-01') + 'T' + (b.horaPropuesta || '00:00'));
+                return dateA - dateB; 
+            });
+
+            // CORREGIDO: Ahora 'filtroText' coincide perfectamente con la variable definida arriba
+            const solicitudesFiltradas = solicitudesOrdenadas.filter(sol => {
+                const cumpleNombre = sol.nombre ? sol.nombre.toLowerCase().includes(filtroText) : false;
+                const cumpleId = sol.id ? sol.id.toLowerCase().includes(filtroText) : false;
+                const cumpleInstitucion = sol.institucion ? sol.institucion.toLowerCase().includes(filtroText) : false;
+                return cumpleNombre || cumpleId || cumpleInstitucion;
+            });
+
+            solicitudesFiltradas.forEach((solicitud) => {
+                const tr = document.createElement('tr');
+
+                let badgeClass = 'badge-pendiente';
+                if (solicitud.estado === 'En espera') badgeClass = 'badge-enespera';
+                if (solicitud.estado === 'Confirmado') badgeClass = 'badge-confirmado';
+                if (solicitud.estado === 'Cancelado') badgeClass = 'badge-cancelado';
+
+                let excelHtml = solicitud.excelNombre !== "No aplica" 
+                    ? `<a href="#" onclick="alert('Descargando lista: ${solicitud.excelNombre}')" style="color:var(--success-color); font-weight:bold; text-decoration:none;">📄 Descargar (${solicitud.cantidad})</a>`
+                    : `Individual (1)`;
+
+                const deshabilitarInputs = solicitud.estado === 'En espera' ? 'disabled' : '';
+
+                let botonesHtml = '';
+                if (solicitud.estado === 'Pendiente') {
+                    botonesHtml = `
+                        <button class="btn-row-action btn-row-create" onclick="procesarOperacion('${solicitud.id}', 'crear')">Aprobar</button>
+                        <button class="btn-row-action btn-row-delete" onclick="procesarOperacion('${solicitud.id}', 'cancelar')">Cancelar</button>
+                    `;
+                } else if (solicitud.estado === 'En espera') {
+                    botonesHtml = `
+                        <span style="color:var(--text-muted); font-size:0.85rem; width: 100%; display:block; margin-bottom:2px;">Enviado al cliente</span>
+                        <button class="btn-row-action btn-row-delete" onclick="procesarOperacion('${solicitud.id}', 'cancelar')">Cancelar</button>
+                    `;
+                } else if (solicitud.estado === 'Confirmado') {
+                    botonesHtml = `
+                        <button class="btn-row-action btn-row-resched" onclick="procesarOperacion('${solicitud.id}', 'reagendar')">🔄 Reagendar</button>
+                        <button class="btn-row-action btn-row-delete" onclick="procesarOperacion('${solicitud.id}', 'cancelar')">🗑 Cancelar</button>
+                    `;
+                } else if (solicitud.estado === 'Cancelado') {
+                    botonesHtml = `
+                        <button class="btn-row-action btn-row-create" onclick="procesarOperacion('${solicitud.id}', 'crear')">Re-abrir Propuesta</button>
+                    `;
+                }
+
+                // CORREGIDO: solicitud.documento (Antes decía solicitid)
+                tr.innerHTML = `
+                    <td><strong>${solicitud.id}</strong><br><small style="text-transform: capitalize; color:var(--text-muted); font-weight:600;">${solicitud.tipoVisitante}</small></td>
+                    <td>
+                        <div class="visitor-info-box">
+                            <strong>${solicitud.nombre}</strong><br>
+                            <span style="font-size:0.85rem; color:var(--accent-color); font-weight:600;">${solicitud.institucion}</span><br>
+                            <div class="contact-details">
+                                <div class="contact-line">📧 ${solicitud.correo}</div>
+                                <div class="contact-line">📞 Tel: <strong>${solicitud.telefono || 'N/A'}</strong></div>
+                                <div class="contact-line">🪪 ID: <strong>${solicitud.documento || 'N/A'}</strong></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${excelHtml}</td>
+                    <td><input type="date" id="fecha-${solicitud.id}" value="${solicitud.fechaPropuesta}" ${deshabilitarInputs}></td>
+                    <td><input type="time" id="hora-${solicitud.id}" value="${solicitud.horaPropuesta}" ${deshabilitarInputs}></td>
+                    <td><span class="badge ${badgeClass}">${solicitud.estado}</span></td>
+                    <td><div class="actions-container">${botonesHtml}</div></td>
+                `;
+
+                if (solicitud.estado === 'Pendiente') {
+                    tbodyPendientes.appendChild(tr);
+                    contPendientes++;
+                } 
+                else if (solicitud.estado === 'Confirmado' || solicitud.estado === 'En espera') {
+                    tbodyActivos.appendChild(tr);
+                    contActivos++;
+                } 
+                else if (solicitud.estado === 'Cancelado') {
+                    tbodyCancelados.appendChild(tr);
+                    contCancelados++;
+                }
+            });
+
+            if (contPendientes === 0) tbodyPendientes.innerHTML = `<tr><td colspan="7" class="no-data">No se encontraron nuevas solicitudes pendientes.</td></tr>`;
+            if (contActivos === 0) tbodyActivos.innerHTML = `<tr><td colspan="7" class="no-data">No se encontraron tours activos que coincidan.</td></tr>`;
+            if (contCancelados === 0) tbodyCancelados.innerHTML = `<tr><td colspan="7" class="no-data">No hay registros en el historial de cancelaciones.</td></tr>`;
+        }
+
+        function procesarOperacion(id, accion) {
+            if (typeof CONFIG === 'undefined' || !CONFIG.appsScriptUrl) {
+                alert('Error: URL de automatización ausente en config.js');
+                return;
+            }
+
+            const urlScript = CONFIG.appsScriptUrl;
+            const index = solicitudes.findIndex(sol => sol.id === id);
+            if (index === -1) return;
+
+            const nuevaFecha = document.getElementById(`fecha-${id}`).value;
+            const nuevaHora = document.getElementById(`hora-${id}`).value;
+            let motivoCancelacion = "";
+
+            if (accion === 'cancelar') {
+                motivoCancelacion = prompt("Por favor, introduce el motivo detallado de la cancelación para notificar al visitante:");
+                if (motivoCancelacion === null) return; 
+                if (motivoCancelacion.trim() === "") {
+                    alert("Es obligatorio definir un motivo para realizar la cancelación.");
+                    return;
+                }
+                solicitudes[index].estado = 'Cancelado';
+            } 
+            else if (accion === 'reagendar' || accion === 'crear') {
+                solicitudes[index].fechaPropuesta = nuevaFecha;
+                solicitudes[index].horaPropuesta = nuevaHora;
+                solicitudes[index].estado = 'En espera'; 
+            }
+
+            localStorage.setItem('solicitudes_tour', JSON.stringify(solicitudes));
+            renderTabla();
+
+            const datosAEnviar = new URLSearchParams();
+            datosAEnviar.append('accion', accion);
+            datosAEnviar.append('id', solicitudes[index].id);
+            datosAEnviar.append('nombre', solicitudes[index].nombre);
+            datosAEnviar.append('correo', solicitudes[index].correo);
+            datosAEnviar.append('fecha', nuevaFecha);
+            datosAEnviar.append('hora', nuevaHora);
+            datosAEnviar.append('institucion', solicitudes[index].institucion);
+            datosAEnviar.append('motivo', motivoCancelacion);
+
+            alert(`Sincronizando cambios. Disparando correo automatizado...`);
+
+            fetch(urlScript, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: datosAEnviar
+            })
+            .then(() => {
+                alert('¡Bandeja de salida sincronizada correctamente!');
+                renderTabla();
+            })
+            .catch(error => {
+                console.error(error);
+                renderTabla();
+            });
+        }
+
+        function limpiarHistorial() {
+            if (confirm('¿Deseas vaciar por completo todos los registros?')) {
+                localStorage.removeItem('solicitudes_tour');
+                solicitudes = [];
+                renderTabla();
+            }
+        }
+
+        renderTabla();
+    </script>
+</body>
+</html>

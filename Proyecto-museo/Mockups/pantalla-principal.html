@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muro de la Comunidad - Museo del Cuervo</title>
+    <style>
+        :root {
+            --primary-color: #1a1a24;
+            --accent-color: #2980b9;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        header h1 { margin: 0; font-size: 2rem; font-weight: 700; letter-spacing: 0.5px; }
+        header p { margin: 5px 0 0 0; opacity: 0.7; font-size: 1rem; }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* DISEÑO DE REJILLA ESTILO MASONRY PARA LOS COMENTARIOS */
+        .muro-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .comentario-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .comentario-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #334155;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .comentario-meta {
+            border-top: 1px solid #f1f5f9;
+            padding-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .autor-name { font-weight: 600; color: var(--primary-color); }
+
+        /* BOTÓN FLOTANTE PARA AGREGAR COMENTARIOS EN EL SIMULACRO */
+        .btn-flotante {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        /* MODAL DE SIMULACIÓN DE VISITANTE */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .modal-content h3 { margin-top: 0; color: var(--primary-color); }
+        .modal-content input, .modal-content textarea {
+            width: 100%; padding: 10px; margin: 10px 0;
+            border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;
+        }
+
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px; }
+        .btn-send { background-color: #27ae60; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-close { background-color: #95a5a6; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+
+        .no-comments { text-align: center; color: #64748b; font-style: italic; grid-column: 1 / -1; padding: 40px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Muro de Experiencias</h1>
+        <p>Qué opinan nuestros visitantes sobre el Museo del Cuervo</p>
+    </header>
+
+    <div class="container">
+        <div class="muro-grid" id="muroContenedor"></div>
+    </div>
+
+    <button class="btn-flotante" onclick="abrirModal()">✍ Dejar un Comentario</button>
+
+    <div class="modal" id="commentModal">
+        <div class="modal-content">
+            <h3>¡Comparte tu opinión!</h3>
+            <p style="font-size:0.85rem; color:#64748b; margin:0;">Tu comentario pasará al panel de moderación antes de ser publicado.</p>
+            <input type="text" id="autorInput" placeholder="Tu Nombre (Ej. María Elena)">
+            <textarea id="textoInput" rows="4" placeholder="¿Qué te pareció la exhibición?"></textarea>
+            <div class="modal-actions">
+                <button class="btn-close" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn-send" onclick="enviarComentario()">Enviar a Moderación</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Escuchar cambios en el LocalStorage para actualizar el muro en tiempo real si la pantalla del moderador está en otra pestaña
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'comentarios_museo') renderMuro();
+        });
+
+        function renderMuro() {
+            const contenedor = document.getElementById('muroContenedor');
+            contenedor.innerHTML = '';
+
+            const lista = JSON.parse(localStorage.getItem('comentarios_museo')) || [];
+            // Filtrar solo los aprobados por el moderador
+            const aprobados = lista.filter(c => c.estado === 'aprobado');
+
+            if (aprobados.length === 0) {
+                contenedor.innerHTML = `<div class="no-comments">El muro está despejado. Usa el botón flotante para enviar una opinión y apruébala en el panel de moderación.</div>`;
+                return;
+            }
+
+            aprobados.forEach(c => {
+                const card = document.createElement('div');
+                card.className = 'comentario-card';
+                card.innerHTML = `
+                    <div class="comentario-text">"${c.texto}"</div>
+                    <div class="comentario-meta">
+                        <span class="autor-name">👤 ${c.autor}</span>
+                        <span>📅 ${c.fecha}</span>
+                    </div>
+                `;
+                contenedor.appendChild(card);
+            });
+        }
+
+        // Lógica del Formulario de Simulación
+        function abrirModal() { document.getElementById('commentModal').style.display = 'flex'; }
+        function cerrarModal() { document.getElementById('commentModal').style.display = 'none'; }
+
+        function enviarComentario() {
+            const autor = document.getElementById('autorInput').value.trim();
+            const texto = document.getElementById('textoInput').value.trim();
+
+            if (!autor || !texto) {
+                alert("Por favor, llena ambos campos.");
+                return;
+            }
+
+            const hoy = new Date();
+            const fechaStr = hoy.getDate() + '/' + (hoy.getMonth()+1) + '/' + hoy.getFullYear();
+
+            const nuevoComentario = {
+                id: 'COM-' + Date.now(),
+                autor: autor,
+                texto: texto,
+                fecha: fechaStr,
+                estado: 'pendiente' // Nace en la bandeja de entrada del moderador
+            };
+
+            let lista = JSON.parse(localStorage.getItem('comentarios_museo')) || [];
+            lista.push(nuevoComentario);
+            localStorage.setItem('comentarios_museo', JSON.stringify(lista));
+
+            alert("¡Recibido! Tu comentario ha sido enviado a la cola de revisión del moderador.");
+            
+            // Resetear formulario y cerrar
+            document.getElementById('autorInput').value = '';
+            document.getElementById('textoInput').value = '';
+            cerrarModal();
+            renderMuro();
+        }
+
+        // Carga inicial
+        renderMuro();
+    </script>
+</body>
+</html>

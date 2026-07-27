@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Donantes - Panamá</title>
+    <style>
+        :root {
+            --primary: #5b87e6;
+            --primary-dark: #1d1b84;
+            --danger: #ff6b6b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 40px 20px; display: flex; justify-content: center; }
+        
+        .container { width: 100%; max-width: 1120px; background: var(--card-bg); padding: 40px; border-radius: 24px; box-shadow: 0 10px 30px rgba(91, 135, 230, 0.1); border: 1px solid #e2e8f0; }
+        h2 { text-align: center; color: var(--primary-dark); margin-bottom: 30px; }
+
+        .step { display: none; }
+        .step.active { display: block; }
+        #stepValidacion { margin-left: auto; margin-right: auto; max-width: 620px; }
+        #formBaja { margin-left: auto; margin-right: auto; max-width: 680px; }
+        .step-label { color: #64748b; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 8px; text-align: center; text-transform: uppercase; }
+        .step-description { color: #64748b; line-height: 1.55; margin: -18px 0 28px; text-align: center; }
+
+        /* Formularios */
+        .form-section { display: none; }
+        .form-section.active { display: block; }
+
+        .form-row { display: grid; gap: 18px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .form-row-3 { display: grid; gap: 12px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .form-row-4 { display: grid; gap: 16px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .form-group { margin-bottom: 20px; }
+        .residence-block { margin-bottom: 22px; }
+        .residence-block > label { margin-bottom: 4px; }
+        .residence-help { color: #64748b; font-size: 0.83rem; line-height: 1.4; margin-bottom: 12px; }
+        .section-divider { border-top: 1px solid #dbe3ee; margin-top: 12px; padding-top: 26px; }
+        .section-divider h3 { color: var(--primary-dark); font-size: 1.2rem; margin-bottom: 8px; }
+        .section-divider > p { color: #64748b; line-height: 1.5; margin-bottom: 22px; }
+        .checkbox-field {
+            align-items: flex-start; background: #f8fafc; border: 1px solid #dbe4f0; border-radius: 12px;
+            cursor: pointer; display: flex; gap: 11px; line-height: 1.45; margin-bottom: 24px; padding: 14px 16px;
+        }
+        .checkbox-field input { accent-color: var(--primary-dark); flex: 0 0 auto; height: 19px; margin-top: 1px; width: 19px; }
+        .consent-section {
+            background: linear-gradient(145deg, #f8fbff, #f1f7ff); border: 1px solid #cdddf2;
+            border-radius: 20px; margin: 10px 0 28px; padding: 26px;
+        }
+        .consent-header { align-items: center; display: flex; gap: 13px; margin-bottom: 8px; }
+        .consent-number {
+            align-items: center; background: var(--primary-dark); border-radius: 50%; color: white; display: flex;
+            flex: 0 0 34px; font-weight: 800; height: 34px; justify-content: center;
+        }
+        .consent-number svg {
+            fill: none; height: 20px; stroke: currentColor; stroke-linecap: round;
+            stroke-linejoin: round; stroke-width: 2; width: 20px;
+        }
+        .consent-header h3 { color: var(--primary-dark); font-size: 1.3rem; }
+        .consent-intro { color: #64748b; line-height: 1.5; margin: 0 0 20px 47px; }
+        .consent-section .checkbox-field { background: white; margin-bottom: 13px; }
+        .consent-section .checkbox-field.required-consent { border-color: #b7cae8; font-weight: 650; }
+        .signature-block { border-top: 1px solid #cdddf2; margin-top: 20px; padding-top: 22px; }
+        .signature-help { color: #64748b; font-size: 0.82rem; line-height: 1.45; margin: -2px 0 12px; }
+        .law-link { color: var(--primary-dark); display: inline-block; font-size: 0.88rem; font-weight: 750; margin-top: 8px; }
+        .health-section {
+            background: linear-gradient(145deg, #f3fbfa, #f7fcfc); border: 1px solid #bfe0dc;
+            border-radius: 20px; margin: 10px 0 28px; padding: 26px;
+        }
+        .health-section .consent-number { background: #0f766e; }
+        .health-section .consent-header h3 { color: #115e59; }
+        .health-grid { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .health-question { background: white; border: 1px solid #d6e8e5; border-radius: 14px; padding: 16px; }
+        .health-question label { line-height: 1.4; min-height: 44px; }
+        .field-status { color: #64748b; font-size: 0.76rem; font-weight: 650; margin-left: 4px; }
+        .preference-section {
+            background: linear-gradient(145deg, #faf8ff, #f5f3ff); border: 1px solid #d8cff4;
+            border-radius: 20px; margin: 10px 0 28px; padding: 26px;
+        }
+        .preference-section .consent-number { background: #6d28d9; }
+        .preference-section .consent-header h3 { color: #5b21b6; }
+        .donation-options { display: grid; gap: 15px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 18px; }
+        .donation-option {
+            background: white; border: 2px solid #ddd6fe; border-radius: 15px; cursor: pointer;
+            display: flex; gap: 12px; line-height: 1.45; padding: 17px;
+        }
+        .donation-option:has(input:checked) { background: #f5f3ff; border-color: #7c3aed; }
+        .donation-option input { accent-color: #6d28d9; flex: 0 0 auto; height: 19px; margin-top: 2px; width: 19px; }
+        .donation-option strong { color: #4c1d95; display: block; margin-bottom: 4px; }
+        .preference-section .law-link { color: #5b21b6; margin: 0 0 18px 47px; }
+        .privacy-section {
+            background: linear-gradient(145deg, #f4f9ff, #f7fbff); border: 1px solid #bfdbfe;
+            border-radius: 20px; margin: 28px 0; padding: 26px;
+        }
+        .privacy-section .consent-number { background: #2563eb; }
+        .privacy-section .consent-header h3 { color: #1d4ed8; }
+        .privacy-section .law-link { color: #1d4ed8; margin: 0 0 18px 47px; }
+        .privacy-grid { display: grid; gap: 15px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .privacy-grid .checkbox-field { align-items: flex-start; background: white; border: 1px solid #dbeafe; border-radius: 14px; margin: 0; padding: 17px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.95rem; }
+        input, select { width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 12px; outline: none; font-size: 1rem; transition: border 0.3s; }
+        input:focus, select:focus { border-color: var(--primary); }
+        input[readonly], input:disabled { background: #f1f5f9; color: #475569; cursor: not-allowed; opacity: 1; }
+
+        .label-row { align-items: center; display: flex; gap: 7px; margin-bottom: 8px; }
+        .label-row label { margin-bottom: 0; }
+        .required-mark { color: #e53e3e; }
+        .help { display: inline-flex; position: relative; }
+        .help-trigger {
+            align-items: center; background: #e8efff; border: 0; border-radius: 50%; color: var(--primary-dark);
+            cursor: help; display: inline-flex; font-size: 0.78rem; font-weight: 800; height: 21px;
+            justify-content: center; padding: 0; width: 21px;
+        }
+        .help-text {
+            background: #172033; border-radius: 10px; bottom: calc(100% + 10px); color: white; font-size: 0.86rem;
+            font-weight: 400; left: 50%; line-height: 1.45; opacity: 0; padding: 12px 14px; pointer-events: none;
+            position: absolute; transform: translate(-50%, 6px); transition: opacity 0.2s, transform 0.2s;
+            visibility: hidden; width: min(330px, 78vw); z-index: 10;
+        }
+        .help:hover .help-text, .help:focus-within .help-text { opacity: 1; transform: translate(-50%, 0); visibility: visible; }
+        .field-error { color: #c53030; display: none; font-size: 0.86rem; line-height: 1.4; margin-top: 7px; }
+        .field-error.visible { display: block; }
+        .input-error { border-color: #e53e3e; }
+        .captcha-box { align-items: stretch; display: grid; gap: 10px; grid-template-columns: 1fr auto; margin-bottom: 10px; }
+        .captcha-code {
+            align-items: center; background: repeating-linear-gradient(135deg, #eef2ff, #eef2ff 8px, #dbeafe 8px, #dbeafe 16px);
+            border: 2px solid #cbd5e1; border-radius: 12px; color: var(--primary-dark); display: flex;
+            font-family: Consolas, monospace; font-size: 1.65rem; font-weight: 800; justify-content: center;
+            letter-spacing: 0.32em; min-height: 54px; padding-left: 0.32em; text-decoration: line-through;
+            text-decoration-color: rgba(29, 27, 132, 0.25); user-select: none;
+        }
+        .captcha-refresh {
+            background: #e8efff; border: 0; border-radius: 12px; color: var(--primary-dark); cursor: pointer;
+            font-size: 1.3rem; font-weight: 800; padding: 0 18px;
+        }
+        .captcha-refresh:hover, .captcha-refresh:focus-visible { background: #dbe7ff; outline: 2px solid var(--primary); outline-offset: 2px; }
+        
+        button[type="submit"] { width: 100%; padding: 14px; border: none; border-radius: 50px; color: white; font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: all 0.3s; }
+        .btn-register { background-color: var(--primary); box-shadow: 0 4px 12px rgba(91, 135, 230, 0.3); }
+        .btn-unregister { background-color: var(--danger); box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3); }
+        .secondary-action { background: none; border: 0; color: var(--primary-dark); cursor: pointer; display: block; font-weight: 700; margin: 18px auto 0; text-decoration: underline; }
+        .btn-cancel-flow { background: white; border: 2px solid #cbd5e1; border-radius: 50px; color: #475569; cursor: pointer; font-size: 1.05rem; font-weight: 700; margin-top: 12px; padding: 12px; width: 100%; }
+        .btn-cancel-flow:hover, .btn-cancel-flow:focus-visible { border-color: #64748b; color: #1e293b; }
+        .record-notice { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; color: #1e3a8a; line-height: 1.5; margin-bottom: 22px; padding: 15px; }
+        .exit-dialog { border: 0; border-radius: 18px; box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25); color: var(--text); margin: auto; max-width: 430px; padding: 28px; width: calc(100% - 32px); }
+        .exit-dialog::backdrop { background: rgba(15, 23, 42, 0.55); }
+        .exit-dialog h3 { color: var(--primary-dark); font-size: 1.3rem; margin-bottom: 12px; }
+        .exit-dialog p { line-height: 1.55; margin-bottom: 24px; }
+        .dialog-actions { display: flex; gap: 12px; }
+        .dialog-actions button { border: 0; border-radius: 50px; cursor: pointer; flex: 1; font-size: 1rem; font-weight: 700; padding: 12px; }
+        .btn-exit { background: var(--danger); color: white; }
+        .btn-stay { background: #e2e8f0; color: #334155; }
+        .btn-reset-demo {
+            align-items: center; background: var(--primary-dark); border: 3px solid white; border-radius: 50%;
+            box-shadow: 0 8px 24px rgba(29, 27, 132, 0.3); color: white; cursor: pointer; display: flex;
+            font-size: 1.65rem; height: 58px; justify-content: center; position: fixed; right: 24px; top: 50%;
+            transform: translateY(-50%); transition: background 0.25s, transform 0.25s; width: 58px; z-index: 20;
+        }
+        .btn-reset-demo:hover, .btn-reset-demo:focus-visible {
+            background: var(--primary); outline: none; transform: translateY(-50%) rotate(45deg) scale(1.07);
+        }
+        
+        .message { margin-top: 20px; padding: 15px; border-radius: 12px; text-align: center; font-weight: 600; display: none; }
+        .success { background: #f0fff4; color: #38a169; border: 1px solid #c6f6d5; }
+        .error { background: #fff5f5; color: #e53e3e; border: 1px solid #fed7d7; }
+
+        @media (max-width: 600px) {
+            body { padding: 20px 12px; }
+            .container { padding: 28px 20px; }
+            .form-row { grid-template-columns: 1fr; gap: 0; }
+            .form-row-3 { grid-template-columns: 1fr; gap: 0; }
+            .form-row-4 { grid-template-columns: 1fr; gap: 0; }
+            .health-grid { grid-template-columns: 1fr; }
+            .donation-options { grid-template-columns: 1fr; }
+            .privacy-grid { grid-template-columns: 1fr; }
+            .btn-reset-demo { bottom: 18px; right: 18px; top: auto; transform: none; }
+            .btn-reset-demo:hover, .btn-reset-demo:focus-visible { transform: rotate(45deg) scale(1.07); }
+        }
+
+        @media (min-width: 601px) and (max-width: 900px) {
+            .form-row-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+
+<button type="button" class="btn-reset-demo" onclick="reiniciarDonantePrueba()" aria-label="Restaurar y refrescar el donante de prueba" title="Restaurar donante de prueba">↻</button>
+
+<div class="container">
+    <section id="stepValidacion" class="step active">
+        <div class="step-label">Paso 1 de 2</div>
+        <h2>Validación de identidad</h2>
+        <p class="step-description">Ingresa los datos tal como aparecen en tu cédula para continuar con el registro.</p>
+
+        <form id="formValidacion" onsubmit="validarIdentidad(event)" novalidate>
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="cedulaValidacion">Cédula de identidad <span class="required-mark">*</span></label>
+                    <span class="help">
+                        <button type="button" class="help-trigger" aria-describedby="ayudaCedula" aria-label="Ver formatos admitidos para la cédula">i</button>
+                        <span id="ayudaCedula" class="help-text" role="tooltip">Incluye los guiones. Se admiten cédulas regulares y formatos PE, E, N y AV. Ejemplos: 1-1234-12345, PE-1234-12345 o 1AV-1234-12345.</span>
+                    </span>
+                </div>
+                <input type="text" id="cedulaValidacion" placeholder="Ej: 1-1234-12345" autocomplete="off" maxlength="18" aria-describedby="errorCedula" required>
+                <p id="errorCedula" class="field-error" aria-live="polite"></p>
+            </div>
+
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="codigoCedula">Código posterior de la cédula <span class="required-mark">*</span></label>
+                    <span class="help">
+                        <button type="button" class="help-trigger" aria-describedby="ayudaCodigo" aria-label="Ver dónde encontrar y cómo escribir el código">i</button>
+                        <span id="ayudaCodigo" class="help-text" role="tooltip">Está al reverso de la cédula. Escríbelo sin espacios y con las letras en mayúscula; distingue la letra I del número 1 y la letra O del número 0. Ejemplo: 47KLMNP0286.</span>
+                    </span>
+                </div>
+                <input type="text" id="codigoCedula" placeholder="Ej: 47KLMNP0286" autocomplete="off" minlength="8" maxlength="20" aria-describedby="errorCodigo" required>
+                <p id="errorCodigo" class="field-error" aria-live="polite"></p>
+            </div>
+
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="captchaInput">Código de seguridad <span class="required-mark">*</span></label>
+                    <span class="help">
+                        <button type="button" class="help-trigger" aria-describedby="ayudaCaptcha" aria-label="Información sobre el código de seguridad">i</button>
+                        <span id="ayudaCaptcha" class="help-text" role="tooltip">Escribe exactamente los seis caracteres mostrados. El código contiene números y letras minúsculas.</span>
+                    </span>
+                </div>
+                <div class="captcha-box">
+                    <div id="captchaCode" class="captcha-code" aria-label="Código de seguridad" aria-live="polite"></div>
+                    <button type="button" class="captcha-refresh" onclick="generarCaptcha()" aria-label="Generar un nuevo código de seguridad" title="Generar otro código">↻</button>
+                </div>
+                <input type="text" id="captchaInput" placeholder="Escribe el código de 6 caracteres" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="6" aria-describedby="errorCaptcha" required>
+                <p id="errorCaptcha" class="field-error" aria-live="polite"></p>
+            </div>
+
+            <button type="submit" class="btn-register">Validar y continuar</button>
+        </form>
+    </section>
+
+    <section id="stepRegistro" class="step">
+        <div class="step-label">Paso 2 de 2</div>
+        <h2 id="tituloResultado">Sistema de Voluntades de Donación</h2>
+
+        <form id="formAlta" class="form-section active" onsubmit="enviarFormulario(event, 'registrar')">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="cedulaAlta">Cédula de identidad</label>
+                    <input type="text" id="cedulaAlta" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="codigoCedulaAlta">Código posterior de la cédula</label>
+                    <input type="text" id="codigoCedulaAlta" disabled>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="nombre">Nombre completo</label>
+                <input type="text" id="nombre" placeholder="Tu nombre" autocomplete="name" required>
+            </div>
+
+            <div class="form-row-4">
+                <div class="form-group">
+                    <div class="label-row">
+                        <label for="fechaNacimiento">Fecha de nacimiento</label>
+                        <span class="help">
+                            <button type="button" class="help-trigger" aria-describedby="ayudaNacimiento" aria-label="Información sobre la fecha de nacimiento">i</button>
+                            <span id="ayudaNacimiento" class="help-text" role="tooltip">Selecciona la fecha que aparece en tu documento de identidad.</span>
+                        </span>
+                    </div>
+                    <input type="date" id="fechaNacimiento" autocomplete="bday" required>
+                </div>
+                <div class="form-group">
+                    <label for="genero">Género</label>
+                    <select id="genero" required>
+                        <option value="" selected disabled>Selecciona una opción</option>
+                        <option value="Femenino">Femenino</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Otro">Otro</option>
+                        <option value="Prefiero no indicar">Prefiero no indicar</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="correo">Correo electrónico</label>
+                    <input type="email" id="correo" placeholder="correo@ejemplo.com" autocomplete="email" required>
+                </div>
+                <div class="form-group">
+                    <div class="label-row">
+                        <label for="telefono">Teléfono</label>
+                        <span class="help">
+                            <button type="button" class="help-trigger" aria-describedby="ayudaTelefono" aria-label="Información sobre el formato del teléfono">i</button>
+                            <span id="ayudaTelefono" class="help-text" role="tooltip">Puedes escribir un teléfono fijo o celular. Se aceptan espacios y guiones; por ejemplo: +507 6000-0000.</span>
+                        </span>
+                    </div>
+                    <input type="tel" id="telefono" value="+507" placeholder="+507 6000-0000" autocomplete="tel" pattern="^\+?[0-9\s-]{7,18}$" required>
+                </div>
+            </div>
+
+            <div class="residence-block">
+                <label>Residencia</label>
+                <p class="residence-help">Selecciona la provincia, el distrito y el corregimiento donde resides.</p>
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label for="provincia">Provincia</label>
+                        <select id="provincia" required>
+                            <option value="Panamá">Panamá</option>
+                            <option value="Bocas del Toro">Bocas del Toro</option>
+                            <option value="Chiriquí">Chiriquí</option>
+                            <option value="Coclé">Coclé</option>
+                            <option value="Colón">Colón</option>
+                            <option value="Darién">Darién</option>
+                            <option value="Herrera">Herrera</option>
+                            <option value="Los Santos">Los Santos</option>
+                            <option value="Panamá Oeste">Panamá Oeste</option>
+                            <option value="Veraguas">Veraguas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="distrito">Distrito</label>
+                        <select id="distrito" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="corregimiento">Corregimiento</label>
+                        <select id="corregimiento" required></select>
+                    </div>
+                </div>
+            </div>
+
+            <section class="section-divider" aria-labelledby="tituloContacto">
+                <h3 id="tituloContacto">Información de contacto</h3>
+                <p>Indica una persona de confianza a quien podamos contactar cuando sea necesario.</p>
+
+                <div class="form-row-4">
+                    <div class="form-group">
+                        <label for="contactoNombre">Nombre completo</label>
+                        <input type="text" id="contactoNombre" placeholder="Nombre de la persona de contacto" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactoParentesco">Parentesco</label>
+                        <select id="contactoParentesco" required>
+                            <option value="" selected disabled>Selecciona un parentesco</option>
+                            <option value="Hermano(a)">Hermano(a)</option>
+                            <option value="Padre/Madre">Padre/Madre</option>
+                            <option value="Cónyuge">Cónyuge</option>
+                            <option value="Amistad">Amistad</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactoCorreo">Correo electrónico</label>
+                        <input type="email" id="contactoCorreo" placeholder="contacto@ejemplo.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactoTelefono">Teléfono</label>
+                        <input type="tel" id="contactoTelefono" value="+507" placeholder="+507 6000-0000" pattern="^\+?[0-9\s-]{7,18}$" required>
+                    </div>
+                </div>
+
+                <label class="checkbox-field" for="contactoConversado">
+                    <input type="checkbox" id="contactoConversado">
+                    <span>¿Ha conversado sobre su decisión de ser donante con esta persona?</span>
+                </label>
+            </section>
+
+            <section class="consent-section" aria-labelledby="tituloConsentimiento">
+                <div class="consent-header">
+                    <span class="consent-number" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.6 2.9 8.1 7 10 4.1-1.9 7-5.4 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+                    </span>
+                    <h3 id="tituloConsentimiento">Consentimiento informado</h3>
+                </div>
+                <p class="consent-intro">Esta sección garantiza que la decisión de donar sea libre, voluntaria e informada.</p>
+
+                <label class="checkbox-field required-consent" for="consentimientoVoluntario">
+                    <input type="checkbox" id="consentimientoVoluntario" required>
+                    <span>
+                        Declaro libre y voluntariamente mi deseo de ser donante, conforme a la Ley 3 de 8 de febrero de 2010.
+                        <br><a class="law-link" href="https://s3-legispan.asamblea.gob.pa/legispan/NORMAS/2010/2010/LEY/Administrador%20Legispan_26468-B_2010_2_10_ASAMBLEA%20NACIONAL_3.pdf" target="_blank" rel="noopener" onclick="event.stopPropagation()">Consultar definición completa de la ley</a>
+                    </span>
+                </label>
+
+                <label class="checkbox-field" for="consentimientoNoDesfigura">
+                    <input type="checkbox" id="consentimientoNoDesfigura">
+                    <span>Comprendo que la donación de córneas no desfigura el rostro.</span>
+                </label>
+
+                <div class="signature-block">
+                    <div class="form-group">
+                        <label for="firmaDigital">Firma electrónica</label>
+                        <p class="signature-help">Escribe tu nombre completo como constancia de aceptación electrónica.</p>
+                        <input type="text" id="firmaDigital" placeholder="Nombre completo del donante" required>
+                    </div>
+                    <label class="checkbox-field required-consent" for="aceptacionElectronica">
+                        <input type="checkbox" id="aceptacionElectronica" required>
+                        <span>Acepto electrónicamente este consentimiento y confirmo que la información proporcionada es correcta.</span>
+                    </label>
+                </div>
+            </section>
+
+            <section class="health-section" aria-labelledby="tituloSalud">
+                <div class="consent-header">
+                    <span class="consent-number" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/><path d="M7 12h3l1-2 2 4 1-2h3"/></svg>
+                    </span>
+                    <h3 id="tituloSalud">Datos de salud relevantes</h3>
+                </div>
+                <p class="consent-intro">La idoneidad final del tejido se evalúa al momento del fallecimiento. Estas preguntas funcionan únicamente como un triaje preventivo.</p>
+
+                <div class="health-grid">
+                    <div class="health-question">
+                        <label for="saludInfecciosas">¿Ha sido diagnosticado con VIH, hepatitis B/C o sífilis? <span class="field-status">Obligatorio</span></label>
+                        <select id="saludInfecciosas" required>
+                            <option value="" selected disabled>Selecciona una respuesta</option>
+                            <option value="Sí">Sí</option>
+                            <option value="No">No</option>
+                            <option value="No sé">No sé</option>
+                        </select>
+                    </div>
+                    <div class="health-question">
+                        <label for="saludCancer">¿Padece o ha padecido algún cáncer sistémico o leucemia? <span class="field-status">Obligatorio</span></label>
+                        <select id="saludCancer" required>
+                            <option value="" selected disabled>Selecciona una respuesta</option>
+                            <option value="Sí">Sí</option>
+                            <option value="No">No</option>
+                            <option value="No sé">No sé</option>
+                        </select>
+                    </div>
+                    <div class="health-question">
+                        <label for="saludOcular">¿Padece glaucoma avanzado, infecciones corneales previas o queratocono? <span class="field-status">Opcional</span></label>
+                        <select id="saludOcular">
+                            <option value="" selected>Sin responder</option>
+                            <option value="Sí">Sí</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <div class="health-question">
+                        <label for="cirugiasOculares">¿Ha tenido cirugías oculares previas, como LASIK o cataratas? <span class="field-status">Opcional</span></label>
+                        <select id="cirugiasOculares">
+                            <option value="" selected>Sin responder</option>
+                            <option value="Sí">Sí</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="preference-section" aria-labelledby="tituloPreferencias">
+                <div class="consent-header">
+                    <span class="consent-number" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M12 21s7-4.4 7-10.5A4.5 4.5 0 0 0 12 6a4.5 4.5 0 0 0-7 4.5C5 16.6 12 21 12 21Z"/><path d="M12 6V3M9.5 3h5"/></svg>
+                    </span>
+                    <h3 id="tituloPreferencias">Preferencias y alcance de la donación</h3>
+                </div>
+                <p class="consent-intro">Selecciona qué tejidos u órganos deseas donar de acuerdo con tu voluntad. La Ley 3 reconoce que la donación puede autorizarse para uno o varios componentes anatómicos.</p>
+                <a class="law-link" href="https://s3-legispan.asamblea.gob.pa/legispan/NORMAS/2010/2010/LEY/Administrador%20Legispan_26468-B_2010_2_10_ASAMBLEA%20NACIONAL_3.pdf" target="_blank" rel="noopener">Consultar definición completa de la ley</a>
+
+                <div class="donation-options" role="radiogroup" aria-label="Alcance de la donación">
+                    <label class="donation-option" for="alcanceCorneas">
+                        <input type="radio" id="alcanceCorneas" name="alcanceDonacion" value="Solo córneas" required>
+                        <span><strong>Solo córneas</strong>Autorizo exclusivamente la donación de tejido corneal.</span>
+                    </label>
+                    <label class="donation-option" for="alcanceUniversal">
+                        <input type="radio" id="alcanceUniversal" name="alcanceDonacion" value="Órganos y tejidos" required>
+                        <span><strong>Órganos y tejidos</strong>Autorizo componentes que puedan salvar o mejorar vidas.</span>
+                    </label>
+                </div>
+
+                <label class="checkbox-field required-consent" for="autorizaInvestigacion">
+                    <input type="checkbox" id="autorizaInvestigacion" required>
+                    <span>Autorizo que, si mis córneas no son aptas para trasplante, puedan utilizarse para investigación científica o docencia médica.</span>
+                </label>
+            </section>
+
+            <section class="privacy-section" aria-labelledby="tituloProteccionDatos">
+                <div class="consent-header">
+                    <span class="consent-number" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></svg>
+                    </span>
+                    <h3 id="tituloProteccionDatos">Protección de datos personales</h3>
+                </div>
+                <p class="consent-intro">La Ley 81 de 2019 establece los principios y derechos aplicables al tratamiento responsable de los datos personales.</p>
+                <a class="law-link" href="https://s3-legispan.asamblea.gob.pa/legispan/NORMAS/2010/2019/LEY/Administrador%20Legispan_28743-A_2019_3_29_ASAMBLEA%20NACIONAL_81.pdf" target="_blank" rel="noopener">Consultar definición completa de la Ley 81 de 2019</a>
+
+                <div class="privacy-grid">
+                    <label class="checkbox-field required-consent" for="autorizaDatosSensibles">
+                        <input type="checkbox" id="autorizaDatosSensibles" required>
+                        <span>Autorizo el tratamiento de mis datos personales sensibles, incluidos los datos de salud e identificación, para gestionar mi voluntad de donación.</span>
+                    </label>
+                    <label class="checkbox-field required-consent" for="autorizaConsultaInstitucional">
+                        <input type="checkbox" id="autorizaConsultaInstitucional" required>
+                        <span>Acepto que mi condición de donante sea compartida y consultada por la Organización Panameña de Trasplantes (OPT) y las autoridades competentes, incluyendo MINSA y CSS.</span>
+                    </label>
+                </div>
+            </section>
+
+            <button type="submit" class="btn-register">Enviar solicitud de registro</button>
+            <button type="button" class="btn-cancel-flow" onclick="abrirDialogoSalida()">Cancelar</button>
+        </form>
+
+        <form id="formBaja" class="form-section" onsubmit="enviarFormulario(event, 'darBaja')">
+            <div class="record-notice">
+                Encontramos una voluntad de donación activa asociada con los datos validados. Puedes mantenerla vigente o solicitar su baja.
+            </div>
+            <div class="form-group">
+                <label for="cedulaBaja">Cédula de identidad registrada</label>
+                <input type="text" id="cedulaBaja" disabled>
+            </div>
+            <div class="form-group">
+                <label for="codigoCedulaBaja">Código posterior de la cédula</label>
+                <input type="text" id="codigoCedulaBaja" disabled>
+            </div>
+            <button type="submit" class="btn-unregister">Darme de baja como donante de córneas</button>
+            <button type="button" class="btn-cancel-flow" onclick="abrirDialogoSalida()">Cancelar</button>
+        </form>
+
+        <div id="statusMessage" class="message"></div>
+    </section>
+</div>
+
+<dialog id="dialogoSalida" class="exit-dialog" aria-labelledby="tituloDialogoSalida">
+    <h3 id="tituloDialogoSalida">¿Deseas salir del registro?</h3>
+    <p>¿Estás seguro de que deseas salir del registro de donantes de córneas? No se realizará ningún cambio ni se guardarán los datos ingresados.</p>
+    <div class="dialog-actions">
+        <button type="button" class="btn-exit" onclick="salirDelFlujo()">Salir</button>
+        <button type="button" class="btn-stay" onclick="cerrarDialogoSalida()">Cancelar</button>
+    </div>
+</dialog>
+
+<dialog id="dialogoBajaExitosa" class="exit-dialog" aria-labelledby="tituloBajaExitosa">
+    <h3 id="tituloBajaExitosa">Baja completada</h3>
+    <p>Ud. ha sido dado de baja como donante de córneas.</p>
+    <div class="dialog-actions">
+        <button type="button" class="btn-register" onclick="aceptarBajaExitosa()">Aceptar</button>
+    </div>
+</dialog>
+
+<dialog id="dialogoRegistroExitoso" class="exit-dialog" aria-labelledby="tituloRegistroExitoso">
+    <h3 id="tituloRegistroExitoso">Solicitud procesada</h3>
+    <p>¡Solicitud procesada! Revisa tu correo electrónico para confirmar la acción mediante el enlace enviado.</p>
+    <div class="dialog-actions">
+        <button type="button" class="btn-register" onclick="aceptarRegistroExitoso()">Aceptar</button>
+    </div>
+</dialog>
+
+<script>
+    // URL de tu Web App de Google Apps Script
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxy3bV3H7xdqJlIj5_C1im_xCVXtqwGTyLt3pXBI3G6huHstdouZ5cLUuVs-D97DkWFTA/exec";
+    const REGISTROS_MOCK_KEY = 'registros_donacion_mock';
+    const DONANTE_PRUEBA = {
+        cedula: '8-123-1234',
+        codigo: '88NNNN0001',
+        activo: true,
+        folio: 'DC-2026-00001',
+        fechaRegistro: '2026-01-15T14:30:00.000Z',
+        estadoRegistro: 'Aceptado',
+        estadoConsentimiento: 'Activo',
+        fechaActualizacion: new Date().toISOString()
+    };
+
+    const PATRONES_CEDULA = [
+        /^\d{1,2}-\d{1,4}-\d{1,6}$/,
+        /^PE-\d{1,4}-\d{1,6}$/,
+        /^E-\d{1,4}-\d{1,6}$/,
+        /^N-\d{1,4}-\d{1,6}$/,
+        /^\d{1,2}AV-\d{1,4}-\d{1,6}$/
+    ];
+
+    const UBICACIONES = {
+        "Panamá": {
+            "Panamá": ["24 de Diciembre", "Alcalde Díaz", "Ancón", "Bella Vista", "Bethania", "Calidonia", "Chilibre", "Curundú", "Don Bosco", "El Chorrillo", "Ernesto Córdoba Campos", "Juan Díaz", "Las Cumbres", "Las Garzas", "Las Mañanitas", "Pacora", "Parque Lefevre", "Pedregal", "Pueblo Nuevo", "Río Abajo", "San Felipe", "San Francisco", "San Martín", "Santa Ana", "Tocumen"],
+            "San Miguelito": ["Amelia Denis de Icaza", "Belisario Frías", "Belisario Porras", "José Domingo Espinar", "Mateo Iturralde", "Omar Torrijos", "Rufina Alfaro", "Victoriano Lorenzo"],
+            "Chepo": ["Cañita", "Chepillo", "Chepo", "El Llano", "Las Margaritas", "Santa Cruz de Chinina", "Tortí"],
+            "Balboa": ["La Ensenada", "La Esmeralda", "La Guinea", "Pedro González", "Saboga", "San Miguel"],
+            "Chimán": ["Brujas", "Chimán", "Gonzalo Vásquez", "Pásiga", "Unión Santeña"],
+            "Taboga": ["Otoque Occidente", "Otoque Oriente", "Taboga"]
+        },
+        "Bocas del Toro": {
+            "Bocas del Toro": ["Bocas del Toro", "Bastimentos", "Boca del Drago"],
+            "Changuinola": ["Changuinola", "El Empalme", "Guabito"],
+            "Almirante": ["Almirante", "Barriada Guaymí", "Valle de Aguas Arriba"]
+        },
+        "Chiriquí": {
+            "David": ["David", "David Este", "Las Lomas", "Pedregal"],
+            "Boquete": ["Alto Boquete", "Bajo Boquete", "Caldera", "Jaramillo"],
+            "Dolega": ["Dolega", "Dos Ríos", "Los Algarrobos", "Potrerillos"]
+        },
+        "Coclé": {
+            "Penonomé": ["Penonomé", "Cañaveral", "Coclé", "Río Grande"],
+            "Antón": ["Antón", "El Chirú", "El Retiro", "Río Hato"],
+            "Aguadulce": ["Aguadulce", "El Cristo", "Pocrí"]
+        },
+        "Colón": {
+            "Colón": ["Barrio Norte", "Barrio Sur", "Buena Vista", "Cristóbal", "Cativá"],
+            "Portobelo": ["Portobelo", "Cacique", "Isla Grande"],
+            "Chagres": ["Nuevo Chagres", "Achiote", "Piña"]
+        },
+        "Darién": {
+            "Chepigana": ["La Palma", "Garachiné", "Jaqué", "Puerto Piña"],
+            "Pinogana": ["El Real de Santa María", "Metetí", "Yaviza"],
+            "Santa Fe": ["Santa Fe", "Agua Fría", "Cucunatí"]
+        },
+        "Herrera": {
+            "Chitré": ["Chitré", "La Arena", "Monagrillo", "San Juan Bautista"],
+            "Ocú": ["Ocú", "Cerro Largo", "Los Llanos"],
+            "Parita": ["Parita", "Cabuya", "Portobelillo"]
+        },
+        "Los Santos": {
+            "Las Tablas": ["Las Tablas", "La Palma", "Santo Domingo"],
+            "Los Santos": ["La Villa de Los Santos", "La Espigadilla", "Santa Ana"],
+            "Pedasí": ["Pedasí", "Los Asientos", "Mariabé"]
+        },
+        "Panamá Oeste": {
+            "La Chorrera": ["Barrio Balboa", "Barrio Colón", "Guadalupe", "Puerto Caimito"],
+            "Arraiján": ["Arraiján", "Burunga", "Cerro Silvestre", "Juan Demóstenes Arosemena", "Vista Alegre"],
+            "Chame": ["Chame", "Bejuco", "Gorgona", "Punta Chame"]
+        },
+        "Veraguas": {
+            "Santiago": ["Santiago", "Canto del Llano", "La Peña", "San Martín de Porres"],
+            "Soná": ["Soná", "Bahía Honda", "Calidonia", "Río Grande"],
+            "Atalaya": ["Atalaya", "La Carrillo", "San Antonio"]
+        }
+    };
+
+    const cedulaValidacion = document.getElementById('cedulaValidacion');
+    const codigoCedula = document.getElementById('codigoCedula');
+    const captchaInput = document.getElementById('captchaInput');
+    const provinciaSelect = document.getElementById('provincia');
+    const distritoSelect = document.getElementById('distrito');
+    const corregimientoSelect = document.getElementById('corregimiento');
+    let captchaActual = '';
+
+    function actualizarDistritos() {
+        const distritos = Object.keys(UBICACIONES[provinciaSelect.value] || {});
+        distritoSelect.innerHTML = distritos.map(distrito => `<option value="${distrito}">${distrito}</option>`).join('');
+        actualizarCorregimientos();
+    }
+
+    function actualizarCorregimientos() {
+        const corregimientos = UBICACIONES[provinciaSelect.value]?.[distritoSelect.value] || [];
+        corregimientoSelect.innerHTML = corregimientos.map(corregimiento => `<option value="${corregimiento}">${corregimiento}</option>`).join('');
+    }
+
+    provinciaSelect.addEventListener('change', actualizarDistritos);
+    distritoSelect.addEventListener('change', actualizarCorregimientos);
+    actualizarDistritos();
+
+    cedulaValidacion.addEventListener('input', (e) => {
+        e.target.value = e.target.value.toUpperCase().replace(/\s/g, '');
+        limpiarError(e.target, 'errorCedula');
+    });
+
+    codigoCedula.addEventListener('input', (e) => {
+        e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        limpiarError(e.target, 'errorCodigo');
+    });
+
+    captchaInput.addEventListener('input', (e) => {
+        e.target.value = e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '');
+        limpiarError(e.target, 'errorCaptcha');
+    });
+
+    function generarCaptcha() {
+        const caracteres = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        let nuevoCodigo = '';
+
+        do {
+            const valores = new Uint32Array(6);
+
+            if (window.crypto && window.crypto.getRandomValues) {
+                window.crypto.getRandomValues(valores);
+            } else {
+                for (let i = 0; i < valores.length; i++) {
+                    valores[i] = Math.floor(Math.random() * caracteres.length);
+                }
+            }
+
+            nuevoCodigo = Array.from(valores, valor => caracteres[valor % caracteres.length]).join('');
+        } while (!/[a-z]/.test(nuevoCodigo) || !/[0-9]/.test(nuevoCodigo));
+
+        captchaActual = nuevoCodigo;
+        document.getElementById('captchaCode').innerText = captchaActual;
+        captchaInput.value = '';
+        limpiarError(captchaInput, 'errorCaptcha');
+    }
+
+    function mostrarError(input, errorId, mensaje) {
+        input.classList.add('input-error');
+        input.setAttribute('aria-invalid', 'true');
+        const error = document.getElementById(errorId);
+        error.innerText = mensaje;
+        error.classList.add('visible');
+    }
+
+    function limpiarError(input, errorId) {
+        input.classList.remove('input-error');
+        input.removeAttribute('aria-invalid');
+        const error = document.getElementById(errorId);
+        error.innerText = '';
+        error.classList.remove('visible');
+    }
+
+    function obtenerRegistrosMock() {
+        try {
+            const registros = JSON.parse(localStorage.getItem(REGISTROS_MOCK_KEY));
+            return Array.isArray(registros) ? registros : [];
+        } catch (error) {
+            return [];
+        }
+    }
+
+    function generarFolio() {
+        const fecha = new Date();
+        const consecutivo = `${fecha.getTime()}`.slice(-7);
+        return `DC-${fecha.getFullYear()}-${consecutivo}`;
+    }
+
+    function guardarEstadoMock(cedula, codigo, activo, datosAdicionales = {}) {
+        const registros = obtenerRegistrosMock();
+        const indice = registros.findIndex(registro => registro.cedula === cedula && registro.codigo === codigo);
+        const anterior = indice === -1 ? {} : registros[indice];
+        const ahora = new Date().toISOString();
+        const datos = {
+            ...anterior,
+            ...datosAdicionales,
+            cedula,
+            codigo,
+            activo,
+            folio: anterior.folio || datosAdicionales.folio || generarFolio(),
+            fechaRegistro: anterior.fechaRegistro || datosAdicionales.fechaRegistro || ahora,
+            fechaRevocacion: activo ? null : ahora,
+            estadoRegistro: anterior.estadoRegistro || datosAdicionales.estadoRegistro || 'Por validar',
+            estadoConsentimiento: activo ? 'Activo' : 'Revocado',
+            fechaActualizacion: ahora
+        };
+
+        if (indice === -1) registros.push(datos);
+        else registros[indice] = datos;
+
+        localStorage.setItem(REGISTROS_MOCK_KEY, JSON.stringify(registros));
+    }
+
+    function crearDonantePrueba() {
+        const registros = obtenerRegistrosMock();
+        const indice = registros.findIndex(registro =>
+            registro.cedula === DONANTE_PRUEBA.cedula && registro.codigo === DONANTE_PRUEBA.codigo
+        );
+
+        if (indice === -1) {
+            registros.push(DONANTE_PRUEBA);
+            localStorage.setItem(REGISTROS_MOCK_KEY, JSON.stringify(registros));
+        }
+    }
+
+    function reiniciarDonantePrueba() {
+        const registros = obtenerRegistrosMock();
+        const indice = registros.findIndex(registro =>
+            registro.cedula === DONANTE_PRUEBA.cedula && registro.codigo === DONANTE_PRUEBA.codigo
+        );
+
+        const registroRestaurado = {
+            ...DONANTE_PRUEBA,
+            activo: true,
+            fechaActualizacion: new Date().toISOString()
+        };
+
+        if (indice === -1) registros.push(registroRestaurado);
+        else registros[indice] = registroRestaurado;
+
+        localStorage.setItem(REGISTROS_MOCK_KEY, JSON.stringify(registros));
+        window.location.reload();
+    }
+
+    function tieneRegistroActivoMock(cedula, codigo) {
+        return obtenerRegistrosMock().some(registro =>
+            registro.cedula === cedula && registro.codigo === codigo && registro.activo === true
+        );
+    }
+
+    function validarIdentidad(e) {
+        e.preventDefault();
+        const cedula = cedulaValidacion.value.trim().toUpperCase();
+        const codigo = codigoCedula.value.trim().toUpperCase();
+        const captchaIngresado = captchaInput.value.trim().toLowerCase();
+        let valido = true;
+
+        limpiarError(cedulaValidacion, 'errorCedula');
+        limpiarError(codigoCedula, 'errorCodigo');
+        limpiarError(captchaInput, 'errorCaptcha');
+
+        if (!PATRONES_CEDULA.some(patron => patron.test(cedula))) {
+            mostrarError(cedulaValidacion, 'errorCedula', 'Revisa el formato e incluye los guiones. Ejemplo: 1-1234-12345, PE-1234-12345, E-1234-123456, N-1234-1234 o 1AV-1234-12345.');
+            valido = false;
+        }
+
+        if (!/^[A-Z0-9]{8,20}$/.test(codigo)) {
+            mostrarError(codigoCedula, 'errorCodigo', 'Escribe entre 8 y 20 letras o números, sin espacios ni guiones. Ejemplo: 47KLMNP0286.');
+            valido = false;
+        }
+
+        if (!/^[a-z0-9]{6}$/.test(captchaIngresado) || captchaIngresado !== captchaActual) {
+            generarCaptcha();
+            mostrarError(captchaInput, 'errorCaptcha', 'El código de seguridad no coincide. Se generó un código nuevo; vuelve a intentarlo.');
+            captchaInput.focus();
+            valido = false;
+        }
+
+        if (!valido) return;
+
+        document.getElementById('cedulaAlta').value = cedula;
+        document.getElementById('codigoCedulaAlta').value = codigo;
+        document.getElementById('cedulaBaja').value = cedula;
+        document.getElementById('codigoCedulaBaja').value = codigo;
+        document.getElementById('stepValidacion').classList.remove('active');
+        document.getElementById('stepRegistro').classList.add('active');
+
+        if (tieneRegistroActivoMock(cedula, codigo)) {
+            document.getElementById('tituloResultado').innerText = 'Registro de donación encontrado';
+            switchTab('baja');
+        } else {
+            document.getElementById('tituloResultado').innerText = 'Completa tu registro de donación';
+            switchTab('alta');
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    crearDonantePrueba();
+    generarCaptcha();
+
+    function abrirDialogoSalida() {
+        document.getElementById('dialogoSalida').showModal();
+    }
+
+    function cerrarDialogoSalida() {
+        document.getElementById('dialogoSalida').close();
+    }
+
+    function salirDelFlujo() {
+        window.location.href = 'index.html';
+    }
+
+    function aceptarBajaExitosa() {
+        window.location.href = 'index.html';
+    }
+
+    function aceptarRegistroExitoso() {
+        window.location.href = 'index.html';
+    }
+
+    function switchTab(tipo) {
+        document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
+        document.getElementById('statusMessage').style.display = 'none';
+
+        if(tipo === 'alta') {
+            document.getElementById('formAlta').classList.add('active');
+        } else {
+            document.getElementById('formBaja').classList.add('active');
+        }
+    }
+
+    // AQUÍ ESTÁ LA CORRECCIÓN: "async function" en lugar de "async class"
+    async function enviarFormulario(e, accion) {
+        e.preventDefault();
+
+        if (accion === 'darBaja') {
+            const confirmarBaja = confirm('¿Está seguro de que desea darse de baja como donante de córneas?');
+            if (!confirmarBaja) return;
+        }
+
+        const msgDiv = document.getElementById('statusMessage');
+        msgDiv.style.display = 'block';
+        msgDiv.className = "message";
+        msgDiv.innerText = "Procesando solicitud... por favor espera.";
+
+        let payload = { action: accion };
+
+        if (accion === 'registrar') {
+            payload.data = {
+                cedula: document.getElementById('cedulaAlta').value.trim(),
+                codigoCedula: document.getElementById('codigoCedula').value.trim(),
+                nombre: document.getElementById('nombre').value.trim(),
+                fechaNacimiento: document.getElementById('fechaNacimiento').value,
+                genero: document.getElementById('genero').value,
+                correo: document.getElementById('correo').value.trim(),
+                telefono: document.getElementById('telefono').value.trim(),
+                provincia: document.getElementById('provincia').value,
+                distrito: document.getElementById('distrito').value,
+                corregimiento: document.getElementById('corregimiento').value,
+                consentimientoVoluntario: document.getElementById('consentimientoVoluntario').checked,
+                consentimientoNoDesfigura: document.getElementById('consentimientoNoDesfigura').checked,
+                firmaDigital: document.getElementById('firmaDigital').value.trim(),
+                aceptacionElectronica: document.getElementById('aceptacionElectronica').checked,
+                fechaAceptacion: new Date().toISOString(),
+                saludInfecciosas: document.getElementById('saludInfecciosas').value,
+                saludCancer: document.getElementById('saludCancer').value,
+                saludOcular: document.getElementById('saludOcular').value || 'Sin responder',
+                cirugiasOculares: document.getElementById('cirugiasOculares').value || 'Sin responder',
+                alcanceDonacion: document.querySelector('input[name="alcanceDonacion"]:checked').value,
+                autorizaInvestigacion: document.getElementById('autorizaInvestigacion').checked,
+                autorizaDatosSensibles: document.getElementById('autorizaDatosSensibles').checked,
+                autorizaConsultaInstitucional: document.getElementById('autorizaConsultaInstitucional').checked,
+                contactoNombre: document.getElementById('contactoNombre').value.trim(),
+                contactoCorreo: document.getElementById('contactoCorreo').value.trim(),
+                contactoTelefono: document.getElementById('contactoTelefono').value.trim(),
+                contactoParentesco: document.getElementById('contactoParentesco').value,
+                contactoConversado: document.getElementById('contactoConversado').checked,
+                fechaSolicitud: new Date().toISOString(),
+                fechaRegistro: new Date().toISOString(),
+                folio: generarFolio(),
+                estadoRegistro: 'Por validar',
+                estadoConsentimiento: 'Activo'
+            };
+        } else {
+            payload.data = {
+                cedula: document.getElementById('cedulaBaja').value.trim(),
+                codigoCedula: document.getElementById('codigoCedulaBaja').value.trim()
+            };
+        }
+
+        try {
+            const response = await fetch(WEB_APP_URL, {
+                method: "POST",
+                mode: "no-cors", 
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            msgDiv.className = "message success";
+            if (accion === 'registrar') {
+                guardarEstadoMock(payload.data.cedula, payload.data.codigoCedula, true, payload.data);
+                document.getElementById('formAlta').reset();
+                msgDiv.style.display = "none";
+                document.getElementById('dialogoRegistroExitoso').showModal();
+            } else {
+                guardarEstadoMock(payload.data.cedula, payload.data.codigoCedula, false);
+                msgDiv.style.display = "none";
+                document.getElementById('dialogoBajaExitosa').showModal();
+            }
+
+        } catch (error) {
+            msgDiv.className = "message error";
+            msgDiv.innerText = "Hubo un error al conectar con el servidor. Inténtalo de nuevo.";
+        }
+    }
+</script>
+</body>
+</html>

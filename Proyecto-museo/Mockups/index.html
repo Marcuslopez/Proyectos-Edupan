@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Prototipo - Museo Interactivo</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        header p {
+            margin: 5px 0 0 0;
+            opacity: 0.8;
+        }
+
+        main {
+            max-width: 1000px;
+            width: 90%;
+            margin: 40px 0;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-decoration: none;
+            color: inherit;
+            border-top: 5px solid var(--accent-color);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .card h3 {
+            margin: 0 0 10px 0;
+            color: var(--primary-color);
+            font-size: 1.3rem;
+        }
+
+        .card p {
+            margin: 0 0 20px 0;
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            font-size: 0.85rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Sistema Interactivo de Gestión Cultural</h1>
+        <p>Prototipo Inicial para Presentación de Museo</p>
+    </header>
+
+    <main>
+        <div class="grid-container">
+            
+            <a href="agenda.html" class="card">
+                <div>
+                    <h3>1.1 Agenda Digital</h3>
+                    <p>Sistema para que los visitantes puedan reservar su entrada, fecha y hora de manera digital.</p>
+                </div>
+                <div class="btn">Abrir Módulo</div>
+            </a>
+
+            <a href="admin-tours.html" class="card">
+                <div>
+                    <h3>1.2 Agenda Digital administracion</h3>
+                    <p>Sistema para que los guias puedan agendar fecha y hora de manera digital.</p>
+                </div>
+                <div class="btn">Abrir Módulo</div>
+            </a>
+
+            <a href="qr-atrio.html" class="card">
+                <div>
+                    <h3>2 y 3. Info QR & Idiomas</h3>
+                    <p>Demo de la página informativa (ej: Atrio Principal) con selector de idioma incorporado.</p>
+                </div>
+                <div class="btn">Ver Demo QR</div>
+            </a>
+
+            <a href="moderacion.html" class="card">
+                <div>
+                    <h3>4a. Panel de Moderación</h3>
+                    <p>Espacio privado donde el personal del museo aprueba o rechaza los comentarios recibidos.</p>
+                </div>
+                <div class="btn">Ir al Panel</div>
+            </a>
+
+            <a href="pantalla-principal.html" class="card">
+                <div>
+                    <h3>4b. Pantalla de Exhibición</h3>
+                    <p>Muro digital que se muestra al público con los comentarios ya aprobados por el moderador.</p>
+                </div>
+                <div class="btn">Ver Pantalla</div>
+            </a>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 Prototipo de Museografía Digital</p>
+    </footer>
+
+</body>
+</html>

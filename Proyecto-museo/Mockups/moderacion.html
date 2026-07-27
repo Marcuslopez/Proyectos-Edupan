@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Moderación - Museo del Cuervo</title>
+    <style>
+        :root {
+            --primary-color: #1a1a24;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0; padding: 25px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border: 1px solid var(--border-color);
+        }
+
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px; margin-bottom: 25px;
+        }
+        h2 { margin: 0; color: var(--primary-color); }
+        .btn-back { text-decoration: none; color: #64748b; font-weight: 600; }
+
+        /* TARJETAS DE REVISIÓN */
+        .item-moderacion {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-5px); } to { opacity: 1; transform: translateX(0); } }
+
+        .item-body { flex-grow: 1; padding-right: 20px; }
+        .item-text { font-size: 1.05rem; margin-bottom: 10px; color: #334155; font-style: italic; }
+        .item-meta { font-size: 0.85rem; color: #64748b; }
+
+        .actions-block { display: flex; gap: 10px; }
+        .btn-mod {
+            border: none; padding: 10px 16px; border-radius: 6px;
+            font-weight: bold; cursor: pointer; color: white; font-size: 0.9rem;
+        }
+        .btn-approve { background-color: var(--success-color); }
+        .btn-reject { background-color: var(--danger-color); }
+        .btn-mod:hover { opacity: 0.9; }
+
+        .no-pending { text-align: center; padding: 40px; color: #64748b; font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h2>🛡 Panel de Moderación de Contenidos</h2>
+            <a href="index.html" class="btn-back">← Volver al Panel</a>
+        </div>
+
+        <p style="color:#64748b; margin-bottom: 30px;">Comentarios entrantes esperando aprobación para ser mostrados en la pantalla principal del museo:</p>
+
+        <div id="colaModeracion"></div>
+    </div>
+
+    <script>
+        let comentarios = JSON.parse(localStorage.getItem('comentarios_museo')) || [];
+
+        function renderModeracion() {
+            const contenedor = document.getElementById('colaModeracion');
+            contenedor.innerHTML = '';
+
+            // Filtrar únicamente los comentarios con estado 'pendiente'
+            const pendientes = comentarios.filter(c => c.estado === 'pendiente');
+
+            if (pendientes.length === 0) {
+                contenedor.innerHTML = `<div class="no-pending">🎉 ¡Felicidades! La cola de moderación está limpia. No hay opiniones pendientes de revisión.</div>`;
+                return;
+            }
+
+            pendientes.forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'item-moderacion';
+                item.innerHTML = `
+                    <div class="item-body">
+                        <div class="item-text">"${c.texto}"</div>
+                        <div class="item-meta">Enviado por: <strong>${c.autor}</strong> | Fecha: ${c.fecha}</div>
+                    </div>
+                    <div class="actions-block">
+                        <button class="btn-mod btn-approve" onclick="cambiarEstado('${c.id}', 'aprobado')">Aprobar</button>
+                        <button class="btn-mod btn-reject" onclick="cambiarEstado('${c.id}', 'rechazado')">Rechazar</button>
+                    </div>
+                `;
+                contenedor.appendChild(item);
+            });
+        }
+
+        function cambiarEstado(id, nuevoEstado) {
+            const index = comentarios.findIndex(c => c.id === id);
+            if (index !== -1) {
+                comentarios[index].estado = nuevoEstado;
+                localStorage.setItem('comentarios_museo', JSON.stringify(comentarios));
+                renderModeracion();
+            }
+        }
+
+        // Carga inicial
+        renderModeracion();
+    </script>
+</body>
+</html>
