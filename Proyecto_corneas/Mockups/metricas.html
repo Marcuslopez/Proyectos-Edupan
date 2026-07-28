@@ -66,9 +66,21 @@
 
         .month-chart { align-items: flex-end; border-bottom: 1px solid #cfd9e7; display: flex; gap: 8px; height: 290px; padding: 36px 8px 0; }
         .month-column { align-items: center; display: flex; flex: 1; flex-direction: column; height: 100%; justify-content: flex-end; min-width: 38px; }
-        .month-fill { background: linear-gradient(180deg, #f8c46b, var(--gold)); border-radius: 8px 8px 2px 2px; min-height: 5px; width: min(44px, 76%); }
+        .month-bars { align-items: flex-end; display: flex; gap: 5px; height: calc(100% - 24px); justify-content: center; width: 100%; }
+        .month-series { align-items: center; display: flex; flex-direction: column; height: 100%; justify-content: flex-end; width: min(34px, 42%); }
+        .month-fill { border-radius: 7px 7px 2px 2px; min-height: 2px; width: 100%; }
+        .month-fill.high { background: linear-gradient(180deg, #f8c46b, var(--gold)); }
+        .month-fill.low { background: linear-gradient(180deg, #f47b7b, #e25c5c); }
+        .month-fill.zero { border-radius: 0; height: 2px !important; }
         .month-label { color: #64748b; font-size: 0.7rem; margin-top: 9px; text-transform: capitalize; }
-        .month-value { color: #8a5b08; font-size: 0.75rem; font-weight: 800; margin-bottom: 5px; }
+        .month-value { font-size: 0.75rem; font-weight: 800; margin-bottom: 5px; }
+        .month-series.high .month-value { color: #8a5b08; }
+        .month-series.low .month-value { color: #b42323; }
+        .month-legend { display: flex; gap: 18px; justify-content: flex-end; margin: 8px 8px -18px; }
+        .month-legend span { align-items: center; color: #475569; display: inline-flex; font-size: 0.75rem; font-weight: 700; gap: 6px; }
+        .month-legend i { border-radius: 50%; display: inline-block; height: 9px; width: 9px; }
+        .month-legend .high { background: var(--gold); }
+        .month-legend .low { background: #e25c5c; }
 
         .status-chart { align-items: center; display: flex; gap: 54px; justify-content: center; min-height: 260px; }
         .status-donut {
@@ -154,22 +166,26 @@
             <section class="chart-card chart-card-wide">
                 <div class="chart-heading">
                     <div>
-                        <h2>Registros de los últimos 12 meses</h2>
-                        <p>Evolución mensual de nuevas voluntades registradas.</p>
+                        <h2>Altas y bajas de los últimos 12 meses</h2>
+                        <p>Evolución mensual de registros y bajas voluntarias.</p>
                     </div>
                     <span class="chart-badge">Últimos 12 meses</span>
+                </div>
+                <div class="month-legend" aria-label="Leyenda">
+                    <span><i class="high"></i>Altas</span>
+                    <span><i class="low"></i>Bajas</span>
                 </div>
                 <div id="graficaMeses" class="month-chart" aria-label="Gráfica de registros de los últimos doce meses"></div>
             </section>
             <section class="chart-card chart-card-wide">
                 <div class="chart-heading">
                     <div>
-                        <h2>Estado de los registros</h2>
-                        <p>Distribución de solicitudes aceptadas, pendientes de validación y rechazadas.</p>
+                        <h2>Altas y bajas de donantes</h2>
+                        <p>Comparación entre donantes con consentimiento activo y donantes que solicitaron su baja.</p>
                     </div>
-                    <span class="chart-badge">Estado del trámite</span>
+                    <span class="chart-badge">Estado del consentimiento</span>
                 </div>
-                <div class="status-chart" aria-label="Gráfica del estado de los registros">
+                <div class="status-chart" aria-label="Gráfica de altas y bajas de donantes">
                     <div id="graficaEstados" class="status-donut"></div>
                     <div id="leyendaEstados" class="status-legend"></div>
                 </div>
@@ -195,18 +211,17 @@
             { fechaNacimiento: "1975-10-12", provincia: "Panamá Oeste", mesesAtras: 6 },
             { fechaNacimiento: "1987-02-25", provincia: "Darién", mesesAtras: 7 },
             { fechaNacimiento: "1991-08-03", provincia: "Panamá", mesesAtras: 8 },
-            { fechaNacimiento: "1960-03-21", provincia: "Panamá", mesesAtras: 8 },
-            { fechaNacimiento: "1980-07-07", provincia: "Chiriquí", mesesAtras: 9 },
-            { fechaNacimiento: "1973-11-29", provincia: "Colón", mesesAtras: 10 },
-            { fechaNacimiento: "1986-05-15", provincia: "Herrera", mesesAtras: 11 }
+            { fechaNacimiento: "1960-03-21", provincia: "Panamá", mesesAtras: 8, bajaMesesAtras: 1 },
+            { fechaNacimiento: "1980-07-07", provincia: "Chiriquí", mesesAtras: 9, bajaMesesAtras: 4 },
+            { fechaNacimiento: "1973-11-29", provincia: "Colón", mesesAtras: 10, bajaMesesAtras: 7 },
+            { fechaNacimiento: "1986-05-15", provincia: "Herrera", mesesAtras: 11, bajaMesesAtras: 10 }
         ];
 
         const ESTADOS_SEMILLA = [
-            "Aceptado", "Por validar", "Aceptado", "Rechazado", "Por validar", "Aceptado",
-            "Rechazado", "Aceptado", "Rechazado", "Por validar", "Aceptado", "Por validar",
-            "Aceptado", "Aceptado", "Rechazado", "Aceptado", "Por validar", "Por validar"
+            "Activo", "Activo", "Activo", "Activo", "Activo", "Activo",
+            "Activo", "Activo", "Activo", "Activo", "Activo", "Activo",
+            "Baja", "Baja", "Baja", "Baja", "Activo", "Activo"
         ];
-        const DECISIONES_ADMIN_KEY = "decisiones_registros_admin_mock";
 
         function calcularEdad(fechaNacimiento) {
             const nacimiento = new Date(fechaNacimiento + "T00:00:00");
@@ -263,50 +278,44 @@
                 meses.push({
                     offset: desplazamiento,
                     etiqueta: new Intl.DateTimeFormat("es-PA", { month: "short" }).format(fecha).replace(".", ""),
-                    cantidad: DATOS_METRICAS.filter(item => item.mesesAtras === desplazamiento).length
+                    altas: DATOS_METRICAS.filter(item => item.mesesAtras === desplazamiento).length,
+                    bajas: DATOS_METRICAS.filter(item => item.bajaMesesAtras === desplazamiento).length
                 });
             }
-            const maximo = Math.max(...meses.map(mes => mes.cantidad), 1);
+            const maximo = Math.max(...meses.flatMap(mes => [mes.altas, mes.bajas]), 1);
 
             document.getElementById("graficaMeses").innerHTML = meses.map(mes => `
-                <div class="month-column" title="${mes.etiqueta}: ${mes.cantidad} registros">
-                    <span class="month-value">${mes.cantidad}</span>
-                    <div class="month-fill" style="height:${(mes.cantidad / maximo) * 82}%"></div>
+                <div class="month-column" title="${mes.etiqueta}: ${mes.altas} altas y ${mes.bajas} bajas">
+                    <div class="month-bars">
+                        <div class="month-series high">
+                            <span class="month-value">${mes.altas}</span>
+                            <div class="month-fill high ${mes.altas === 0 ? "zero" : ""}" style="height:${(mes.altas / maximo) * 82}%"></div>
+                        </div>
+                        <div class="month-series low">
+                            <span class="month-value">${mes.bajas}</span>
+                            <div class="month-fill low ${mes.bajas === 0 ? "zero" : ""}" style="height:${(mes.bajas / maximo) * 82}%"></div>
+                        </div>
+                    </div>
                     <span class="month-label">${mes.etiqueta}</span>
                 </div>
             `).join("");
         }
 
         function renderEstados() {
-            let decisionesGuardadas = {};
-            try {
-                decisionesGuardadas = JSON.parse(localStorage.getItem(DECISIONES_ADMIN_KEY)) || {};
-            } catch (error) {
-                decisionesGuardadas = {};
-            }
-
-            const estadosActuales = ESTADOS_SEMILLA.map((estado, indice) => {
-                const decisionGuardada = decisionesGuardadas[indice + 1];
-                const estadoGuardado = typeof decisionGuardada === "string"
-                    ? decisionGuardada
-                    : decisionGuardada?.estadoRegistro;
-                return ["Aceptado", "Por validar", "Rechazado"].includes(estadoGuardado) ? estadoGuardado : estado;
-            });
+            const estadosActuales = ESTADOS_SEMILLA;
             const estados = [
-                { etiqueta: "Aceptados", cantidad: estadosActuales.filter(estado => estado === "Aceptado").length, clase: "accepted" },
-                { etiqueta: "Por validar", cantidad: estadosActuales.filter(estado => estado === "Por validar").length, clase: "pending" },
-                { etiqueta: "Rechazados", cantidad: estadosActuales.filter(estado => estado === "Rechazado").length, clase: "rejected" }
+                { etiqueta: "Altas", cantidad: estadosActuales.filter(estado => estado === "Activo").length, clase: "accepted" },
+                { etiqueta: "Bajas", cantidad: estadosActuales.filter(estado => estado === "Baja").length, clase: "rejected" }
             ];
             const total = estados.reduce((acumulado, estado) => acumulado + estado.cantidad, 0);
-            const porcentajeAceptados = (estados[0].cantidad / total) * 100;
-            const porcentajePendientes = porcentajeAceptados + (estados[1].cantidad / total) * 100;
+            const porcentajeAltas = (estados[0].cantidad / total) * 100;
             document.getElementById("graficaEstados").style.background =
-                `conic-gradient(#159a70 0 ${porcentajeAceptados}%, #e6a93d ${porcentajeAceptados}% ${porcentajePendientes}%, #e25c5c ${porcentajePendientes}% 100%)`;
+                `conic-gradient(#159a70 0 ${porcentajeAltas}%, #e25c5c ${porcentajeAltas}% 100%)`;
 
             document.getElementById("graficaEstados").innerHTML = `
                 <div class="status-total">
                     <strong>${total}</strong>
-                    <span>registros</span>
+                    <span>donantes</span>
                 </div>
             `;
             document.getElementById("leyendaEstados").innerHTML = estados.map(estado => `

@@ -145,6 +145,8 @@
         .btn-cancel-flow { background: white; border: 2px solid #cbd5e1; border-radius: 50px; color: #475569; cursor: pointer; font-size: 1.05rem; font-weight: 700; margin-top: 12px; padding: 12px; width: 100%; }
         .btn-cancel-flow:hover, .btn-cancel-flow:focus-visible { border-color: #64748b; color: #1e293b; }
         .record-notice { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; color: #1e3a8a; line-height: 1.5; margin-bottom: 22px; padding: 15px; }
+        .record-notice.rejected { background: #fff5f5; border-color: #fecaca; color: #991b1b; }
+        .record-notice a { color: inherit; font-weight: 700; }
         .exit-dialog { border: 0; border-radius: 18px; box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25); color: var(--text); margin: auto; max-width: 430px; padding: 28px; width: calc(100% - 32px); }
         .exit-dialog::backdrop { background: rgba(15, 23, 42, 0.55); }
         .exit-dialog h3 { color: var(--primary-dark); font-size: 1.3rem; margin-bottom: 12px; }
@@ -187,7 +189,7 @@
 </head>
 <body>
 
-<button type="button" class="btn-reset-demo" onclick="reiniciarDonantePrueba()" aria-label="Restaurar y refrescar el donante de prueba" title="Restaurar donante de prueba">↻</button>
+<button type="button" class="btn-reset-demo" onclick="reiniciarDonantesPrueba()" aria-label="Restaurar y refrescar los donantes de prueba" title="Restaurar donantes de prueba">↻</button>
 
 <div class="container">
     <section id="stepValidacion" class="step active">
@@ -197,6 +199,14 @@
 
         <form id="formValidacion" onsubmit="validarIdentidad(event)" novalidate>
             <div class="form-group">
+                <label for="tipoDocumento">Tipo de documento de identidad <span class="required-mark">*</span></label>
+                <select id="tipoDocumento" required>
+                    <option value="cedula" selected>Cédula</option>
+                    <option value="pasaporte">Pasaporte</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="grupoCedula">
                 <div class="label-row">
                     <label for="cedulaValidacion">Cédula de identidad <span class="required-mark">*</span></label>
                     <span class="help">
@@ -208,7 +218,7 @@
                 <p id="errorCedula" class="field-error" aria-live="polite"></p>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="grupoCodigoCedula">
                 <div class="label-row">
                     <label for="codigoCedula">Código posterior de la cédula <span class="required-mark">*</span></label>
                     <span class="help">
@@ -218,6 +228,18 @@
                 </div>
                 <input type="text" id="codigoCedula" placeholder="Ej: 47KLMNP0286" autocomplete="off" minlength="8" maxlength="20" aria-describedby="errorCodigo" required>
                 <p id="errorCodigo" class="field-error" aria-live="polite"></p>
+            </div>
+
+            <div class="form-group" id="grupoPasaporte" hidden>
+                <div class="label-row">
+                    <label for="pasaporteValidacion">Número de pasaporte <span class="required-mark">*</span></label>
+                    <span class="help">
+                        <button type="button" class="help-trigger" aria-describedby="ayudaPasaporte" aria-label="Ver formato admitido para el pasaporte">i</button>
+                        <span id="ayudaPasaporte" class="help-text" role="tooltip">Escribe entre 6 y 20 letras o números, sin espacios ni guiones.</span>
+                    </span>
+                </div>
+                <input type="text" id="pasaporteValidacion" placeholder="Ej: PA1234567" autocomplete="off" minlength="6" maxlength="20" aria-describedby="errorPasaporte">
+                <p id="errorPasaporte" class="field-error" aria-live="polite"></p>
             </div>
 
             <div class="form-group">
@@ -237,6 +259,7 @@
             </div>
 
             <button type="submit" class="btn-register">Validar y continuar</button>
+            <button type="button" class="btn-cancel-flow" onclick="abrirDialogoSalida()">Cancelar</button>
         </form>
     </section>
 
@@ -247,10 +270,10 @@
         <form id="formAlta" class="form-section active" onsubmit="enviarFormulario(event, 'registrar')">
             <div class="form-row">
                 <div class="form-group">
-                    <label for="cedulaAlta">Cédula de identidad</label>
+                    <label for="cedulaAlta" id="labelDocumentoAlta">Cédula de identidad</label>
                     <input type="text" id="cedulaAlta" disabled>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="grupoCodigoCedulaAlta">
                     <label for="codigoCedulaAlta">Código posterior de la cédula</label>
                     <input type="text" id="codigoCedulaAlta" disabled>
                 </div>
@@ -501,17 +524,17 @@
 
         <form id="formBaja" class="form-section" onsubmit="enviarFormulario(event, 'darBaja')">
             <div class="record-notice">
-                Encontramos una voluntad de donación activa asociada con los datos validados. Puedes mantenerla vigente o solicitar su baja.
+                Los datos ingresados corresponden a un donante de órganos con registro activo. Puedes mantener tu consentimiento vigente o solicitar la baja.
             </div>
             <div class="form-group">
-                <label for="cedulaBaja">Cédula de identidad registrada</label>
+                <label for="cedulaBaja" id="labelDocumentoBaja">Cédula de identidad registrada</label>
                 <input type="text" id="cedulaBaja" disabled>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="grupoCodigoCedulaBaja">
                 <label for="codigoCedulaBaja">Código posterior de la cédula</label>
                 <input type="text" id="codigoCedulaBaja" disabled>
             </div>
-            <button type="submit" class="btn-unregister">Darme de baja como donante de córneas</button>
+            <button type="submit" class="btn-unregister">Darme de baja como donante de órganos</button>
             <button type="button" class="btn-cancel-flow" onclick="abrirDialogoSalida()">Cancelar</button>
         </form>
 
@@ -528,9 +551,18 @@
     </div>
 </dialog>
 
+<dialog id="dialogoConfirmarBaja" class="exit-dialog" aria-labelledby="tituloConfirmarBaja">
+    <h3 id="tituloConfirmarBaja">Confirmar baja</h3>
+    <p>¿Estás seguro de que deseas darte de baja como donante de órganos?</p>
+    <div class="dialog-actions">
+        <button type="button" class="btn-exit" onclick="confirmarBaja()">Sí, darme de baja</button>
+        <button type="button" class="btn-stay" onclick="cerrarConfirmacionBaja()">Cancelar</button>
+    </div>
+</dialog>
+
 <dialog id="dialogoBajaExitosa" class="exit-dialog" aria-labelledby="tituloBajaExitosa">
     <h3 id="tituloBajaExitosa">Baja completada</h3>
-    <p>Ud. ha sido dado de baja como donante de córneas.</p>
+    <p>Has sido dado de baja como donante de órganos.</p>
     <div class="dialog-actions">
         <button type="button" class="btn-register" onclick="aceptarBajaExitosa()">Aceptar</button>
     </div>
@@ -548,16 +580,41 @@
     // URL de tu Web App de Google Apps Script
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxy3bV3H7xdqJlIj5_C1im_xCVXtqwGTyLt3pXBI3G6huHstdouZ5cLUuVs-D97DkWFTA/exec";
     const REGISTROS_MOCK_KEY = 'registros_donacion_mock';
-    const DONANTE_PRUEBA = {
-        cedula: '8-123-1234',
-        codigo: '88NNNN0001',
-        activo: true,
-        folio: 'DC-2026-00001',
-        fechaRegistro: '2026-01-15T14:30:00.000Z',
-        estadoRegistro: 'Aceptado',
-        estadoConsentimiento: 'Activo',
-        fechaActualizacion: new Date().toISOString()
-    };
+    const DONANTES_PRUEBA = [
+        {
+            cedula: '8-123-1234',
+            codigo: '88NNNN0001',
+            activo: true,
+            folio: 'DC-2026-00001',
+            fechaRegistro: '2026-01-15T14:30:00.000Z',
+            estadoConsentimiento: 'Activo'
+        },
+        {
+            cedula: '4-765-2310',
+            codigo: '42ABCD0912',
+            activo: true,
+            folio: 'DC-2026-00002',
+            fechaRegistro: '2026-02-10T15:00:00.000Z',
+            estadoConsentimiento: 'Activo'
+        },
+        {
+            cedula: '8-901-4567',
+            codigo: '80PQRS3145',
+            activo: false,
+            folio: 'DC-2026-00004',
+            fechaRegistro: '2026-03-05T16:15:00.000Z',
+            estadoConsentimiento: 'Baja'
+        },
+        {
+            cedula: '8-551-7840',
+            codigo: '85ZABC3308',
+            activo: false,
+            folio: 'DC-2026-00013',
+            fechaRegistro: '2025-12-12T14:20:00.000Z',
+            fechaRevocacion: '2026-05-18T15:30:00.000Z',
+            estadoConsentimiento: 'Baja'
+        }
+    ];
 
     const PATRONES_CEDULA = [
         /^\d{1,2}-\d{1,4}-\d{1,6}$/,
@@ -623,13 +680,16 @@
         }
     };
 
+    const tipoDocumento = document.getElementById('tipoDocumento');
     const cedulaValidacion = document.getElementById('cedulaValidacion');
     const codigoCedula = document.getElementById('codigoCedula');
+    const pasaporteValidacion = document.getElementById('pasaporteValidacion');
     const captchaInput = document.getElementById('captchaInput');
     const provinciaSelect = document.getElementById('provincia');
     const distritoSelect = document.getElementById('distrito');
     const corregimientoSelect = document.getElementById('corregimiento');
     let captchaActual = '';
+    let bajaConfirmada = false;
 
     function actualizarDistritos() {
         const distritos = Object.keys(UBICACIONES[provinciaSelect.value] || {});
@@ -646,6 +706,28 @@
     distritoSelect.addEventListener('change', actualizarCorregimientos);
     actualizarDistritos();
 
+    function actualizarTipoDocumento() {
+        const usaPasaporte = tipoDocumento.value === 'pasaporte';
+        document.getElementById('grupoCedula').hidden = usaPasaporte;
+        document.getElementById('grupoCodigoCedula').hidden = usaPasaporte;
+        document.getElementById('grupoPasaporte').hidden = !usaPasaporte;
+        cedulaValidacion.required = !usaPasaporte;
+        codigoCedula.required = !usaPasaporte;
+        pasaporteValidacion.required = usaPasaporte;
+        if (usaPasaporte) {
+            cedulaValidacion.value = '';
+            codigoCedula.value = '';
+            limpiarError(cedulaValidacion, 'errorCedula');
+            limpiarError(codigoCedula, 'errorCodigo');
+        } else {
+            pasaporteValidacion.value = '';
+            limpiarError(pasaporteValidacion, 'errorPasaporte');
+        }
+    }
+
+    tipoDocumento.addEventListener('change', actualizarTipoDocumento);
+    actualizarTipoDocumento();
+
     cedulaValidacion.addEventListener('input', (e) => {
         e.target.value = e.target.value.toUpperCase().replace(/\s/g, '');
         limpiarError(e.target, 'errorCedula');
@@ -654,6 +736,11 @@
     codigoCedula.addEventListener('input', (e) => {
         e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
         limpiarError(e.target, 'errorCodigo');
+    });
+
+    pasaporteValidacion.addEventListener('input', (e) => {
+        e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        limpiarError(e.target, 'errorPasaporte');
     });
 
     captchaInput.addEventListener('input', (e) => {
@@ -721,17 +808,17 @@
         const indice = registros.findIndex(registro => registro.cedula === cedula && registro.codigo === codigo);
         const anterior = indice === -1 ? {} : registros[indice];
         const ahora = new Date().toISOString();
+        const estadoConsentimiento = activo ? 'Activo' : 'Baja';
         const datos = {
             ...anterior,
             ...datosAdicionales,
             cedula,
             codigo,
-            activo,
+            activo: estadoConsentimiento === 'Activo',
             folio: anterior.folio || datosAdicionales.folio || generarFolio(),
             fechaRegistro: anterior.fechaRegistro || datosAdicionales.fechaRegistro || ahora,
             fechaRevocacion: activo ? null : ahora,
-            estadoRegistro: anterior.estadoRegistro || datosAdicionales.estadoRegistro || 'Por validar',
-            estadoConsentimiento: activo ? 'Activo' : 'Revocado',
+            estadoConsentimiento,
             fechaActualizacion: ahora
         };
 
@@ -741,61 +828,75 @@
         localStorage.setItem(REGISTROS_MOCK_KEY, JSON.stringify(registros));
     }
 
-    function crearDonantePrueba() {
+    function crearDonantesPrueba() {
         const registros = obtenerRegistrosMock();
-        const indice = registros.findIndex(registro =>
-            registro.cedula === DONANTE_PRUEBA.cedula && registro.codigo === DONANTE_PRUEBA.codigo
-        );
-
-        if (indice === -1) {
-            registros.push(DONANTE_PRUEBA);
+        let seAgregoRegistro = false;
+        DONANTES_PRUEBA.forEach(donante => {
+            const existe = registros.some(registro =>
+                registro.cedula === donante.cedula && registro.codigo === donante.codigo
+            );
+            if (!existe) {
+                registros.push({ ...donante, fechaActualizacion: new Date().toISOString() });
+                seAgregoRegistro = true;
+            }
+        });
+        if (seAgregoRegistro) {
             localStorage.setItem(REGISTROS_MOCK_KEY, JSON.stringify(registros));
         }
     }
 
-    function reiniciarDonantePrueba() {
+    function reiniciarDonantesPrueba() {
         const registros = obtenerRegistrosMock();
-        const indice = registros.findIndex(registro =>
-            registro.cedula === DONANTE_PRUEBA.cedula && registro.codigo === DONANTE_PRUEBA.codigo
-        );
-
-        const registroRestaurado = {
-            ...DONANTE_PRUEBA,
-            activo: true,
-            fechaActualizacion: new Date().toISOString()
-        };
-
-        if (indice === -1) registros.push(registroRestaurado);
-        else registros[indice] = registroRestaurado;
+        DONANTES_PRUEBA.forEach(donante => {
+            const indice = registros.findIndex(registro =>
+                registro.cedula === donante.cedula && registro.codigo === donante.codigo
+            );
+            const registroRestaurado = {
+                ...donante,
+                fechaActualizacion: new Date().toISOString()
+            };
+            if (indice === -1) registros.push(registroRestaurado);
+            else registros[indice] = registroRestaurado;
+        });
 
         localStorage.setItem(REGISTROS_MOCK_KEY, JSON.stringify(registros));
         window.location.reload();
     }
 
-    function tieneRegistroActivoMock(cedula, codigo) {
-        return obtenerRegistrosMock().some(registro =>
-            registro.cedula === cedula && registro.codigo === codigo && registro.activo === true
-        );
+    function obtenerRegistroMock(documento, codigo, tipo) {
+        return obtenerRegistrosMock().find(registro =>
+            registro.cedula === documento &&
+            registro.codigo === codigo &&
+            (registro.tipoDocumento || 'cedula') === tipo
+        ) || null;
     }
 
     function validarIdentidad(e) {
         e.preventDefault();
-        const cedula = cedulaValidacion.value.trim().toUpperCase();
-        const codigo = codigoCedula.value.trim().toUpperCase();
+        const tipo = tipoDocumento.value;
+        const usaPasaporte = tipo === 'pasaporte';
+        const documento = (usaPasaporte ? pasaporteValidacion.value : cedulaValidacion.value).trim().toUpperCase();
+        const codigo = usaPasaporte ? '' : codigoCedula.value.trim().toUpperCase();
         const captchaIngresado = captchaInput.value.trim().toLowerCase();
         let valido = true;
 
         limpiarError(cedulaValidacion, 'errorCedula');
         limpiarError(codigoCedula, 'errorCodigo');
+        limpiarError(pasaporteValidacion, 'errorPasaporte');
         limpiarError(captchaInput, 'errorCaptcha');
 
-        if (!PATRONES_CEDULA.some(patron => patron.test(cedula))) {
+        if (!usaPasaporte && !PATRONES_CEDULA.some(patron => patron.test(documento))) {
             mostrarError(cedulaValidacion, 'errorCedula', 'Revisa el formato e incluye los guiones. Ejemplo: 1-1234-12345, PE-1234-12345, E-1234-123456, N-1234-1234 o 1AV-1234-12345.');
             valido = false;
         }
 
-        if (!/^[A-Z0-9]{8,20}$/.test(codigo)) {
+        if (!usaPasaporte && !/^[A-Z0-9]{8,20}$/.test(codigo)) {
             mostrarError(codigoCedula, 'errorCodigo', 'Escribe entre 8 y 20 letras o números, sin espacios ni guiones. Ejemplo: 47KLMNP0286.');
+            valido = false;
+        }
+
+        if (usaPasaporte && !/^[A-Z0-9]{6,20}$/.test(documento)) {
+            mostrarError(pasaporteValidacion, 'errorPasaporte', 'Escribe entre 6 y 20 letras o números, sin espacios ni guiones. Ejemplo: PA1234567.');
             valido = false;
         }
 
@@ -808,17 +909,25 @@
 
         if (!valido) return;
 
-        document.getElementById('cedulaAlta').value = cedula;
+        document.getElementById('cedulaAlta').value = documento;
         document.getElementById('codigoCedulaAlta').value = codigo;
-        document.getElementById('cedulaBaja').value = cedula;
+        document.getElementById('cedulaBaja').value = documento;
         document.getElementById('codigoCedulaBaja').value = codigo;
+        document.getElementById('labelDocumentoAlta').textContent = usaPasaporte ? 'Número de pasaporte' : 'Cédula de identidad';
+        document.getElementById('labelDocumentoBaja').textContent = usaPasaporte ? 'Pasaporte registrado' : 'Cédula de identidad registrada';
+        document.getElementById('grupoCodigoCedulaAlta').hidden = usaPasaporte;
+        document.getElementById('grupoCodigoCedulaBaja').hidden = usaPasaporte;
         document.getElementById('stepValidacion').classList.remove('active');
         document.getElementById('stepRegistro').classList.add('active');
 
-        if (tieneRegistroActivoMock(cedula, codigo)) {
-            document.getElementById('tituloResultado').innerText = 'Registro de donación encontrado';
+        const registroEncontrado = obtenerRegistroMock(documento, codigo, tipo);
+        const estadoConsentimiento = registroEncontrado?.estadoConsentimiento;
+
+        if (estadoConsentimiento === 'Activo') {
+            document.getElementById('tituloResultado').innerText = 'Donante de órganos con registro activo';
             switchTab('baja');
         } else {
+            // Un consentimiento en Baja no impide presentar un nuevo registro.
             document.getElementById('tituloResultado').innerText = 'Completa tu registro de donación';
             switchTab('alta');
         }
@@ -826,7 +935,7 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    crearDonantePrueba();
+    crearDonantesPrueba();
     generarCaptcha();
 
     function abrirDialogoSalida() {
@@ -845,6 +954,17 @@
         window.location.href = 'index.html';
     }
 
+    function confirmarBaja() {
+        bajaConfirmada = true;
+        document.getElementById('dialogoConfirmarBaja').close();
+        document.getElementById('formBaja').requestSubmit();
+    }
+
+    function cerrarConfirmacionBaja() {
+        bajaConfirmada = false;
+        document.getElementById('dialogoConfirmarBaja').close();
+    }
+
     function aceptarRegistroExitoso() {
         window.location.href = 'index.html';
     }
@@ -853,21 +973,22 @@
         document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
         document.getElementById('statusMessage').style.display = 'none';
 
-        if(tipo === 'alta') {
-            document.getElementById('formAlta').classList.add('active');
-        } else {
-            document.getElementById('formBaja').classList.add('active');
-        }
+        const secciones = {
+            alta: 'formAlta',
+            baja: 'formBaja'
+        };
+        document.getElementById(secciones[tipo] || secciones.alta).classList.add('active');
     }
 
     // AQUÍ ESTÁ LA CORRECCIÓN: "async function" en lugar de "async class"
     async function enviarFormulario(e, accion) {
         e.preventDefault();
 
-        if (accion === 'darBaja') {
-            const confirmarBaja = confirm('¿Está seguro de que desea darse de baja como donante de córneas?');
-            if (!confirmarBaja) return;
+        if (accion === 'darBaja' && !bajaConfirmada) {
+            document.getElementById('dialogoConfirmarBaja').showModal();
+            return;
         }
+        if (accion === 'darBaja') bajaConfirmada = false;
 
         const msgDiv = document.getElementById('statusMessage');
         msgDiv.style.display = 'block';
@@ -878,6 +999,7 @@
 
         if (accion === 'registrar') {
             payload.data = {
+                tipoDocumento: tipoDocumento.value,
                 cedula: document.getElementById('cedulaAlta').value.trim(),
                 codigoCedula: document.getElementById('codigoCedula').value.trim(),
                 nombre: document.getElementById('nombre').value.trim(),
@@ -909,11 +1031,11 @@
                 fechaSolicitud: new Date().toISOString(),
                 fechaRegistro: new Date().toISOString(),
                 folio: generarFolio(),
-                estadoRegistro: 'Por validar',
                 estadoConsentimiento: 'Activo'
             };
         } else {
             payload.data = {
+                tipoDocumento: tipoDocumento.value,
                 cedula: document.getElementById('cedulaBaja').value.trim(),
                 codigoCedula: document.getElementById('codigoCedulaBaja').value.trim()
             };

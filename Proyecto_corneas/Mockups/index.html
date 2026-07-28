@@ -82,6 +82,19 @@
         nav ul li a:hover {
             color: var(--card-border-color);
         }
+        .nav-actions { align-items: center; display: flex; gap: 14px; }
+        .admin-icon-button {
+            align-items: center; background: var(--dark-blue-text); border: 0; border-radius: 50%;
+            color: white; cursor: pointer; display: inline-flex; height: 42px; justify-content: center;
+            transition: transform 0.2s, box-shadow 0.2s; width: 42px;
+        }
+        .admin-icon-button:hover, .admin-icon-button:focus-visible {
+            box-shadow: 0 6px 16px rgba(20, 24, 122, 0.3); transform: translateY(-2px);
+        }
+        .admin-icon-button svg {
+            fill: none; height: 23px; stroke: currentColor; stroke-linecap: round;
+            stroke-linejoin: round; stroke-width: 2; width: 23px;
+        }
 
         /* --- SECCIONES GENERALES --- */
         section {
@@ -166,7 +179,7 @@
         .access-dialog::backdrop { background: rgba(15, 23, 42, 0.62); backdrop-filter: blur(3px); }
         .access-dialog h2 { color: var(--dark-blue-text); font-size: 1.65rem; margin-bottom: 10px; text-align: center; }
         .access-dialog > p { color: #64748b; line-height: 1.5; margin-bottom: 26px; text-align: center; }
-        .access-options { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; }
+        .access-options { display: grid; gap: 14px; grid-template-columns: 1fr; }
         .access-option {
             align-items: center; border: 2px solid #dbe4f0; border-radius: 18px; color: var(--dark-blue-text);
             cursor: pointer; display: flex; flex-direction: column; font: inherit; font-weight: 750; gap: 10px;
@@ -569,6 +582,15 @@
                     <li><a href="#historias">Testimonios</a></li>
                 </ul>
             </nav>
+            <div class="nav-actions">
+                <button type="button" class="admin-icon-button" onclick="accederAdministracion()" aria-label="Acceso de administración" title="Acceso de administración">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="8" r="4"></circle>
+                        <path d="M5 21v-2a7 7 0 0 1 14 0v2"></path>
+                        <path d="m18 10 1.5 1.5L22 9"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
     </header>
 
@@ -576,25 +598,9 @@
         <div class="hero-content">
             <h1>Regala Visión, Transforma Vidas</h1>
             <p>Concientización sobre la donación de tejido corneal en Panamá para devolver la luz y la autonomía a quienes más lo necesitan.</p>
-            <button type="button" class="btn-cta" onclick="abrirAcceso()">Haz click para acceder</button>
+            <a href="formulario.html" class="btn-cta">Haz click para acceder</a>
         </div>
     </section>
-
-    <dialog id="dialogoAcceso" class="access-dialog" aria-labelledby="tituloAcceso">
-        <button type="button" class="dialog-close" onclick="cerrarAcceso()" aria-label="Cerrar">×</button>
-        <h2 id="tituloAcceso">Selecciona cómo deseas acceder</h2>
-        <p>Elige una opción para continuar en el sistema.</p>
-        <div class="access-options">
-            <a href="formulario.html" class="access-option">
-                <span class="access-icon" aria-hidden="true">♥</span>
-                <span>Registrar donante</span>
-            </a>
-            <button type="button" class="access-option" onclick="accederAdministracion()">
-                <span class="access-icon" aria-hidden="true">⚙</span>
-                <span>Administración</span>
-            </button>
-        </div>
-    </dialog>
 
     <dialog id="dialogoLoginAdmin" class="access-dialog" aria-labelledby="tituloLoginAdmin">
         <button type="button" class="dialog-close" onclick="cerrarLoginAdmin()" aria-label="Cerrar">×</button>
@@ -909,16 +915,7 @@
     </footer>
 
     <script>
-        function abrirAcceso() {
-            document.getElementById("dialogoAcceso").showModal();
-        }
-
-        function cerrarAcceso() {
-            document.getElementById("dialogoAcceso").close();
-        }
-
         function accederAdministracion() {
-            cerrarAcceso();
             document.getElementById("dialogoLoginAdmin").showModal();
             document.getElementById("usuarioAdmin").focus();
         }
