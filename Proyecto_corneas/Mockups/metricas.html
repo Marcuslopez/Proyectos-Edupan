@@ -82,6 +82,16 @@
         .month-legend .high { background: var(--gold); }
         .month-legend .low { background: #e25c5c; }
 
+        .growth-chart { min-height: 330px; overflow-x: auto; padding-top: 12px; }
+        .growth-chart svg { display: block; min-width: 760px; width: 100%; }
+        .growth-grid { stroke: #dbe4f0; stroke-dasharray: 5 6; stroke-width: 1; }
+        .growth-area { fill: url(#growthGradient); }
+        .growth-line { fill: none; stroke: var(--teal); stroke-linecap: round; stroke-linejoin: round; stroke-width: 5; }
+        .growth-point { fill: white; stroke: var(--teal); stroke-width: 4; }
+        .growth-value { fill: var(--primary); font-size: 13px; font-weight: 800; text-anchor: middle; }
+        .growth-label { fill: #64748b; font-size: 12px; text-anchor: middle; text-transform: capitalize; }
+        .growth-axis-label { fill: #64748b; font-size: 11px; text-anchor: end; }
+
         .status-chart { align-items: center; display: flex; gap: 54px; justify-content: center; min-height: 260px; }
         .status-donut {
             align-items: center; background: #e2e8f0;
@@ -176,6 +186,16 @@
                     <span><i class="low"></i>Bajas</span>
                 </div>
                 <div id="graficaMeses" class="month-chart" aria-label="Gráfica de registros de los últimos doce meses"></div>
+            </section>
+            <section class="chart-card chart-card-wide">
+                <div class="chart-heading">
+                    <div>
+                        <h2>Crecimiento acumulado de donantes</h2>
+                        <p>Evolución mensual del total de donantes durante los últimos 12 meses.</p>
+                    </div>
+                    <span class="chart-badge">Hasta el mes actual</span>
+                </div>
+                <div id="graficaCrecimiento" class="growth-chart" aria-label="Gráfica de crecimiento acumulado mensual de donantes"></div>
             </section>
             <section class="chart-card chart-card-wide">
                 <div class="chart-heading">
@@ -327,9 +347,66 @@
             `).join("");
         }
 
+        function renderCrecimiento() {
+            const hoy = new Date();
+            let acumulado = 0;
+            const meses = [];
+            for (let desplazamiento = 11; desplazamiento >= 0; desplazamiento--) {
+                const fecha = new Date(hoy.getFullYear(), hoy.getMonth() - desplazamiento, 1);
+                const altas = DATOS_METRICAS.filter(item => item.mesesAtras === desplazamiento).length;
+                acumulado += altas;
+                meses.push({
+                    etiqueta: new Intl.DateTimeFormat("es-PA", { month: "short" }).format(fecha).replace(".", ""),
+                    total: acumulado
+                });
+            }
+
+            const ancho = 920;
+            const alto = 320;
+            const margen = { arriba: 36, derecha: 28, abajo: 48, izquierda: 48 };
+            const anchoUtil = ancho - margen.izquierda - margen.derecha;
+            const altoUtil = alto - margen.arriba - margen.abajo;
+            const maximo = Math.max(...meses.map(mes => mes.total), 1);
+            const puntos = meses.map((mes, indice) => ({
+                ...mes,
+                x: margen.izquierda + (indice * anchoUtil) / (meses.length - 1),
+                y: margen.arriba + altoUtil - (mes.total / maximo) * altoUtil
+            }));
+            const linea = puntos.map((punto, indice) => `${indice === 0 ? "M" : "L"} ${punto.x} ${punto.y}`).join(" ");
+            const area = `${linea} L ${puntos[puntos.length - 1].x} ${margen.arriba + altoUtil} L ${puntos[0].x} ${margen.arriba + altoUtil} Z`;
+            const niveles = [0, 0.25, 0.5, 0.75, 1];
+
+            document.getElementById("graficaCrecimiento").innerHTML = `
+                <svg viewBox="0 0 ${ancho} ${alto}" role="img" aria-labelledby="tituloGraficaCrecimiento">
+                    <title id="tituloGraficaCrecimiento">Crecimiento acumulado de donantes durante los últimos doce meses</title>
+                    <defs>
+                        <linearGradient id="growthGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#159a70" stop-opacity="0.32"></stop>
+                            <stop offset="100%" stop-color="#159a70" stop-opacity="0.03"></stop>
+                        </linearGradient>
+                    </defs>
+                    ${niveles.map(nivel => {
+                        const y = margen.arriba + altoUtil - nivel * altoUtil;
+                        return `
+                            <line class="growth-grid" x1="${margen.izquierda}" y1="${y}" x2="${ancho - margen.derecha}" y2="${y}"></line>
+                            <text class="growth-axis-label" x="${margen.izquierda - 9}" y="${y + 4}">${Math.round(maximo * nivel)}</text>
+                        `;
+                    }).join("")}
+                    <path class="growth-area" d="${area}"></path>
+                    <path class="growth-line" d="${linea}"></path>
+                    ${puntos.map(punto => `
+                        <circle class="growth-point" cx="${punto.x}" cy="${punto.y}" r="5"></circle>
+                        <text class="growth-value" x="${punto.x}" y="${punto.y - 13}">${punto.total}</text>
+                        <text class="growth-label" x="${punto.x}" y="${alto - 17}">${punto.etiqueta}</text>
+                    `).join("")}
+                </svg>
+            `;
+        }
+
         renderEdades();
         renderProvincias();
         renderMeses();
+        renderCrecimiento();
         renderEstados();
     </script>
 </body>

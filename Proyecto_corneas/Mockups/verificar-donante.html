@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de donante</title>
+    <style>
+        :root { color-scheme: light; font-family: Arial, sans-serif; }
+        * { box-sizing: border-box; }
+        body {
+            align-items: center;
+            background: #f1f6fc;
+            color: #172554;
+            display: flex;
+            justify-content: center;
+            margin: 0;
+            min-height: 100vh;
+            padding: 24px;
+        }
+        main {
+            background: white;
+            border: 1px solid #dbe4f0;
+            border-radius: 22px;
+            box-shadow: 0 18px 45px rgba(15, 35, 80, .12);
+            max-width: 560px;
+            padding: 38px 30px;
+            text-align: center;
+            width: 100%;
+        }
+        .heart {
+            align-items: center;
+            background: #dcfce7;
+            border-radius: 50%;
+            color: #16a34a;
+            display: inline-flex;
+            font-size: 2rem;
+            height: 68px;
+            justify-content: center;
+            width: 68px;
+        }
+        h1 { color: #201b8f; font-size: 1.8rem; margin: 20px 0 14px; }
+        .message { font-size: 1.15rem; line-height: 1.65; }
+        .date {
+            background: #eff6ff;
+            border-radius: 12px;
+            margin: 24px 0 12px;
+            padding: 14px;
+        }
+        .folio { color: #64748b; font-size: .88rem; }
+        .demo { color: #64748b; font-size: .78rem; margin-top: 28px; }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="heart" aria-hidden="true">♥</div>
+        <h1>Donación Conectada Panamá</h1>
+        <p class="message">
+            Hola <strong id="nombreDonante"></strong>, estás inscrito como donante de órganos.
+            Tu decisión salva vidas <span aria-label="corazón">♥</span>
+        </p>
+        <p class="date"><strong>Fecha de inscripción:</strong> <span id="fechaInscripcion"></span></p>
+        <p class="folio">Folio: <span id="folioDonante"></span></p>
+        <p class="demo">Página de verificación demostrativa. No constituye una certificación oficial.</p>
+    </main>
+    <script>
+        const parametros = new URLSearchParams(window.location.search);
+        const nombre = parametros.get('nombre') || 'Donante';
+        const folio = parametros.get('folio') || 'No disponible';
+        const fechaRecibida = parametros.get('fecha');
+        const fecha = fechaRecibida ? new Date(fechaRecibida) : null;
+
+        document.getElementById('nombreDonante').textContent = nombre;
+        document.getElementById('folioDonante').textContent = folio;
+        document.getElementById('fechaInscripcion').textContent =
+            fecha && !Number.isNaN(fecha.getTime())
+                ? new Intl.DateTimeFormat('es-PA', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                }).format(fecha)
+                : 'No disponible';
+    </script>
+</body>
+</html>

@@ -154,6 +154,8 @@
         .dialog-actions { display: flex; gap: 12px; }
         .dialog-actions button { border: 0; border-radius: 50px; cursor: pointer; flex: 1; font-size: 1rem; font-weight: 700; padding: 12px; }
         .btn-exit { background: var(--danger); color: white; }
+        .btn-exit-light { background: #bbf7d0; color: #166534; }
+        .btn-exit-light:hover, .btn-exit-light:focus-visible { background: #86efac; }
         .btn-stay { background: #e2e8f0; color: #334155; }
         .btn-reset-demo {
             align-items: center; background: var(--primary-dark); border: 3px solid white; border-radius: 50%;
@@ -168,6 +170,35 @@
         .message { margin-top: 20px; padding: 15px; border-radius: 12px; text-align: center; font-weight: 600; display: none; }
         .success { background: #f0fff4; color: #38a169; border: 1px solid #c6f6d5; }
         .error { background: #fff5f5; color: #e53e3e; border: 1px solid #fed7d7; }
+        .card-dialog { max-width: 720px; }
+        .mock-email-notice { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; color: #166534; padding: 12px 14px; }
+        .donor-card { background: white; border: 1px solid #dbe4f0; border-radius: 16px; box-shadow: 0 12px 28px rgba(15,23,42,.12); margin: 18px 0; overflow: hidden; }
+        .donor-card-header { align-items: center; background: #f8fafc; border-bottom: 4px solid #15356d; display: flex; justify-content: space-between; padding: 16px 20px; }
+        .donor-card-header small { color: #64748b; display: block; font-size: .68rem; font-weight: 800; letter-spacing: .08em; }
+        .donor-card-header strong { color: #15356d; font-size: .9rem; }
+        .donor-life-mark { align-items: center; color: #15356d; display: flex; font-size: .7rem; font-weight: 900; gap: 7px; letter-spacing: .03em; }
+        .donor-life-mark svg { background: #e8f7ef; border-radius: 50%; color: #159a70; height: 42px; padding: 8px; width: 42px; }
+        .donor-card-mark { align-items: center; background: #15356d; border-radius: 50%; color: white; display: flex; font-size: .65rem; font-weight: 800; height: 48px; justify-content: center; text-align: center; width: 48px; }
+        .donor-card-body { padding: 20px; }
+        .donor-card-title { color: #15356d; font-size: 1.35rem; font-weight: 900; margin-bottom: 15px; }
+        .donor-card-title small { display: block; font-size: .82rem; }
+        .donor-card-content { display: grid; gap: 18px; grid-template-columns: 1fr auto; }
+        .donor-card-grid { display: grid; gap: 10px; grid-template-columns: 1fr 1fr; }
+        .donor-card-field { background: #f8fafc; border-radius: 8px; padding: 9px 11px; }
+        .donor-card-field-wide { grid-column: 1 / -1; }
+        .donor-card-field span { color: #64748b; display: block; font-size: .62rem; font-weight: 800; margin-bottom: 3px; text-transform: uppercase; }
+        .donor-card-field strong { color: #172554; font-size: .88rem; }
+        .symbolic-qr { align-self: center; background: white; border: 6px solid white; box-shadow: 0 0 0 1px #cbd5e1; height: 104px; width: 104px; }
+        .symbolic-qr img, .symbolic-qr canvas { display: block; height: 100% !important; width: 100% !important; }
+        .qr-card-wrap { align-self: center; text-align: center; }
+        .qr-card-id { color: #64748b; display: block; font-size: .58rem; margin-top: 7px; }
+        .donor-card-footer { background: #15356d; color: white; display: flex; font-size: .72rem; justify-content: space-between; padding: 10px 20px; }
+        @media print {
+            body * { visibility: hidden !important; }
+            #carnetPreview, #carnetPreview * { visibility: visible !important; }
+            #carnetPreview { left: 0; margin: 0; position: absolute; top: 0; width: 100%; }
+            .donor-card { box-shadow: none; }
+        }
 
         @media (max-width: 600px) {
             body { padding: 20px 12px; }
@@ -280,14 +311,14 @@
             </div>
 
             <div class="form-group">
-                <label for="nombre">Nombre completo</label>
+                <label for="nombre">Nombre completo <span class="required-mark">*</span></label>
                 <input type="text" id="nombre" placeholder="Tu nombre" autocomplete="name" required>
             </div>
 
             <div class="form-row-4">
                 <div class="form-group">
                     <div class="label-row">
-                        <label for="fechaNacimiento">Fecha de nacimiento</label>
+                        <label for="fechaNacimiento">Fecha de nacimiento <span class="required-mark">*</span></label>
                         <span class="help">
                             <button type="button" class="help-trigger" aria-describedby="ayudaNacimiento" aria-label="Información sobre la fecha de nacimiento">i</button>
                             <span id="ayudaNacimiento" class="help-text" role="tooltip">Selecciona la fecha que aparece en tu documento de identidad.</span>
@@ -296,7 +327,7 @@
                     <input type="date" id="fechaNacimiento" autocomplete="bday" required>
                 </div>
                 <div class="form-group">
-                    <label for="genero">Género</label>
+                    <label for="genero">Género <span class="required-mark">*</span></label>
                     <select id="genero" required>
                         <option value="" selected disabled>Selecciona una opción</option>
                         <option value="Femenino">Femenino</option>
@@ -306,12 +337,12 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="correo">Correo electrónico</label>
+                    <label for="correo">Correo electrónico <span class="required-mark">*</span></label>
                     <input type="email" id="correo" placeholder="correo@ejemplo.com" autocomplete="email" required>
                 </div>
                 <div class="form-group">
                     <div class="label-row">
-                        <label for="telefono">Teléfono</label>
+                        <label for="telefono">Teléfono <span class="required-mark">*</span></label>
                         <span class="help">
                             <button type="button" class="help-trigger" aria-describedby="ayudaTelefono" aria-label="Información sobre el formato del teléfono">i</button>
                             <span id="ayudaTelefono" class="help-text" role="tooltip">Puedes escribir un teléfono fijo o celular. Se aceptan espacios y guiones; por ejemplo: +507 6000-0000.</span>
@@ -322,11 +353,11 @@
             </div>
 
             <div class="residence-block">
-                <label>Residencia</label>
+                <label>Residencia <span class="required-mark">*</span></label>
                 <p class="residence-help">Selecciona la provincia, el distrito y el corregimiento donde resides.</p>
                 <div class="form-row-3">
                     <div class="form-group">
-                        <label for="provincia">Provincia</label>
+                        <label for="provincia">Provincia <span class="required-mark">*</span></label>
                         <select id="provincia" required>
                             <option value="Panamá">Panamá</option>
                             <option value="Bocas del Toro">Bocas del Toro</option>
@@ -341,11 +372,11 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="distrito">Distrito</label>
+                        <label for="distrito">Distrito <span class="required-mark">*</span></label>
                         <select id="distrito" required></select>
                     </div>
                     <div class="form-group">
-                        <label for="corregimiento">Corregimiento</label>
+                        <label for="corregimiento">Corregimiento <span class="required-mark">*</span></label>
                         <select id="corregimiento" required></select>
                     </div>
                 </div>
@@ -357,11 +388,11 @@
 
                 <div class="form-row-4">
                     <div class="form-group">
-                        <label for="contactoNombre">Nombre completo</label>
+                        <label for="contactoNombre">Nombre completo <span class="required-mark">*</span></label>
                         <input type="text" id="contactoNombre" placeholder="Nombre de la persona de contacto" required>
                     </div>
                     <div class="form-group">
-                        <label for="contactoParentesco">Parentesco</label>
+                        <label for="contactoParentesco">Parentesco <span class="required-mark">*</span></label>
                         <select id="contactoParentesco" required>
                             <option value="" selected disabled>Selecciona un parentesco</option>
                             <option value="Hermano(a)">Hermano(a)</option>
@@ -372,11 +403,11 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="contactoCorreo">Correo electrónico</label>
+                        <label for="contactoCorreo">Correo electrónico <span class="required-mark">*</span></label>
                         <input type="email" id="contactoCorreo" placeholder="contacto@ejemplo.com" required>
                     </div>
                     <div class="form-group">
-                        <label for="contactoTelefono">Teléfono</label>
+                        <label for="contactoTelefono">Teléfono <span class="required-mark">*</span></label>
                         <input type="tel" id="contactoTelefono" value="+507" placeholder="+507 6000-0000" pattern="^\+?[0-9\s-]{7,18}$" required>
                     </div>
                 </div>
@@ -399,7 +430,7 @@
                 <label class="checkbox-field required-consent" for="consentimientoVoluntario">
                     <input type="checkbox" id="consentimientoVoluntario" required>
                     <span>
-                        Declaro libre y voluntariamente mi deseo de ser donante, conforme a la Ley 3 de 8 de febrero de 2010.
+                        Declaro libre y voluntariamente mi deseo de ser donante, conforme a la Ley 3 de 8 de febrero de 2010. <span class="required-mark">*</span>
                         <br><a class="law-link" href="https://s3-legispan.asamblea.gob.pa/legispan/NORMAS/2010/2010/LEY/Administrador%20Legispan_26468-B_2010_2_10_ASAMBLEA%20NACIONAL_3.pdf" target="_blank" rel="noopener" onclick="event.stopPropagation()">Consultar definición completa de la ley</a>
                     </span>
                 </label>
@@ -411,13 +442,13 @@
 
                 <div class="signature-block">
                     <div class="form-group">
-                        <label for="firmaDigital">Firma electrónica</label>
+                        <label for="firmaDigital">Firma electrónica <span class="required-mark">*</span></label>
                         <p class="signature-help">Escribe tu nombre completo como constancia de aceptación electrónica.</p>
                         <input type="text" id="firmaDigital" placeholder="Nombre completo del donante" required>
                     </div>
                     <label class="checkbox-field required-consent" for="aceptacionElectronica">
                         <input type="checkbox" id="aceptacionElectronica" required>
-                        <span>Acepto electrónicamente este consentimiento y confirmo que la información proporcionada es correcta.</span>
+                        <span>Acepto electrónicamente este consentimiento y confirmo que la información proporcionada es correcta. <span class="required-mark">*</span></span>
                     </label>
                 </div>
             </section>
@@ -433,7 +464,7 @@
 
                 <div class="health-grid">
                     <div class="health-question">
-                        <label for="saludInfecciosas">¿Ha sido diagnosticado con VIH, hepatitis B/C o sífilis? <span class="field-status">Obligatorio</span></label>
+                        <label for="saludInfecciosas">¿Ha sido diagnosticado con VIH, hepatitis B/C o sífilis? <span class="required-mark">*</span> <span class="field-status">Obligatorio</span></label>
                         <select id="saludInfecciosas" required>
                             <option value="" selected disabled>Selecciona una respuesta</option>
                             <option value="Sí">Sí</option>
@@ -442,7 +473,7 @@
                         </select>
                     </div>
                     <div class="health-question">
-                        <label for="saludCancer">¿Padece o ha padecido algún cáncer sistémico o leucemia? <span class="field-status">Obligatorio</span></label>
+                        <label for="saludCancer">¿Padece o ha padecido algún cáncer sistémico o leucemia? <span class="required-mark">*</span> <span class="field-status">Obligatorio</span></label>
                         <select id="saludCancer" required>
                             <option value="" selected disabled>Selecciona una respuesta</option>
                             <option value="Sí">Sí</option>
@@ -479,6 +510,7 @@
                 <p class="consent-intro">Selecciona qué tejidos u órganos deseas donar de acuerdo con tu voluntad. La Ley 3 reconoce que la donación puede autorizarse para uno o varios componentes anatómicos.</p>
                 <a class="law-link" href="https://s3-legispan.asamblea.gob.pa/legispan/NORMAS/2010/2010/LEY/Administrador%20Legispan_26468-B_2010_2_10_ASAMBLEA%20NACIONAL_3.pdf" target="_blank" rel="noopener">Consultar definición completa de la ley</a>
 
+                <p><strong>Selecciona el alcance de la donación <span class="required-mark">*</span></strong></p>
                 <div class="donation-options" role="radiogroup" aria-label="Alcance de la donación">
                     <label class="donation-option" for="alcanceCorneas">
                         <input type="radio" id="alcanceCorneas" name="alcanceDonacion" value="Solo córneas" required>
@@ -492,7 +524,7 @@
 
                 <label class="checkbox-field required-consent" for="autorizaInvestigacion">
                     <input type="checkbox" id="autorizaInvestigacion" required>
-                    <span>Autorizo que, si mis córneas no son aptas para trasplante, puedan utilizarse para investigación científica o docencia médica.</span>
+                    <span>Autorizo que, si mis córneas no son aptas para trasplante, puedan utilizarse para investigación científica o docencia médica. <span class="required-mark">*</span></span>
                 </label>
             </section>
 
@@ -509,11 +541,11 @@
                 <div class="privacy-grid">
                     <label class="checkbox-field required-consent" for="autorizaDatosSensibles">
                         <input type="checkbox" id="autorizaDatosSensibles" required>
-                        <span>Autorizo el tratamiento de mis datos personales sensibles, incluidos los datos de salud e identificación, para gestionar mi voluntad de donación.</span>
+                        <span>Autorizo el tratamiento de mis datos personales sensibles, incluidos los datos de salud e identificación, para gestionar mi voluntad de donación. <span class="required-mark">*</span></span>
                     </label>
                     <label class="checkbox-field required-consent" for="autorizaConsultaInstitucional">
                         <input type="checkbox" id="autorizaConsultaInstitucional" required>
-                        <span>Acepto que mi condición de donante sea compartida y consultada por la Organización Panameña de Trasplantes (OPT) y las autoridades competentes, incluyendo MINSA y CSS.</span>
+                        <span>Acepto que mi condición de donante sea compartida y consultada por la Organización Panameña de Trasplantes (OPT) y las autoridades competentes, incluyendo MINSA y CSS. <span class="required-mark">*</span></span>
                     </label>
                 </div>
             </section>
@@ -544,10 +576,10 @@
 
 <dialog id="dialogoSalida" class="exit-dialog" aria-labelledby="tituloDialogoSalida">
     <h3 id="tituloDialogoSalida">¿Deseas salir del registro?</h3>
-    <p>¿Estás seguro de que deseas salir del registro de donantes de córneas? No se realizará ningún cambio ni se guardarán los datos ingresados.</p>
+    <p>¿Estás seguro de que deseas salir del registro de donantes de órganos? No se realizará ningún cambio ni se guardarán los datos ingresados.</p>
     <div class="dialog-actions">
         <button type="button" class="btn-exit" onclick="salirDelFlujo()">Salir</button>
-        <button type="button" class="btn-stay" onclick="cerrarDialogoSalida()">Cancelar</button>
+        <button type="button" class="btn-exit-light" onclick="cerrarDialogoSalida()">Regresar</button>
     </div>
 </dialog>
 
@@ -568,18 +600,23 @@
     </div>
 </dialog>
 
-<dialog id="dialogoRegistroExitoso" class="exit-dialog" aria-labelledby="tituloRegistroExitoso">
-    <h3 id="tituloRegistroExitoso">Solicitud procesada</h3>
-    <p>¡Solicitud procesada! Revisa tu correo electrónico para confirmar la acción mediante el enlace enviado.</p>
+<dialog id="dialogoRegistroExitoso" class="exit-dialog card-dialog" aria-labelledby="tituloRegistroExitoso">
+    <h3 id="tituloRegistroExitoso">Registro completado</h3>
+    <p class="mock-email-notice">Envío simulado correctamente a <strong id="correoCarnetSimulado"></strong>.</p>
+    <div id="carnetPreview" aria-label="Vista previa del carnet simbólico"></div>
     <div class="dialog-actions">
+        <button type="button" class="btn-stay" onclick="imprimirCarnetRegistro()">Imprimir / Guardar PDF</button>
         <button type="button" class="btn-register" onclick="aceptarRegistroExitoso()">Aceptar</button>
     </div>
 </dialog>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
     // URL de tu Web App de Google Apps Script
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxy3bV3H7xdqJlIj5_C1im_xCVXtqwGTyLt3pXBI3G6huHstdouZ5cLUuVs-D97DkWFTA/exec";
     const REGISTROS_MOCK_KEY = 'registros_donacion_mock';
+    const CORREOS_SIMULADOS_KEY = 'correos_carnet_mock';
+    let ultimoDatosCarnet = null;
     const DONANTES_PRUEBA = [
         {
             cedula: '8-123-1234',
@@ -801,6 +838,202 @@
         const fecha = new Date();
         const consecutivo = `${fecha.getTime()}`.slice(-7);
         return `DC-${fecha.getFullYear()}-${consecutivo}`;
+    }
+
+    function escaparHtml(valor) {
+        return String(valor ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
+    function crearUrlVerificacion(datos) {
+        const url = new URL('verificar-donante.html', window.location.href);
+        if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+            url.hostname = '192.168.1.54';
+        }
+        url.searchParams.set('folio', datos.folio);
+        url.searchParams.set('nombre', datos.nombre);
+        url.searchParams.set('fecha', datos.fechaRegistro);
+        return url.toString();
+    }
+
+    function prepararCarnet(datos) {
+        ultimoDatosCarnet = datos;
+        const etiquetaDocumento = datos.tipoDocumento === 'pasaporte' ? 'Pasaporte' : 'Cédula';
+        const fechaRegistro = new Intl.DateTimeFormat('es-PA', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        }).format(new Date(datos.fechaRegistro));
+        const folio = escaparHtml(datos.folio);
+
+        document.getElementById('carnetPreview').innerHTML = `
+            <article class="donor-card">
+                <header class="donor-card-header">
+                    <strong>DONACIÓN CONECTADA PANAMÁ</strong>
+                    <span class="donor-life-mark">
+                        <svg viewBox="0 0 32 32" aria-hidden="true">
+                            <path fill="currentColor" d="M16 28S4 20.6 4 11.6C4 7.4 7.1 5 10.4 5c2.4 0 4.5 1.3 5.6 3.2C17.1 6.3 19.2 5 21.6 5 24.9 5 28 7.4 28 11.6 28 20.6 16 28 16 28Z"/>
+                            <path fill="#fff" d="M14.4 11h3.2v3.4H21v3.2h-3.4V21h-3.2v-3.4H11v-3.2h3.4V11Z"/>
+                        </svg>
+                        DONA VIDA
+                    </span>
+                </header>
+                <div class="donor-card-body">
+                    <div class="donor-card-title">CARNET DE DONANTE<small>VOLUNTAD DE DONACIÓN DE ÓRGANOS</small></div>
+                    <div class="donor-card-content">
+                        <div class="donor-card-grid">
+                            <div class="donor-card-field donor-card-field-wide"><span>Nombre completo</span><strong>${escaparHtml(datos.nombre)}</strong></div>
+                            <div class="donor-card-field"><span>${etiquetaDocumento}</span><strong>${escaparHtml(datos.cedula)}</strong></div>
+                            <div class="donor-card-field"><span>Registro</span><strong>${fechaRegistro}</strong></div>
+                        </div>
+                        <div class="qr-card-wrap">
+                            <div id="qrCarnet" class="symbolic-qr" aria-label="QR de verificación del carnet"></div>
+                            <small class="qr-card-id">ID: ${folio}</small>
+                        </div>
+                    </div>
+                </div>
+                <footer class="donor-card-footer">
+                    <span>“He decidido compartir vida.”</span>
+                    <span>Confirma y comparte tu decisión</span>
+                </footer>
+            </article>`;
+
+        const contenedorQr = document.getElementById('qrCarnet');
+        if (typeof QRCode === 'undefined') {
+            contenedorQr.textContent = 'QR no disponible';
+            return;
+        }
+        new QRCode(contenedorQr, {
+            text: crearUrlVerificacion(datos),
+            width: 104,
+            height: 104,
+            colorDark: '#15356d',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+        });
+    }
+
+    function imprimirCarnetRegistro() {
+        if (!ultimoDatosCarnet) return;
+        const frente = document.getElementById('carnetPreview').cloneNode(true);
+        const canvasQr = document.querySelector('#qrCarnet canvas');
+        const qrFrente = frente.querySelector('#qrCarnet');
+        if (canvasQr && qrFrente) {
+            const imagenQr = document.createElement('img');
+            imagenQr.src = canvasQr.toDataURL('image/png');
+            imagenQr.alt = 'QR de verificación';
+            qrFrente.replaceChildren(imagenQr);
+        }
+
+        const reverso = document.createElement('article');
+        reverso.className = 'donor-card donor-card-back';
+        reverso.innerHTML = `
+            <header class="back-header">♥ &nbsp; COMPARTE TU DECISIÓN</header>
+            <div class="back-body">
+                <p class="back-message">El paso más importante es <strong>informar a tu familia</strong> sobre tu decisión de ser donante. Ellos serán quienes respetarán y autorizarán tu voluntad.</p>
+                <h3>FAMILIAR / CONTACTO INFORMADO</h3>
+                <div class="back-contacts">
+                    <div class="back-contact-row">
+                        <div><span>Nombre del familiar</span><span class="back-blank"></span></div>
+                        <div><span>Teléfono</span><span class="back-blank"></span></div>
+                    </div>
+                    <div class="back-contact-row">
+                        <div><span>Nombre del familiar</span><span class="back-blank"></span></div>
+                        <div><span>Teléfono</span><span class="back-blank"></span></div>
+                    </div>
+                </div>
+                <div class="back-bottom">
+                    <div class="back-qr"></div>
+                    <p>Escanea este código para verificar este carnet simbólico y conocer más sobre el programa de donación.</p>
+                </div>
+            </div>`;
+        const qrImagen = frente.querySelector('#qrCarnet img');
+        if (qrImagen) reverso.querySelector('.back-qr').appendChild(qrImagen.cloneNode(true));
+
+        const ventana = window.open('', '_blank', 'width=950,height=700');
+        if (!ventana) {
+            alert('Permite las ventanas emergentes para imprimir o guardar el carnet en PDF.');
+            return;
+        }
+        ventana.document.title = 'Carnet de donante';
+        const estilos = ventana.document.createElement('style');
+        estilos.textContent = `${document.querySelector('style').textContent}
+            body { background: white !important; display: block !important; margin: 0; padding: 12mm !important; }
+            #carnetPreview { width: 100%; }
+            .card-print-sheet { align-items: flex-start; display: flex; gap: 8mm; justify-content: center; }
+            .card-print-item { height: 53.98mm; overflow: hidden; width: 85.60mm; }
+            .card-print-item .donor-card { height: 107.96mm; margin: 0; position: relative; transform: scale(.5); transform-origin: top left; width: 171.20mm; }
+            .card-print-item .donor-card-footer { bottom: 0; left: 0; position: absolute; right: 0; }
+            .back-header { background: #15356d; color: white; font-size: 1rem; font-weight: 800; padding: 18px; text-align: center; }
+            .back-body { padding: 24px; }
+            .back-message { background: #f8fafc; color: #475569; line-height: 1.5; margin: 0 0 22px; padding: 14px; text-align: center; }
+            .back-body h3 { color: #dc3545; font-size: .75rem; margin: 0 0 12px; }
+            .back-contacts { border-bottom: 1px solid #dbe4f0; padding: 6px 0 18px; }
+            .back-contact-row { display: grid; gap: 24px; grid-template-columns: 1.5fr 1fr; padding: 8px 0; }
+            .back-contact-row span { color: #94a3b8; display: block; font-size: .65rem; text-transform: uppercase; }
+            .back-blank { border-bottom: 2px dotted #cbd5e1; height: 14px; }
+            .back-bottom { align-items: center; display: grid; gap: 18px; grid-template-columns: 62px 1fr; padding-top: 18px; }
+            .back-bottom p { color: #64748b; font-size: .7rem; text-align: right; }
+            .back-qr img { display: block; height: 58px; width: 58px; }
+            @page { size: landscape; margin: 10mm; }
+            @media print {
+                * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                body { padding: 0 !important; }
+                #carnetPreview { position: static !important; }
+                .card-print-sheet, .card-print-sheet *,
+                .donor-card-back, .donor-card-back * { visibility: visible !important; }
+            }
+        `;
+        ventana.document.head.appendChild(estilos);
+        const hoja = ventana.document.createElement('div');
+        hoja.className = 'card-print-sheet';
+        const contenedorFrente = ventana.document.createElement('div');
+        const contenedorReverso = ventana.document.createElement('div');
+        contenedorFrente.className = 'card-print-item';
+        contenedorReverso.className = 'card-print-item';
+        contenedorFrente.appendChild(frente.querySelector('.donor-card'));
+        contenedorReverso.appendChild(reverso);
+        hoja.append(contenedorFrente, contenedorReverso);
+        ventana.document.body.appendChild(hoja);
+        ventana.onafterprint = () => ventana.close();
+        setTimeout(() => {
+            ventana.focus();
+            ventana.print();
+        }, 250);
+    }
+
+    function registrarCorreoSimulado(datos) {
+        let correos = [];
+        try {
+            const guardados = JSON.parse(localStorage.getItem(CORREOS_SIMULADOS_KEY));
+            if (Array.isArray(guardados)) correos = guardados;
+        } catch (error) {
+            correos = [];
+        }
+        document.getElementById('correoCarnetSimulado').textContent = datos.correo;
+        correos.push({
+            destinatario: datos.correo,
+            asunto: 'Carnet simbólico de donante de órganos',
+            fechaEnvio: new Date().toISOString(),
+            estado: 'Enviado (simulación)',
+            folio: datos.folio,
+            contenidoAdjunto: ['Frente del carnet', 'Reverso del carnet'],
+            reversoContactosEnBlanco: true,
+            carnet: {
+                nombre: datos.nombre,
+                tipoDocumento: datos.tipoDocumento,
+                documento: datos.cedula,
+                fechaRegistro: datos.fechaRegistro,
+                contactoNombre: datos.contactoNombre,
+                contactoTelefono: datos.contactoTelefono,
+                incluyeReverso: true
+            }
+        });
+        localStorage.setItem(CORREOS_SIMULADOS_KEY, JSON.stringify(correos));
     }
 
     function guardarEstadoMock(cedula, codigo, activo, datosAdicionales = {}) {
@@ -1052,6 +1285,8 @@
             msgDiv.className = "message success";
             if (accion === 'registrar') {
                 guardarEstadoMock(payload.data.cedula, payload.data.codigoCedula, true, payload.data);
+                prepararCarnet(payload.data);
+                registrarCorreoSimulado(payload.data);
                 document.getElementById('formAlta').reset();
                 msgDiv.style.display = "none";
                 document.getElementById('dialogoRegistroExitoso').showModal();
