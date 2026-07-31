@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Correo simulado | Donación Conectada Panamá</title>
+    <style>
+        :root {
+            --primary: #201b8f;
+            --blue: #15356d;
+            --green: #159a70;
+            --background: #eef4fb;
+            --border: #d8e2ef;
+            --muted: #64748b;
+            --text: #172554;
+            font-family: Arial, sans-serif;
+        }
+        * { box-sizing: border-box; }
+        body { background: var(--background); color: var(--text); margin: 0; min-height: 100vh; }
+        header { align-items: center; background: var(--blue); color: white; display: flex; justify-content: space-between; padding: 18px clamp(20px, 6vw, 72px); }
+        header strong { display: block; font-size: 1.1rem; }
+        header small { opacity: .82; }
+        header a { border: 1px solid rgba(255,255,255,.55); border-radius: 50px; color: white; font-weight: 700; padding: 9px 16px; text-decoration: none; }
+        main { display: grid; gap: 20px; grid-template-columns: minmax(250px, 330px) minmax(0, 1fr); margin: 32px auto; max-width: 1180px; padding: 0 20px; }
+        .panel { background: white; border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 12px 30px rgba(15,35,80,.08); overflow: hidden; }
+        .panel-title { border-bottom: 1px solid var(--border); padding: 20px; }
+        .panel-title h1, .panel-title h2 { color: var(--primary); font-size: 1.2rem; margin: 0 0 5px; }
+        .panel-title p { color: var(--muted); font-size: .85rem; margin: 0; }
+        .mail-list { list-style: none; margin: 0; padding: 0; }
+        .mail-item { border-bottom: 1px solid var(--border); cursor: pointer; padding: 17px 20px; }
+        .mail-item:hover, .mail-item.active { background: #eff6ff; }
+        .mail-item strong, .mail-item span { display: block; }
+        .mail-item strong { color: var(--blue); margin-bottom: 5px; }
+        .mail-item span { color: var(--muted); font-size: .78rem; margin-top: 4px; }
+        .message { padding: 26px; }
+        .message-head { border-bottom: 1px solid var(--border); margin-bottom: 24px; padding-bottom: 18px; }
+        .message-head h2 { color: var(--primary); margin: 0 0 14px; }
+        .metadata { color: var(--muted); display: grid; font-size: .86rem; gap: 6px; }
+        .status { background: #dcfce7; border-radius: 50px; color: #166534; display: inline-block; font-size: .75rem; font-weight: 800; margin-top: 12px; padding: 6px 10px; }
+        .email-body { color: #334155; line-height: 1.65; }
+        .email-body h3 { color: var(--blue); }
+        .attachment-title { color: var(--primary); font-size: .9rem; margin: 26px 0 12px; }
+        .attachments { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .attachment { align-items: center; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; display: flex; gap: 12px; padding: 14px; }
+        .attachment-icon { align-items: center; background: #dbeafe; border-radius: 10px; color: #1d4ed8; display: flex; font-size: 1.3rem; height: 42px; justify-content: center; width: 42px; }
+        .attachment strong, .attachment small { display: block; }
+        .attachment small { color: var(--muted); margin-top: 3px; }
+        .demo-note { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 12px; color: #9a3412; font-size: .82rem; margin-top: 24px; padding: 12px; }
+        .empty { color: var(--muted); padding: 44px 24px; text-align: center; }
+        @media (max-width: 760px) {
+            main { grid-template-columns: 1fr; }
+            .attachments { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div><strong>Donación Conectada Panamá</strong><small>Bandeja demostrativa</small></div>
+        <a href="index.html">Volver al inicio</a>
+    </header>
+    <main>
+        <aside class="panel">
+            <div class="panel-title">
+                <h1>Correos simulados</h1>
+                <p>Mensajes generados en este navegador.</p>
+            </div>
+            <ul id="listaCorreos" class="mail-list"></ul>
+        </aside>
+        <section class="panel">
+            <div id="detalleCorreo" class="empty">Registra un donante para generar un correo de demostración.</div>
+        </section>
+    </main>
+    <script>
+        const CORREOS_SIMULADOS_KEY = 'correos_carnet_mock';
+
+        function escaparHtml(valor) {
+            return String(valor ?? '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
+        }
+
+        function obtenerCorreos() {
+            try {
+                const correos = JSON.parse(localStorage.getItem(CORREOS_SIMULADOS_KEY));
+                return Array.isArray(correos) ? correos.slice().reverse() : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        const correos = obtenerCorreos();
+
+        function mostrarCorreo(indice) {
+            const correo = correos[indice];
+            if (!correo) return;
+            document.querySelectorAll('.mail-item').forEach((elemento, posicion) => {
+                elemento.classList.toggle('active', posicion === indice);
+            });
+            const fecha = new Intl.DateTimeFormat('es-PA', {
+                dateStyle: 'medium', timeStyle: 'medium'
+            }).format(new Date(correo.fechaEnvio));
+            const carnet = correo.carnet || {};
+            document.getElementById('detalleCorreo').className = 'message';
+            document.getElementById('detalleCorreo').innerHTML = `
+                <div class="message-head">
+                    <h2>${escaparHtml(correo.asunto)}</h2>
+                    <div class="metadata">
+                        <span><strong>De:</strong> ${escaparHtml(correo.remitente || 'Donación Conectada Panamá')} &lt;${escaparHtml(correo.correoRemitente || 'no-responder@donacion-conectada.demo')}&gt;</span>
+                        <span><strong>Para:</strong> ${escaparHtml(correo.destinatario)}</span>
+                        <span><strong>Fecha:</strong> ${fecha}</span>
+                    </div>
+                    <span class="status">${escaparHtml(correo.estado)}</span>
+                </div>
+                <div class="email-body">
+                    <h3>Hola ${escaparHtml(carnet.nombre || 'Donante')},</h3>
+                    <p>Gracias por registrar tu voluntad como donante de órganos. Adjuntamos tu carnet simbólico para que puedas conservarlo y compartir tu decisión con tu familia.</p>
+                    <p><strong>Folio:</strong> ${escaparHtml(correo.folio)}</p>
+                    <p>Tu decisión salva vidas <span aria-label="corazón">♥</span></p>
+                </div>
+                <h3 class="attachment-title">Archivos adjuntos simulados</h3>
+                <div class="attachments">
+                    <div class="attachment"><span class="attachment-icon">▣</span><div><strong>Frente del carnet</strong><small>${escaparHtml(correo.folio)} · imagen simulada</small></div></div>
+                    <div class="attachment"><span class="attachment-icon">▤</span><div><strong>Reverso del carnet</strong><small>Espacio para dos contactos · imagen simulada</small></div></div>
+                </div>
+                <div class="demo-note">Este mensaje es una representación visual. GitHub Pages no envió un correo real.</div>`;
+        }
+
+        function renderizarLista() {
+            const lista = document.getElementById('listaCorreos');
+            if (!correos.length) {
+                lista.innerHTML = '<li class="empty">No hay correos simulados.</li>';
+                return;
+            }
+            lista.innerHTML = correos.map((correo, indice) => {
+                const fecha = new Date(correo.fechaEnvio).toLocaleString('es-PA');
+                return `<li class="mail-item" onclick="mostrarCorreo(${indice})">
+                    <strong>${escaparHtml(correo.asunto)}</strong>
+                    <span>Para: ${escaparHtml(correo.destinatario)}</span>
+                    <span>${fecha}</span>
+                </li>`;
+            }).join('');
+            mostrarCorreo(0);
+        }
+
+        renderizarLista();
+    </script>
+</body>
+</html>

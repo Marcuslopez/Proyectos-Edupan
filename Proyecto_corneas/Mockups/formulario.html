@@ -151,7 +151,7 @@
         .exit-dialog::backdrop { background: rgba(15, 23, 42, 0.55); }
         .exit-dialog h3 { color: var(--primary-dark); font-size: 1.3rem; margin-bottom: 12px; }
         .exit-dialog p { line-height: 1.55; margin-bottom: 24px; }
-        .dialog-actions { display: flex; gap: 12px; }
+        .dialog-actions { display: flex; flex-wrap: wrap; gap: 12px; }
         .dialog-actions button { border: 0; border-radius: 50px; cursor: pointer; flex: 1; font-size: 1rem; font-weight: 700; padding: 12px; }
         .btn-exit { background: var(--danger); color: white; }
         .btn-exit-light { background: #bbf7d0; color: #166534; }
@@ -159,6 +159,8 @@
         .btn-stay { background: #e2e8f0; color: #334155; }
         .btn-print-carnet { background: #22a06b; color: white; }
         .btn-print-carnet:hover, .btn-print-carnet:focus-visible { background: #168454; }
+        .btn-mail-simulated { background: #dbeafe; color: #1d4ed8; }
+        .btn-mail-simulated:hover, .btn-mail-simulated:focus-visible { background: #bfdbfe; }
         .btn-reset-demo {
             align-items: center; background: var(--primary-dark); border: 3px solid white; border-radius: 50%;
             box-shadow: 0 8px 24px rgba(29, 27, 132, 0.3); color: white; cursor: pointer; display: flex;
@@ -231,14 +233,6 @@
         <p class="step-description">Ingresa los datos tal como aparecen en tu cédula para continuar con el registro.</p>
 
         <form id="formValidacion" onsubmit="validarIdentidad(event)" novalidate>
-            <div class="form-group">
-                <label for="tipoDocumento">Tipo de documento de identidad <span class="required-mark">*</span></label>
-                <select id="tipoDocumento" required>
-                    <option value="cedula" selected>Cédula</option>
-                    <option value="pasaporte">Pasaporte</option>
-                </select>
-            </div>
-
             <div class="form-group" id="grupoCedula">
                 <div class="label-row">
                     <label for="cedulaValidacion">Cédula de identidad <span class="required-mark">*</span></label>
@@ -261,18 +255,6 @@
                 </div>
                 <input type="text" id="codigoCedula" placeholder="Ej: 47KLMNP0286" autocomplete="off" minlength="8" maxlength="20" aria-describedby="errorCodigo" required>
                 <p id="errorCodigo" class="field-error" aria-live="polite"></p>
-            </div>
-
-            <div class="form-group" id="grupoPasaporte" hidden>
-                <div class="label-row">
-                    <label for="pasaporteValidacion">Número de pasaporte <span class="required-mark">*</span></label>
-                    <span class="help">
-                        <button type="button" class="help-trigger" aria-describedby="ayudaPasaporte" aria-label="Ver formato admitido para el pasaporte">i</button>
-                        <span id="ayudaPasaporte" class="help-text" role="tooltip">Escribe entre 6 y 20 letras o números, sin espacios ni guiones.</span>
-                    </span>
-                </div>
-                <input type="text" id="pasaporteValidacion" placeholder="Ej: PA1234567" autocomplete="off" minlength="6" maxlength="20" aria-describedby="errorPasaporte">
-                <p id="errorPasaporte" class="field-error" aria-live="polite"></p>
             </div>
 
             <div class="form-group">
@@ -608,6 +590,7 @@
     <div id="carnetPreview" aria-label="Vista previa del carnet simbólico"></div>
     <div class="dialog-actions">
         <button type="button" class="btn-print-carnet" onclick="imprimirCarnetRegistro()">Imprimir / Guardar PDF</button>
+        <button type="button" class="btn-mail-simulated" onclick="window.location.href='correos-simulados.html'">Ver correo simulado</button>
         <button type="button" class="btn-register" onclick="aceptarRegistroExitoso()">Aceptar</button>
     </div>
 </dialog>
@@ -719,10 +702,8 @@
         }
     };
 
-    const tipoDocumento = document.getElementById('tipoDocumento');
     const cedulaValidacion = document.getElementById('cedulaValidacion');
     const codigoCedula = document.getElementById('codigoCedula');
-    const pasaporteValidacion = document.getElementById('pasaporteValidacion');
     const captchaInput = document.getElementById('captchaInput');
     const provinciaSelect = document.getElementById('provincia');
     const distritoSelect = document.getElementById('distrito');
@@ -745,28 +726,6 @@
     distritoSelect.addEventListener('change', actualizarCorregimientos);
     actualizarDistritos();
 
-    function actualizarTipoDocumento() {
-        const usaPasaporte = tipoDocumento.value === 'pasaporte';
-        document.getElementById('grupoCedula').hidden = usaPasaporte;
-        document.getElementById('grupoCodigoCedula').hidden = usaPasaporte;
-        document.getElementById('grupoPasaporte').hidden = !usaPasaporte;
-        cedulaValidacion.required = !usaPasaporte;
-        codigoCedula.required = !usaPasaporte;
-        pasaporteValidacion.required = usaPasaporte;
-        if (usaPasaporte) {
-            cedulaValidacion.value = '';
-            codigoCedula.value = '';
-            limpiarError(cedulaValidacion, 'errorCedula');
-            limpiarError(codigoCedula, 'errorCodigo');
-        } else {
-            pasaporteValidacion.value = '';
-            limpiarError(pasaporteValidacion, 'errorPasaporte');
-        }
-    }
-
-    tipoDocumento.addEventListener('change', actualizarTipoDocumento);
-    actualizarTipoDocumento();
-
     cedulaValidacion.addEventListener('input', (e) => {
         e.target.value = e.target.value.toUpperCase().replace(/\s/g, '');
         limpiarError(e.target, 'errorCedula');
@@ -775,11 +734,6 @@
     codigoCedula.addEventListener('input', (e) => {
         e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
         limpiarError(e.target, 'errorCodigo');
-    });
-
-    pasaporteValidacion.addEventListener('input', (e) => {
-        e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-        limpiarError(e.target, 'errorPasaporte');
     });
 
     captchaInput.addEventListener('input', (e) => {
@@ -864,7 +818,7 @@
 
     function prepararCarnet(datos) {
         ultimoDatosCarnet = datos;
-        const etiquetaDocumento = datos.tipoDocumento === 'pasaporte' ? 'Pasaporte' : 'Cédula';
+        const etiquetaDocumento = 'Cédula';
         const fechaRegistro = new Intl.DateTimeFormat('es-PA', {
             day: '2-digit',
             month: '2-digit',
@@ -1018,6 +972,8 @@
         }
         document.getElementById('correoCarnetSimulado').textContent = datos.correo;
         correos.push({
+            remitente: 'Donación Conectada Panamá',
+            correoRemitente: 'no-responder@donacion-conectada.demo',
             destinatario: datos.correo,
             asunto: 'Carnet simbólico de donante de órganos',
             fechaEnvio: new Date().toISOString(),
@@ -1027,7 +983,6 @@
             reversoContactosEnBlanco: true,
             carnet: {
                 nombre: datos.nombre,
-                tipoDocumento: datos.tipoDocumento,
                 documento: datos.cedula,
                 fechaRegistro: datos.fechaRegistro,
                 contactoNombre: datos.contactoNombre,
@@ -1098,40 +1053,31 @@
         window.location.reload();
     }
 
-    function obtenerRegistroMock(documento, codigo, tipo) {
+    function obtenerRegistroMock(documento, codigo) {
         return obtenerRegistrosMock().find(registro =>
             registro.cedula === documento &&
-            registro.codigo === codigo &&
-            (registro.tipoDocumento || 'cedula') === tipo
+            registro.codigo === codigo
         ) || null;
     }
 
     function validarIdentidad(e) {
         e.preventDefault();
-        const tipo = tipoDocumento.value;
-        const usaPasaporte = tipo === 'pasaporte';
-        const documento = (usaPasaporte ? pasaporteValidacion.value : cedulaValidacion.value).trim().toUpperCase();
-        const codigo = usaPasaporte ? '' : codigoCedula.value.trim().toUpperCase();
+        const documento = cedulaValidacion.value.trim().toUpperCase();
+        const codigo = codigoCedula.value.trim().toUpperCase();
         const captchaIngresado = captchaInput.value.trim().toLowerCase();
         let valido = true;
 
         limpiarError(cedulaValidacion, 'errorCedula');
         limpiarError(codigoCedula, 'errorCodigo');
-        limpiarError(pasaporteValidacion, 'errorPasaporte');
         limpiarError(captchaInput, 'errorCaptcha');
 
-        if (!usaPasaporte && !PATRONES_CEDULA.some(patron => patron.test(documento))) {
+        if (!PATRONES_CEDULA.some(patron => patron.test(documento))) {
             mostrarError(cedulaValidacion, 'errorCedula', 'Revisa el formato e incluye los guiones. Ejemplo: 1-1234-12345, PE-1234-12345, E-1234-123456, N-1234-1234 o 1AV-1234-12345.');
             valido = false;
         }
 
-        if (!usaPasaporte && !/^[A-Z0-9]{8,20}$/.test(codigo)) {
+        if (!/^[A-Z0-9]{8,20}$/.test(codigo)) {
             mostrarError(codigoCedula, 'errorCodigo', 'Escribe entre 8 y 20 letras o números, sin espacios ni guiones. Ejemplo: 47KLMNP0286.');
-            valido = false;
-        }
-
-        if (usaPasaporte && !/^[A-Z0-9]{6,20}$/.test(documento)) {
-            mostrarError(pasaporteValidacion, 'errorPasaporte', 'Escribe entre 6 y 20 letras o números, sin espacios ni guiones. Ejemplo: PA1234567.');
             valido = false;
         }
 
@@ -1148,14 +1094,14 @@
         document.getElementById('codigoCedulaAlta').value = codigo;
         document.getElementById('cedulaBaja').value = documento;
         document.getElementById('codigoCedulaBaja').value = codigo;
-        document.getElementById('labelDocumentoAlta').textContent = usaPasaporte ? 'Número de pasaporte' : 'Cédula de identidad';
-        document.getElementById('labelDocumentoBaja').textContent = usaPasaporte ? 'Pasaporte registrado' : 'Cédula de identidad registrada';
-        document.getElementById('grupoCodigoCedulaAlta').hidden = usaPasaporte;
-        document.getElementById('grupoCodigoCedulaBaja').hidden = usaPasaporte;
+        document.getElementById('labelDocumentoAlta').textContent = 'Cédula de identidad';
+        document.getElementById('labelDocumentoBaja').textContent = 'Cédula de identidad registrada';
+        document.getElementById('grupoCodigoCedulaAlta').hidden = false;
+        document.getElementById('grupoCodigoCedulaBaja').hidden = false;
         document.getElementById('stepValidacion').classList.remove('active');
         document.getElementById('stepRegistro').classList.add('active');
 
-        const registroEncontrado = obtenerRegistroMock(documento, codigo, tipo);
+        const registroEncontrado = obtenerRegistroMock(documento, codigo);
         const estadoConsentimiento = registroEncontrado?.estadoConsentimiento;
 
         if (estadoConsentimiento === 'Activo') {
@@ -1234,7 +1180,6 @@
 
         if (accion === 'registrar') {
             payload.data = {
-                tipoDocumento: tipoDocumento.value,
                 cedula: document.getElementById('cedulaAlta').value.trim(),
                 codigoCedula: document.getElementById('codigoCedula').value.trim(),
                 nombre: document.getElementById('nombre').value.trim(),
@@ -1270,7 +1215,6 @@
             };
         } else {
             payload.data = {
-                tipoDocumento: tipoDocumento.value,
                 cedula: document.getElementById('cedulaBaja').value.trim(),
                 codigoCedula: document.getElementById('codigoCedulaBaja').value.trim()
             };
