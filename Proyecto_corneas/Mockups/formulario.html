@@ -157,6 +157,8 @@
         .btn-exit-light { background: #bbf7d0; color: #166534; }
         .btn-exit-light:hover, .btn-exit-light:focus-visible { background: #86efac; }
         .btn-stay { background: #e2e8f0; color: #334155; }
+        .btn-print-carnet { background: #22a06b; color: white; }
+        .btn-print-carnet:hover, .btn-print-carnet:focus-visible { background: #168454; }
         .btn-reset-demo {
             align-items: center; background: var(--primary-dark); border: 3px solid white; border-radius: 50%;
             box-shadow: 0 8px 24px rgba(29, 27, 132, 0.3); color: white; cursor: pointer; display: flex;
@@ -605,7 +607,7 @@
     <p class="mock-email-notice">Envío simulado correctamente a <strong id="correoCarnetSimulado"></strong>.</p>
     <div id="carnetPreview" aria-label="Vista previa del carnet simbólico"></div>
     <div class="dialog-actions">
-        <button type="button" class="btn-stay" onclick="imprimirCarnetRegistro()">Imprimir / Guardar PDF</button>
+        <button type="button" class="btn-print-carnet" onclick="imprimirCarnetRegistro()">Imprimir / Guardar PDF</button>
         <button type="button" class="btn-register" onclick="aceptarRegistroExitoso()">Aceptar</button>
     </div>
 </dialog>
