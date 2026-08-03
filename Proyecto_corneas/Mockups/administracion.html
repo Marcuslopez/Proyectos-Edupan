@@ -759,11 +759,11 @@
                     <h3>FAMILIAR / CONTACTO INFORMADO</h3>
                     <div class="back-contacts">
                         <div class="back-contact-row">
-                            <div><span>Nombre del familiar</span><span class="back-blank"></span></div>
+                            <div><span>Nombre de contacto</span><span class="back-blank"></span></div>
                             <div><span>Teléfono</span><span class="back-blank"></span></div>
                         </div>
                         <div class="back-contact-row">
-                            <div><span>Nombre del familiar</span><span class="back-blank"></span></div>
+                            <div><span>Nombre de contacto</span><span class="back-blank"></span></div>
                             <div><span>Teléfono</span><span class="back-blank"></span></div>
                         </div>
                     </div>
@@ -814,8 +814,8 @@
                 .back-body h3 { color: #dc3545; font-size: .75rem; margin: 0 0 12px; }
                 .back-contacts { border-bottom: 1px solid #dbe4f0; padding: 6px 0 18px; }
                 .back-contact-row { display: grid; gap: 24px; grid-template-columns: 1.5fr 1fr; padding: 8px 0; }
-                .back-contact-row span { color: #94a3b8; display: block; font-size: .65rem; text-transform: uppercase; }
-                .back-blank { border-bottom: 2px dotted #cbd5e1; height: 14px; }
+                .back-contact-row span { color: #15356d; display: block; font-size: .65rem; text-transform: uppercase; }
+                .back-blank { border-bottom: 2px dotted #15356d; height: 14px; }
                 .back-bottom { align-items: center; display: grid; gap: 18px; grid-template-columns: 62px 1fr; padding-top: 18px; }
                 .back-bottom p { color: #64748b; font-size: .7rem; text-align: right; }
                 .back-qr img { display: block; height: 58px; width: 58px; }
@@ -911,15 +911,15 @@
             pdf.setTextColor(220, 53, 69);
             pdf.setFont("helvetica", "bold");
             pdf.text("FAMILIAR / CONTACTO INFORMADO", 6, 27);
-            pdf.setTextColor(100, 116, 139);
+            pdf.setTextColor(21, 53, 109);
             pdf.setFontSize(5.5);
-            pdf.text("NOMBRE DEL FAMILIAR", 6, 32);
+            pdf.text("NOMBRE DE CONTACTO", 6, 32);
             pdf.text("TELÉFONO", 47, 32);
-            pdf.setDrawColor(219, 228, 240);
+            pdf.setDrawColor(21, 53, 109);
             pdf.setLineDashPattern([0.8, 0.8], 0);
             pdf.line(6, 36, 42, 36);
             pdf.line(47, 36, 80, 36);
-            pdf.text("NOMBRE DEL FAMILIAR", 6, 40);
+            pdf.text("NOMBRE DE CONTACTO", 6, 40);
             pdf.text("TELÉFONO", 47, 40);
             pdf.line(6, 44, 42, 44);
             pdf.line(47, 44, 80, 44);
