@@ -89,6 +89,7 @@
         .growth-line { fill: none; stroke: var(--teal); stroke-linecap: round; stroke-linejoin: round; stroke-width: 5; }
         .growth-point { fill: white; stroke: var(--teal); stroke-width: 4; }
         .growth-value { fill: var(--primary); font-size: 13px; font-weight: 800; text-anchor: middle; }
+        .growth-increment { fill: var(--teal); font-size: 11px; font-weight: 800; text-anchor: middle; }
         .growth-label { fill: #64748b; font-size: 12px; text-anchor: middle; text-transform: capitalize; }
         .growth-axis-label { fill: #64748b; font-size: 11px; text-anchor: end; }
 
@@ -359,6 +360,7 @@
                 acumulado += altas;
                 meses.push({
                     etiqueta: new Intl.DateTimeFormat("es-PA", { month: "short" }).format(fecha).replace(".", ""),
+                    altas,
                     total: acumulado
                 });
             }
@@ -399,6 +401,7 @@
                     ${puntos.map(punto => `
                         <circle class="growth-point" cx="${punto.x}" cy="${punto.y}" r="5"></circle>
                         <text class="growth-value" x="${punto.x}" y="${punto.y - 13}">${punto.total}</text>
+                        <text class="growth-increment" x="${punto.x}" y="${punto.y + 21}">+${punto.altas}</text>
                         <text class="growth-label" x="${punto.x}" y="${alto - 17}">${punto.etiqueta}</text>
                     `).join("")}
                 </svg>
