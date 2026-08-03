@@ -151,6 +151,46 @@
         </div>
 
         <div class="metrics-grid">
+            <section class="chart-card chart-card-wide">
+                <div class="chart-heading">
+                    <div>
+                        <h2>Crecimiento acumulado de donantes</h2>
+                        <p>Evolución mensual del total de donantes durante los últimos 12 meses.</p>
+                    </div>
+                    <span class="chart-badge">Hasta el mes actual</span>
+                </div>
+                <div id="graficaCrecimiento" class="growth-chart" aria-label="Gráfica de crecimiento acumulado mensual de donantes"></div>
+            </section>
+
+            <section class="chart-card chart-card-wide">
+                <div class="chart-heading">
+                    <div>
+                        <h2>Altas y bajas de los últimos 12 meses</h2>
+                        <p>Evolución mensual de registros y bajas voluntarias.</p>
+                    </div>
+                    <span class="chart-badge">Últimos 12 meses</span>
+                </div>
+                <div class="month-legend" aria-label="Leyenda">
+                    <span><i class="high"></i>Altas</span>
+                    <span><i class="low"></i>Bajas</span>
+                </div>
+                <div id="graficaMeses" class="month-chart" aria-label="Gráfica de registros de los últimos doce meses"></div>
+            </section>
+
+            <section class="chart-card chart-card-wide">
+                <div class="chart-heading">
+                    <div>
+                        <h2>Altas y bajas de donantes</h2>
+                        <p>Comparación entre donantes con consentimiento activo y donantes que solicitaron su baja.</p>
+                    </div>
+                    <span class="chart-badge">Estado del consentimiento</span>
+                </div>
+                <div class="status-chart" aria-label="Gráfica de altas y bajas de donantes">
+                    <div id="graficaEstados" class="status-donut"></div>
+                    <div id="leyendaEstados" class="status-legend"></div>
+                </div>
+            </section>
+
             <section class="chart-card">
                 <div class="chart-heading">
                     <div>
@@ -171,44 +211,6 @@
                     <span class="chart-badge">Todas las provincias</span>
                 </div>
                 <div id="graficaProvincias" class="horizontal-chart" aria-label="Gráfica de donantes por provincia"></div>
-            </section>
-
-            <section class="chart-card chart-card-wide">
-                <div class="chart-heading">
-                    <div>
-                        <h2>Altas y bajas de los últimos 12 meses</h2>
-                        <p>Evolución mensual de registros y bajas voluntarias.</p>
-                    </div>
-                    <span class="chart-badge">Últimos 12 meses</span>
-                </div>
-                <div class="month-legend" aria-label="Leyenda">
-                    <span><i class="high"></i>Altas</span>
-                    <span><i class="low"></i>Bajas</span>
-                </div>
-                <div id="graficaMeses" class="month-chart" aria-label="Gráfica de registros de los últimos doce meses"></div>
-            </section>
-            <section class="chart-card chart-card-wide">
-                <div class="chart-heading">
-                    <div>
-                        <h2>Crecimiento acumulado de donantes</h2>
-                        <p>Evolución mensual del total de donantes durante los últimos 12 meses.</p>
-                    </div>
-                    <span class="chart-badge">Hasta el mes actual</span>
-                </div>
-                <div id="graficaCrecimiento" class="growth-chart" aria-label="Gráfica de crecimiento acumulado mensual de donantes"></div>
-            </section>
-            <section class="chart-card chart-card-wide">
-                <div class="chart-heading">
-                    <div>
-                        <h2>Altas y bajas de donantes</h2>
-                        <p>Comparación entre donantes con consentimiento activo y donantes que solicitaron su baja.</p>
-                    </div>
-                    <span class="chart-badge">Estado del consentimiento</span>
-                </div>
-                <div class="status-chart" aria-label="Gráfica de altas y bajas de donantes">
-                    <div id="graficaEstados" class="status-donut"></div>
-                    <div id="leyendaEstados" class="status-legend"></div>
-                </div>
             </section>
         </div>
     </main>
