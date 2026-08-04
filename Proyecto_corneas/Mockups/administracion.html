@@ -122,8 +122,9 @@
         .confirm-actions button { border: 0; border-radius: 50px; cursor: pointer; font-weight: 750; padding: 12px; }
         .btn-confirm-exit { background: var(--primary); color: white; }
         .btn-confirm-cancel { background: #e2e8f0; color: #334155; }
-        .card-dialog { border: 0; border-radius: 24px; box-shadow: 0 24px 70px rgba(15,23,42,.3); margin: auto; max-width: 720px; padding: 26px; width: calc(100% - 32px); }
-        .card-dialog::backdrop { background: rgba(15,23,42,.62); backdrop-filter: blur(3px); }
+        .inline-card-section { border-top: 1px solid var(--border); margin: 0 28px 26px; padding-top: 24px; }
+        .inline-card-section h3 { color: var(--primary); font-size: 1.15rem; margin-bottom: 12px; }
+        .card-unavailable { background: #f8fafc; border: 1px solid var(--border); border-radius: 14px; color: var(--muted); line-height: 1.5; padding: 18px; }
         .donor-card { background: white; border: 1px solid #dbe4f0; border-radius: 16px; margin: 18px 0; overflow: hidden; }
         .donor-card-header { align-items: center; background: #f8fafc; border-bottom: 4px solid #15356d; color: #15356d; display: flex; justify-content: space-between; padding: 16px 20px; }
         .donor-life-mark { align-items: center; color: #15356d; display: flex; font-size: .7rem; font-weight: 900; gap: 7px; letter-spacing: .03em; }
@@ -146,13 +147,6 @@
         .card-actions button { border: 0; border-radius: 50px; cursor: pointer; font-weight: 750; padding: 11px 20px; }
         .btn-print { background: #dbeafe; color: #1d4ed8; }
         .btn-pdf { background: #2563eb; color: white; }
-        .btn-card-close { background: #e2e8f0; color: #334155; }
-        @media print {
-            body.imprimir-carnet * { visibility: hidden !important; }
-            body.imprimir-carnet #vistaCarnetAdmin,
-            body.imprimir-carnet #vistaCarnetAdmin * { visibility: visible !important; }
-            body.imprimir-carnet #vistaCarnetAdmin { left: 0; position: absolute; top: 0; width: 100%; }
-        }
         @media (max-width: 900px) {
             .page-heading { align-items: start; flex-direction: column; gap: 18px; }
             .filters { grid-template-columns: repeat(2, 1fr); }
@@ -266,27 +260,17 @@
             <button type="button" class="dialog-close" onclick="cerrarDetalle()" aria-label="Cerrar">×</button>
         </div>
         <div id="contenidoDetalle" class="detail-body"></div>
+        <section id="seccionCarnetDetalle" class="inline-card-section" aria-labelledby="tituloCarnetDetalle" hidden>
+            <h3 id="tituloCarnetDetalle">Carnet del donante</h3>
+            <div id="vistaCarnetAdmin"></div>
+            <div id="accionesCarnetDetalle" class="card-actions">
+                <button type="button" class="btn-print" onclick="imprimirCarnet()">Imprimir</button>
+                <button type="button" class="btn-pdf" onclick="descargarCarnetPDF()">Descargar PDF</button>
+            </div>
+        </section>
         <div class="detail-footer">
-            <button type="button" class="btn-card" onclick="abrirCarnet()">Carnet</button>
+            <button type="button" id="btnToggleCarnet" class="btn-card" onclick="toggleCarnet()" aria-expanded="false" aria-controls="seccionCarnetDetalle">Ver carnet</button>
             <button type="button" class="btn-close-detail" onclick="cerrarDetalle()">Cerrar</button>
-        </div>
-    </dialog>
-
-    <dialog id="dialogoCarnet" class="card-dialog" aria-labelledby="tituloCarnet">
-        <h2 id="tituloCarnet">Carnet del donante</h2>
-        <div id="vistaCarnetAdmin"></div>
-        <div class="card-actions">
-            <button type="button" class="btn-print" onclick="imprimirCarnet()">Imprimir</button>
-            <button type="button" class="btn-pdf" onclick="descargarCarnetPDF()">Descargar PDF</button>
-            <button type="button" class="btn-card-close" onclick="cerrarCarnet()">Regresar</button>
-        </div>
-    </dialog>
-
-    <dialog id="dialogoCarnetBaja" class="confirm-dialog" aria-labelledby="tituloCarnetBaja">
-        <h2 id="tituloCarnetBaja">Carnet no disponible</h2>
-        <p>Un Donante en estado de baja no se le generaría un carnet de donante vigente.</p>
-        <div class="confirm-actions">
-            <button type="button" class="btn-confirm-exit" onclick="cerrarAvisoCarnetBaja()">Regresar</button>
         </div>
     </dialog>
 
@@ -546,6 +530,7 @@
             const donante = donantes.find(registro => registro.id === id);
             if (!donante) return;
             donanteSeleccionadoId = id;
+            ocultarCarnetDetalle();
 
             document.getElementById("contenidoDetalle").innerHTML = `
                 <section class="detail-section">
@@ -637,12 +622,37 @@
             return url.toString();
         }
 
-        function abrirCarnet() {
+        function ocultarCarnetDetalle() {
+            const seccion = document.getElementById("seccionCarnetDetalle");
+            const boton = document.getElementById("btnToggleCarnet");
+            seccion.hidden = true;
+            document.getElementById("vistaCarnetAdmin").replaceChildren();
+            document.getElementById("accionesCarnetDetalle").hidden = false;
+            boton.textContent = "Ver carnet";
+            boton.setAttribute("aria-expanded", "false");
+        }
+
+        function toggleCarnet() {
+            const seccion = document.getElementById("seccionCarnetDetalle");
+            const boton = document.getElementById("btnToggleCarnet");
+            if (!seccion.hidden) {
+                ocultarCarnetDetalle();
+                return;
+            }
+
             const donante = donantes.find(registro => registro.id === donanteSeleccionadoId);
             if (!donante) return;
             if (donante.estado === "Baja") {
-                document.getElementById("detalleDonante").close();
-                document.getElementById("dialogoCarnetBaja").showModal();
+                document.getElementById("vistaCarnetAdmin").innerHTML = `
+                    <div class="card-unavailable">
+                        <strong>Carnet no disponible</strong><br>
+                        Un donante en estado de Baja no tiene un carnet de donante vigente.
+                    </div>`;
+                document.getElementById("accionesCarnetDetalle").hidden = true;
+                seccion.hidden = false;
+                boton.textContent = "Ocultar carnet";
+                boton.setAttribute("aria-expanded", "true");
+                seccion.scrollIntoView({ behavior: "smooth", block: "start" });
                 return;
             }
             const fecha = new Intl.DateTimeFormat("es-PA", {
@@ -695,8 +705,10 @@
             } else {
                 qr.textContent = "QR no disponible";
             }
-            document.getElementById("detalleDonante").close();
-            document.getElementById("dialogoCarnet").showModal();
+            seccion.hidden = false;
+            boton.textContent = "Ocultar carnet";
+            boton.setAttribute("aria-expanded", "true");
+            seccion.scrollIntoView({ behavior: "smooth", block: "start" });
         }
 
         function imprimirCarnet() {
@@ -901,17 +913,8 @@
             pdf.save(`carnet-${donante.folio}.pdf`);
         }
 
-        function cerrarCarnet() {
-            document.getElementById("dialogoCarnet").close();
-            document.getElementById("detalleDonante").showModal();
-        }
-
-        function cerrarAvisoCarnetBaja() {
-            document.getElementById("dialogoCarnetBaja").close();
-            document.getElementById("detalleDonante").showModal();
-        }
-
         function cerrarDetalle() {
+            ocultarCarnetDetalle();
             document.getElementById("detalleDonante").close();
         }
 
