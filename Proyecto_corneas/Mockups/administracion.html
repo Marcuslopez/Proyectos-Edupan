@@ -107,47 +107,27 @@
         .detail-field { background: #f8fafc; border: 1px solid #e5ebf3; border-radius: 12px; padding: 12px 14px; }
         .detail-field span { color: var(--muted); display: block; font-size: 0.72rem; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; }
         .detail-field strong { font-size: 0.94rem; font-weight: 650; overflow-wrap: anywhere; }
-        .rejection-summary {
-            background: linear-gradient(145deg, #fff1f2, #fff7f7); border: 1px solid #f4a7ad;
-            border-radius: 16px; box-shadow: 0 8px 22px rgba(190, 24, 40, 0.08); margin-bottom: 24px; padding: 20px;
-        }
-        .rejection-summary-header { align-items: center; display: flex; gap: 13px; margin-bottom: 16px; }
-        .rejection-summary-header small { color: #b42331; display: block; font-size: 0.7rem; font-weight: 850; letter-spacing: 0.09em; margin-bottom: 3px; }
-        .rejection-summary-header h3 { color: #991b2b; font-size: 1.08rem; margin: 0; }
-        .rejection-icon {
-            align-items: center; background: #dc3545; border-radius: 50%; color: white;
-            display: inline-flex; flex: 0 0 42px; height: 42px; justify-content: center; width: 42px;
-        }
-        .rejection-icon svg { fill: none; height: 23px; stroke: currentColor; stroke-linecap: round; stroke-width: 2.4; width: 23px; }
-        .rejection-summary .detail-field { background: rgba(255,255,255,0.78); border-color: #f2c6ca; }
-        .rejection-summary .detail-field span { color: #9f3640; }
         .detail-footer { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; padding: 0 28px 28px; }
         .btn-close-detail { background: var(--primary); border: 0; border-radius: 50px; color: white; cursor: pointer; font-weight: 750; padding: 11px 24px; }
         .btn-card { background: #2563eb; border: 0; border-radius: 50px; color: white; cursor: pointer; font-weight: 750; padding: 11px 24px; }
-        .btn-review { border: 0; border-radius: 50px; color: white; cursor: pointer; font-weight: 750; padding: 11px 24px; }
-        .btn-accept { background: #159a70; }
-        .btn-reject { background: #dc4c4c; }
-        .btn-review:hover, .btn-close-detail:hover { filter: brightness(0.94); }
-        .btn-review:disabled { background: #cbd5e1; color: #64748b; cursor: not-allowed; filter: none; opacity: 0.75; }
+        .btn-close-detail:hover { filter: brightness(0.94); }
         .confirm-dialog {
             border: 0; border-radius: 22px; box-shadow: 0 24px 70px rgba(15,23,42,0.3);
             margin: auto; max-width: 440px; padding: 30px; width: calc(100% - 32px);
         }
         .confirm-dialog::backdrop { background: rgba(15,23,42,0.62); backdrop-filter: blur(3px); }
-        #dialogoDecision { max-height: 90vh; max-width: 620px; overflow-y: auto; }
         .confirm-dialog h2 { color: var(--primary); font-size: 1.4rem; margin-bottom: 12px; }
         .confirm-dialog p { color: var(--muted); line-height: 1.55; margin-bottom: 24px; }
         .confirm-actions { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
         .confirm-actions button { border: 0; border-radius: 50px; cursor: pointer; font-weight: 750; padding: 12px; }
         .btn-confirm-exit { background: var(--primary); color: white; }
-        .btn-confirm-decision { color: white; }
         .btn-confirm-cancel { background: #e2e8f0; color: #334155; }
         .card-dialog { border: 0; border-radius: 24px; box-shadow: 0 24px 70px rgba(15,23,42,.3); margin: auto; max-width: 720px; padding: 26px; width: calc(100% - 32px); }
         .card-dialog::backdrop { background: rgba(15,23,42,.62); backdrop-filter: blur(3px); }
         .donor-card { background: white; border: 1px solid #dbe4f0; border-radius: 16px; margin: 18px 0; overflow: hidden; }
         .donor-card-header { align-items: center; background: #f8fafc; border-bottom: 4px solid #15356d; color: #15356d; display: flex; justify-content: space-between; padding: 16px 20px; }
         .donor-life-mark { align-items: center; color: #15356d; display: flex; font-size: .7rem; font-weight: 900; gap: 7px; letter-spacing: .03em; }
-        .donor-life-mark svg { background: #e8f7ef; border-radius: 50%; color: #159a70; height: 42px; padding: 8px; width: 42px; }
+        .donor-life-mark svg { background: #fff1f2; border-radius: 50%; color: #dc3545; height: 42px; padding: 6px; width: 42px; }
         .donor-card-body { padding: 20px; }
         .donor-card-title { color: #15356d; font-size: 1.35rem; font-weight: 900; margin-bottom: 15px; }
         .donor-card-title small { display: block; font-size: .82rem; }
@@ -173,22 +153,6 @@
             body.imprimir-carnet #vistaCarnetAdmin * { visibility: visible !important; }
             body.imprimir-carnet #vistaCarnetAdmin { left: 0; position: absolute; top: 0; width: 100%; }
         }
-        .rejection-reasons { border-top: 1px solid var(--border); margin: -6px 0 22px; padding-top: 18px; }
-        .rejection-reasons > strong { color: var(--text); display: block; font-size: 0.92rem; margin-bottom: 12px; }
-        .reason-option {
-            align-items: flex-start; border: 1px solid var(--border); border-radius: 11px; cursor: pointer;
-            display: flex; gap: 10px; line-height: 1.35; margin-bottom: 9px; padding: 10px 12px;
-        }
-        .reason-option:has(input:checked) { background: #fff5f5; border-color: #dc4c4c; }
-        .reason-option input { accent-color: #dc4c4c; flex: 0 0 auto; margin-top: 2px; }
-        .other-reason { margin-top: 12px; }
-        .other-reason label { display: block; font-size: 0.84rem; font-weight: 700; margin-bottom: 7px; }
-        .other-reason textarea {
-            border: 1px solid var(--border); border-radius: 11px; font: inherit; min-height: 82px;
-            padding: 11px 12px; resize: vertical; width: 100%;
-        }
-        .confirm-actions button:disabled { cursor: not-allowed; opacity: 0.5; }
-
         @media (max-width: 900px) {
             .page-heading { align-items: start; flex-direction: column; gap: 18px; }
             .filters { grid-template-columns: repeat(2, 1fr); }
@@ -272,7 +236,7 @@
                             <th>Contacto</th>
                             <th>Correo contacto</th>
                             <th>Fecha de registro</th>
-                            <th>Consentimiento</th>
+                            <th>Estado</th>
                             <th>Acción</th>
                         </tr>
                     </thead>
@@ -343,24 +307,24 @@
         }
 
         const DONANTES_SEMILLA = [
-            { id: 1, nombre: "Carlos Mendoza", cedula: "8-123-1234", codigo: "88NNNN0001", fechaNacimiento: "1985-03-14", genero: "Masculino", correo: "carlos.mendoza@email.com", telefono: "+50760001234", provincia: "Panamá", distrito: "Panamá", corregimiento: "San Francisco", contacto: "María Mendoza", correoContacto: "maria.mendoza@email.com", telefonoContacto: "+50761001122", relacion: "Cónyuge", activo: true, estadoRegistro: "Aceptado" },
-            { id: 2, nombre: "Ana Rodríguez", cedula: "4-765-2310", codigo: "42ABCD0912", fechaNacimiento: "1992-07-22", genero: "Femenino", correo: "ana.rodriguez@email.com", telefono: "+50766772211", provincia: "Chiriquí", distrito: "David", corregimiento: "David", contacto: "Luis Rodríguez", correoContacto: "luis.rodriguez@email.com", telefonoContacto: "+50765554433", relacion: "Hermano(a)", activo: true, estadoRegistro: "Por validar" },
-            { id: 3, nombre: "José Martínez", cedula: "3-412-9981", codigo: "31KLMN7740", fechaNacimiento: "1978-11-02", genero: "Masculino", correo: "jose.martinez@email.com", telefono: "+50762223344", provincia: "Colón", distrito: "Colón", corregimiento: "Cristóbal", contacto: "Elena Martínez", correoContacto: "elena.martinez@email.com", telefonoContacto: "+50763334455", relacion: "Cónyuge", activo: true, estadoRegistro: "Aceptado" },
-            { id: 4, nombre: "Lucía González", cedula: "8-901-4567", codigo: "80PQRS3145", fechaNacimiento: "2001-01-19", genero: "Femenino", correo: "lucia.gonzalez@email.com", telefono: "+50767778899", provincia: "Panamá", distrito: "San Miguelito", corregimiento: "Rufina Alfaro", contacto: "Pedro González", correoContacto: "pedro.gonzalez@email.com", telefonoContacto: "+50769990011", relacion: "Padre/Madre", activo: true, estadoRegistro: "Rechazado" },
-            { id: 5, nombre: "Miguel Castillo", cedula: "6-223-7814", codigo: "62TUVW8803", fechaNacimiento: "1988-09-08", genero: "Masculino", correo: "miguel.castillo@email.com", telefono: "+50761112233", provincia: "Herrera", distrito: "Chitré", corregimiento: "Monagrillo", contacto: "Rosa Castillo", correoContacto: "rosa.castillo@email.com", telefonoContacto: "+50764445566", relacion: "Cónyuge", activo: true, estadoRegistro: "Por validar" },
-            { id: 6, nombre: "Sofía Herrera", cedula: "7-541-3902", codigo: "75XYZA0461", fechaNacimiento: "1994-05-27", genero: "Femenino", correo: "sofia.herrera@email.com", telefono: "+50765556677", provincia: "Los Santos", distrito: "Las Tablas", corregimiento: "Las Tablas", contacto: "Daniel Herrera", correoContacto: "daniel.herrera@email.com", telefonoContacto: "+50768889900", relacion: "Hermano(a)", activo: true, estadoRegistro: "Aceptado" },
-            { id: 7, nombre: "Ricardo Sánchez", cedula: "9-334-1208", codigo: "93BCDE5520", fechaNacimiento: "1981-12-10", genero: "Masculino", correo: "ricardo.sanchez@email.com", telefono: "+50760009988", provincia: "Veraguas", distrito: "Santiago", corregimiento: "Santiago", contacto: "Carmen Sánchez", correoContacto: "carmen.sanchez@email.com", telefonoContacto: "+50767776655", relacion: "Cónyuge", activo: true, estadoRegistro: "Rechazado" },
-            { id: 8, nombre: "Elena Morales", cedula: "2-882-6401", codigo: "28FGHI9034", fechaNacimiento: "1990-04-16", genero: "Femenino", correo: "elena.morales@email.com", telefono: "+50763332211", provincia: "Coclé", distrito: "Penonomé", corregimiento: "Penonomé", contacto: "Tomás Morales", correoContacto: "tomas.morales@email.com", telefonoContacto: "+50762221100", relacion: "Padre/Madre", activo: true, estadoRegistro: "Aceptado" },
-            { id: 9, nombre: "Andrés Vega", cedula: "1-678-3029", codigo: "16JKLM4812", fechaNacimiento: "1983-06-30", genero: "Masculino", correo: "andres.vega@email.com", telefono: "+50768887766", provincia: "Bocas del Toro", distrito: "Changuinola", corregimiento: "Changuinola", contacto: "Julio Vega", correoContacto: "julio.vega@email.com", telefonoContacto: "+50761110022", relacion: "Hermano(a)", activo: true, estadoRegistro: "Rechazado" },
-            { id: 10, nombre: "Patricia Ríos", cedula: "8-745-6120", codigo: "87NOPQ1509", fechaNacimiento: "1975-10-12", genero: "Femenino", correo: "patricia.rios@email.com", telefono: "+50769998877", provincia: "Panamá Oeste", distrito: "La Chorrera", corregimiento: "Barrio Balboa", contacto: "Marta Ríos", correoContacto: "marta.rios@email.com", telefonoContacto: "+50765550011", relacion: "Amistad", activo: true, estadoRegistro: "Por validar" },
-            { id: 11, nombre: "Fernando López", cedula: "5-390-4472", codigo: "53RSTU6274", fechaNacimiento: "1987-02-25", genero: "Masculino", correo: "fernando.lopez@email.com", telefono: "+50764443322", provincia: "Darién", distrito: "Pinogana", corregimiento: "Metetí", contacto: "Iván López", correoContacto: "ivan.lopez@email.com", telefonoContacto: "+50763330022", relacion: "Hermano(a)", activo: true, estadoRegistro: "Aceptado" },
-            { id: 12, nombre: "Gabriela Pérez", cedula: "8-712-3456", codigo: "87GABR1234", fechaNacimiento: "1991-08-03", genero: "Femenino", correo: "gabriela.perez@email.com", telefono: "+50767770088", provincia: "Panamá", distrito: "Panamá", corregimiento: "Bella Vista", contacto: "Raúl Pérez", correoContacto: "raul.perez@email.com", telefonoContacto: "+50769991122", relacion: "Padre/Madre", activo: true, estadoRegistro: "Por validar" },
-            { id: 13, nombre: "Roberto Díaz", cedula: "8-551-7840", codigo: "85ZABC3308", fechaNacimiento: "1960-03-21", genero: "Masculino", correo: "roberto.diaz@email.com", telefono: "+50761113355", provincia: "Panamá", distrito: "Panamá", corregimiento: "Bethania", contacto: "Laura Díaz", correoContacto: "laura.diaz@email.com", telefonoContacto: "+50762224466", relacion: "Cónyuge", activo: false, estadoRegistro: "Aceptado" },
-            { id: 14, nombre: "Mónica Salazar", cedula: "4-330-9821", codigo: "43DEFG8142", fechaNacimiento: "1980-07-07", genero: "Femenino", correo: "monica.salazar@email.com", telefono: "+50765557799", provincia: "Chiriquí", distrito: "Boquete", corregimiento: "Bajo Boquete", contacto: "Rafael Salazar", correoContacto: "rafael.salazar@email.com", telefonoContacto: "+50766668800", relacion: "Cónyuge", activo: false, estadoRegistro: "Aceptado" },
-            { id: 15, nombre: "Julio Espinosa", cedula: "3-708-1165", codigo: "37HIJK0956", fechaNacimiento: "1973-11-29", genero: "Masculino", correo: "julio.espinosa@email.com", telefono: "+50763335577", provincia: "Colón", distrito: "Portobelo", corregimiento: "Portobelo", contacto: "Silvia Espinosa", correoContacto: "silvia.espinosa@email.com", telefonoContacto: "+50764446688", relacion: "Amistad", activo: false, estadoRegistro: "Rechazado" },
-            { id: 16, nombre: "Teresa Navarro", cedula: "6-487-2250", codigo: "64LMNO5713", fechaNacimiento: "1986-05-15", genero: "Femenino", correo: "teresa.navarro@email.com", telefono: "+50768880099", provincia: "Herrera", distrito: "Ocú", corregimiento: "Ocú", contacto: "Marco Navarro", correoContacto: "marco.navarro@email.com", telefonoContacto: "+50769992233", relacion: "Hermano(a)", activo: false, estadoRegistro: "Aceptado" },
-            { id: 17, nombre: "Daniela Torres", cedula: "8-620-1843", codigo: "86QWERT2047", fechaNacimiento: "1996-04-18", genero: "Femenino", correo: "daniela.torres@email.com", telefono: "+50761234567", provincia: "Panamá", distrito: "Panamá", corregimiento: "Juan Díaz", contacto: "Adriana Torres", correoContacto: "adriana.torres@email.com", telefonoContacto: "+50762345678", relacion: "Hermano(a)", activo: true, estadoRegistro: "Por validar" },
-            { id: 18, nombre: "Samuel Batista", cedula: "4-908-1726", codigo: "49SAMA1726", fechaNacimiento: "1989-09-26", genero: "Masculino", correo: "samuel.batista@email.com", telefono: "+50763456789", provincia: "Chiriquí", distrito: "David", corregimiento: "David", contacto: "Rebeca Batista", correoContacto: "rebeca.batista@email.com", telefonoContacto: "+50764567890", relacion: "Cónyuge", activo: true, estadoRegistro: "Por validar" }
+            { id: 1, nombre: "Carlos Mendoza", cedula: "8-123-1234", codigo: "88NNNN0001", fechaNacimiento: "1985-03-14", genero: "Masculino", correo: "carlos.mendoza@email.com", telefono: "+50760001234", provincia: "Panamá", distrito: "Panamá", corregimiento: "San Francisco", contacto: "María Mendoza", correoContacto: "maria.mendoza@email.com", telefonoContacto: "+50761001122", relacion: "Cónyuge", activo: true },
+            { id: 2, nombre: "Ana Rodríguez", cedula: "4-765-2310", codigo: "42ABCD0912", fechaNacimiento: "1992-07-22", genero: "Femenino", correo: "ana.rodriguez@email.com", telefono: "+50766772211", provincia: "Chiriquí", distrito: "David", corregimiento: "David", contacto: "Luis Rodríguez", correoContacto: "luis.rodriguez@email.com", telefonoContacto: "+50765554433", relacion: "Hermano(a)", activo: true },
+            { id: 3, nombre: "José Martínez", cedula: "3-412-9981", codigo: "31KLMN7740", fechaNacimiento: "1978-11-02", genero: "Masculino", correo: "jose.martinez@email.com", telefono: "+50762223344", provincia: "Colón", distrito: "Colón", corregimiento: "Cristóbal", contacto: "Elena Martínez", correoContacto: "elena.martinez@email.com", telefonoContacto: "+50763334455", relacion: "Cónyuge", activo: true },
+            { id: 4, nombre: "Lucía González", cedula: "8-901-4567", codigo: "80PQRS3145", fechaNacimiento: "2001-01-19", genero: "Femenino", correo: "lucia.gonzalez@email.com", telefono: "+50767778899", provincia: "Panamá", distrito: "San Miguelito", corregimiento: "Rufina Alfaro", contacto: "Pedro González", correoContacto: "pedro.gonzalez@email.com", telefonoContacto: "+50769990011", relacion: "Padre/Madre", activo: true },
+            { id: 5, nombre: "Miguel Castillo", cedula: "6-223-7814", codigo: "62TUVW8803", fechaNacimiento: "1988-09-08", genero: "Masculino", correo: "miguel.castillo@email.com", telefono: "+50761112233", provincia: "Herrera", distrito: "Chitré", corregimiento: "Monagrillo", contacto: "Rosa Castillo", correoContacto: "rosa.castillo@email.com", telefonoContacto: "+50764445566", relacion: "Cónyuge", activo: true },
+            { id: 6, nombre: "Sofía Herrera", cedula: "7-541-3902", codigo: "75XYZA0461", fechaNacimiento: "1994-05-27", genero: "Femenino", correo: "sofia.herrera@email.com", telefono: "+50765556677", provincia: "Los Santos", distrito: "Las Tablas", corregimiento: "Las Tablas", contacto: "Daniel Herrera", correoContacto: "daniel.herrera@email.com", telefonoContacto: "+50768889900", relacion: "Hermano(a)", activo: true },
+            { id: 7, nombre: "Ricardo Sánchez", cedula: "9-334-1208", codigo: "93BCDE5520", fechaNacimiento: "1981-12-10", genero: "Masculino", correo: "ricardo.sanchez@email.com", telefono: "+50760009988", provincia: "Veraguas", distrito: "Santiago", corregimiento: "Santiago", contacto: "Carmen Sánchez", correoContacto: "carmen.sanchez@email.com", telefonoContacto: "+50767776655", relacion: "Cónyuge", activo: true },
+            { id: 8, nombre: "Elena Morales", cedula: "2-882-6401", codigo: "28FGHI9034", fechaNacimiento: "1990-04-16", genero: "Femenino", correo: "elena.morales@email.com", telefono: "+50763332211", provincia: "Coclé", distrito: "Penonomé", corregimiento: "Penonomé", contacto: "Tomás Morales", correoContacto: "tomas.morales@email.com", telefonoContacto: "+50762221100", relacion: "Padre/Madre", activo: true },
+            { id: 9, nombre: "Andrés Vega", cedula: "1-678-3029", codigo: "16JKLM4812", fechaNacimiento: "1983-06-30", genero: "Masculino", correo: "andres.vega@email.com", telefono: "+50768887766", provincia: "Bocas del Toro", distrito: "Changuinola", corregimiento: "Changuinola", contacto: "Julio Vega", correoContacto: "julio.vega@email.com", telefonoContacto: "+50761110022", relacion: "Hermano(a)", activo: true },
+            { id: 10, nombre: "Patricia Ríos", cedula: "8-745-6120", codigo: "87NOPQ1509", fechaNacimiento: "1975-10-12", genero: "Femenino", correo: "patricia.rios@email.com", telefono: "+50769998877", provincia: "Panamá Oeste", distrito: "La Chorrera", corregimiento: "Barrio Balboa", contacto: "Marta Ríos", correoContacto: "marta.rios@email.com", telefonoContacto: "+50765550011", relacion: "Amistad", activo: true },
+            { id: 11, nombre: "Fernando López", cedula: "5-390-4472", codigo: "53RSTU6274", fechaNacimiento: "1987-02-25", genero: "Masculino", correo: "fernando.lopez@email.com", telefono: "+50764443322", provincia: "Darién", distrito: "Pinogana", corregimiento: "Metetí", contacto: "Iván López", correoContacto: "ivan.lopez@email.com", telefonoContacto: "+50763330022", relacion: "Hermano(a)", activo: true },
+            { id: 12, nombre: "Gabriela Pérez", cedula: "8-712-3456", codigo: "87GABR1234", fechaNacimiento: "1991-08-03", genero: "Femenino", correo: "gabriela.perez@email.com", telefono: "+50767770088", provincia: "Panamá", distrito: "Panamá", corregimiento: "Bella Vista", contacto: "Raúl Pérez", correoContacto: "raul.perez@email.com", telefonoContacto: "+50769991122", relacion: "Padre/Madre", activo: true },
+            { id: 13, nombre: "Roberto Díaz", cedula: "8-551-7840", codigo: "85ZABC3308", fechaNacimiento: "1960-03-21", genero: "Masculino", correo: "roberto.diaz@email.com", telefono: "+50761113355", provincia: "Panamá", distrito: "Panamá", corregimiento: "Bethania", contacto: "Laura Díaz", correoContacto: "laura.diaz@email.com", telefonoContacto: "+50762224466", relacion: "Cónyuge", activo: false },
+            { id: 14, nombre: "Mónica Salazar", cedula: "4-330-9821", codigo: "43DEFG8142", fechaNacimiento: "1980-07-07", genero: "Femenino", correo: "monica.salazar@email.com", telefono: "+50765557799", provincia: "Chiriquí", distrito: "Boquete", corregimiento: "Bajo Boquete", contacto: "Rafael Salazar", correoContacto: "rafael.salazar@email.com", telefonoContacto: "+50766668800", relacion: "Cónyuge", activo: false },
+            { id: 15, nombre: "Julio Espinosa", cedula: "3-708-1165", codigo: "37HIJK0956", fechaNacimiento: "1973-11-29", genero: "Masculino", correo: "julio.espinosa@email.com", telefono: "+50763335577", provincia: "Colón", distrito: "Portobelo", corregimiento: "Portobelo", contacto: "Silvia Espinosa", correoContacto: "silvia.espinosa@email.com", telefonoContacto: "+50764446688", relacion: "Amistad", activo: false },
+            { id: 16, nombre: "Teresa Navarro", cedula: "6-487-2250", codigo: "64LMNO5713", fechaNacimiento: "1986-05-15", genero: "Femenino", correo: "teresa.navarro@email.com", telefono: "+50768880099", provincia: "Herrera", distrito: "Ocú", corregimiento: "Ocú", contacto: "Marco Navarro", correoContacto: "marco.navarro@email.com", telefonoContacto: "+50769992233", relacion: "Hermano(a)", activo: false },
+            { id: 17, nombre: "Daniela Torres", cedula: "8-620-1843", codigo: "86QWERT2047", fechaNacimiento: "1996-04-18", genero: "Femenino", correo: "daniela.torres@email.com", telefono: "+50761234567", provincia: "Panamá", distrito: "Panamá", corregimiento: "Juan Díaz", contacto: "Adriana Torres", correoContacto: "adriana.torres@email.com", telefonoContacto: "+50762345678", relacion: "Hermano(a)", activo: true },
+            { id: 18, nombre: "Samuel Batista", cedula: "4-908-1726", codigo: "49SAMA1726", fechaNacimiento: "1989-09-26", genero: "Masculino", correo: "samuel.batista@email.com", telefono: "+50763456789", provincia: "Chiriquí", distrito: "David", corregimiento: "David", contacto: "Rebeca Batista", correoContacto: "rebeca.batista@email.com", telefonoContacto: "+50764567890", relacion: "Cónyuge", activo: true }
         ];
         const FECHAS_REGISTRO_SEMILLA = [
             "2025-01-03T13:15:00.000Z", "2025-02-04T14:15:00.000Z", "2025-03-05T15:15:00.000Z",
@@ -371,12 +335,12 @@
             "2026-04-18T19:15:00.000Z", "2026-05-19T20:15:00.000Z", "2026-06-20T21:15:00.000Z"
         ];
 
-        let donantes = DONANTES_SEMILLA.map(({ estadoRegistro: estadoAnterior, ...donante }, indice) => ({
+        let donantes = DONANTES_SEMILLA.map((donante, indice) => ({
             ...donante,
             folio: `DC-2026-${String(indice + 1).padStart(5, "0")}`,
             fechaRegistro: FECHAS_REGISTRO_SEMILLA[indice],
             fechaRevocacion: donante.activo ? null : new Date(2026, (indice + 2) % 7, 10 + (indice % 12), 10, 30).toISOString(),
-            estadoConsentimiento: donante.activo ? "Activo" : "Baja",
+            estado: donante.activo ? "Activo" : "Baja",
             conversado: indice % 3 !== 0,
             consentimientoVoluntario: true,
             consentimientoNoDesfigura: indice % 4 !== 0,
@@ -396,14 +360,14 @@
         let donanteSeleccionadoId = null;
         const REGISTROS_MOCK_KEY = "registros_donacion_mock";
 
-        function aplicarReglasConsentimiento(donante) {
-            donante.estadoConsentimiento = donante.estadoConsentimiento === "Baja" ? "Baja" : "Activo";
-            donante.activo = donante.estadoConsentimiento === "Activo";
+        function aplicarReglasEstado(donante) {
+            donante.estado = donante.estado === "Baja" ? "Baja" : "Activo";
+            donante.activo = donante.estado === "Activo";
             if (donante.activo) donante.fechaRevocacion = null;
             return donante;
         }
 
-        donantes.forEach(aplicarReglasConsentimiento);
+        donantes.forEach(aplicarReglasEstado);
 
         function sincronizarRegistrosFormulario() {
             try {
@@ -417,8 +381,8 @@
                     donante.folio = registro.folio || donante.folio;
                     donante.fechaRegistro = registro.fechaRegistro || donante.fechaRegistro;
                     donante.fechaRevocacion = registro.fechaRevocacion || null;
-                    donante.estadoConsentimiento = registro.estadoConsentimiento || donante.estadoConsentimiento;
-                    aplicarReglasConsentimiento(donante);
+                    donante.estado = registro.estado || (registro.activo === false ? "Baja" : "Activo");
+                    aplicarReglasEstado(donante);
                 });
             } catch (error) {
                 // Los datos semilla permanecen disponibles si el almacenamiento local no es válido.
@@ -453,8 +417,8 @@
                     normalizar(donante.cedula).includes(filtrosAplicados.cedula) &&
                     (!filtrosAplicados.provincia || donante.provincia === filtrosAplicados.provincia) &&
                     (!filtrosAplicados.estado || (filtrosAplicados.estado === "activo"
-                        ? donante.estadoConsentimiento === "Activo"
-                        : donante.estadoConsentimiento === "Baja")) &&
+                        ? donante.estado === "Activo"
+                        : donante.estado === "Baja")) &&
                     coincideFecha;
             });
         }
@@ -499,7 +463,7 @@
                         <td>${donante.contacto}</td>
                         <td>${donante.correoContacto}</td>
                         <td>${new Date(donante.fechaRegistro).toLocaleDateString("es-PA")}</td>
-                        <td><span class="badge ${donante.estadoConsentimiento === "Activo" ? "badge-active" : "badge-inactive"}">${donante.estadoConsentimiento}</span></td>
+                        <td><span class="badge ${donante.estado === "Activo" ? "badge-active" : "badge-inactive"}">${donante.estado}</span></td>
                         <td><button type="button" class="btn-view" onclick="verDonante(${donante.id})">Ver</button></td>
                     </tr>
                 `).join("");
@@ -537,7 +501,7 @@
             const paginaVisible = filtrados.slice(inicio, inicio + tamano);
             const encabezados = [
                 "Nombre", "Cédula", "Correo", "Provincia", "Contacto",
-                "Correo contacto", "Fecha de registro", "Consentimiento"
+                "Correo contacto", "Fecha de registro", "Estado"
             ];
             const filas = paginaVisible.map(donante => [
                 donante.nombre,
@@ -547,7 +511,7 @@
                 donante.contacto,
                 donante.correoContacto,
                 new Date(donante.fechaRegistro).toLocaleDateString("es-PA"),
-                donante.estadoConsentimiento
+                donante.estado
             ]);
             const contenido = [encabezados, ...filas]
                 .map(fila => fila.map(escaparCSV).join(","))
@@ -588,7 +552,7 @@
                     <h3>Datos del donante</h3>
                     <div class="detail-grid">
                         ${campoDetalle("Nombre completo", donante.nombre)}
-                        ${campoDetalle("Estado del consentimiento", donante.estadoConsentimiento)}
+                        ${campoDetalle("Estado", donante.estado)}
                         ${campoDetalle("Cédula", donante.cedula)}
                         ${campoDetalle("Código posterior", donante.codigo)}
                         ${campoDetalle("Fecha de nacimiento", donante.fechaNacimiento)}
@@ -605,17 +569,17 @@
                     <div class="detail-grid">
                         ${campoDetalle("Número de folio", donante.folio)}
                         ${campoDetalle("Fecha y hora de registro", new Date(donante.fechaRegistro).toLocaleString("es-PA"))}
-                        ${campoDetalle("Estado del consentimiento", donante.estadoConsentimiento)}
+                        ${campoDetalle("Estado", donante.estado)}
                         ${campoDetalle("Fecha de baja", donante.fechaRevocacion ? new Date(donante.fechaRevocacion).toLocaleString("es-PA") : "No aplica")}
                     </div>
                 </section>
                 <section class="detail-section">
                     <h3>Consentimiento informado</h3>
                     <div class="detail-grid">
-                        ${campoDetalle("Voluntad libre y expresa", donante.consentimientoVoluntario ? "Aceptado" : "No aceptado")}
+                        ${campoDetalle("Voluntad libre y expresa", donante.consentimientoVoluntario ? "Sí" : "No")}
                         ${campoDetalle("Comprende que no desfigura", donante.consentimientoNoDesfigura ? "Sí" : "No")}
                         ${campoDetalle("Firma electrónica", donante.firmaDigital)}
-                        ${campoDetalle("Aceptación electrónica", donante.aceptacionElectronica ? "Aceptada" : "No aceptada")}
+                        ${campoDetalle("Aceptación electrónica", donante.aceptacionElectronica ? "Sí" : "No")}
                     </div>
                 </section>
                 <section class="detail-section">
@@ -676,7 +640,7 @@
         function abrirCarnet() {
             const donante = donantes.find(registro => registro.id === donanteSeleccionadoId);
             if (!donante) return;
-            if (donante.estadoConsentimiento === "Baja") {
+            if (donante.estado === "Baja") {
                 document.getElementById("detalleDonante").close();
                 document.getElementById("dialogoCarnetBaja").showModal();
                 return;
@@ -691,9 +655,9 @@
                     <header class="donor-card-header">
                         <strong>DONA ÓRGANOS PANAMÁ</strong>
                         <span class="donor-life-mark">
-                            <svg viewBox="0 0 32 32" aria-hidden="true">
-                                <path fill="currentColor" d="M16 28S4 20.6 4 11.6C4 7.4 7.1 5 10.4 5c2.4 0 4.5 1.3 5.6 3.2C17.1 6.3 19.2 5 21.6 5 24.9 5 28 7.4 28 11.6 28 20.6 16 28 16 28Z"/>
-                                <path fill="#fff" d="M14.4 11h3.2v3.4H21v3.2h-3.4V21h-3.2v-3.4H11v-3.2h3.4V11Z"/>
+                            <svg viewBox="0 0 64 64" aria-hidden="true">
+                                <path fill="currentColor" d="M32 32 21.6 22.7C15.5 17.3 19.4 7 27.3 7c2.1 0 3.8.9 4.7 2.6C32.9 7.9 34.6 7 36.7 7c7.9 0 11.8 10.3 5.7 15.7L32 32Z"/>
+                                <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="5" d="M5 36c6.5.2 8.7 7.1 15.2 9.1 4.5 1.4 8.2-.3 11.8-3.6M59 36c-6.5.2-8.7 7.1-15.2 9.1-4.5 1.4-8.2-.3-11.8-3.6M9 44l7.5 8M55 44l-7.5 8"/>
                             </svg>
                             DONA VIDA
                         </span>
@@ -792,7 +756,7 @@
                 .card-print-item .donor-card { background: white; border: 1px solid #dbe4f0; border-radius: 16px; height: 107.96mm; margin: 0; overflow: hidden; position: relative; transform: scale(.5); transform-origin: top left; width: 171.20mm; }
                 .donor-card-header { align-items: center; background: #f8fafc; border-bottom: 4px solid #15356d; color: #15356d; display: flex; justify-content: space-between; padding: 16px 20px; }
                 .donor-life-mark { align-items: center; color: #15356d; display: flex; font-size: .7rem; font-weight: 900; gap: 7px; }
-                .donor-life-mark svg { background: #e8f7ef; border-radius: 50%; color: #159a70; height: 42px; padding: 8px; width: 42px; }
+                .donor-life-mark svg { background: #fff1f2; border-radius: 50%; color: #dc3545; height: 42px; padding: 6px; width: 42px; }
                 .donor-card-body { padding: 20px; }
                 .donor-card-title { color: #15356d; font-size: 1.35rem; font-weight: 900; margin-bottom: 15px; }
                 .donor-card-title small { display: block; font-size: .82rem; }
@@ -860,12 +824,17 @@
             pdf.setFont("helvetica", "bold");
             pdf.setFontSize(8);
             pdf.text("DONA ÓRGANOS PANAMÁ", 5, 7);
-            pdf.setFillColor(21, 154, 112);
+            pdf.setFillColor(255, 241, 242);
             pdf.circle(68, 6.5, 3.4, "F");
-            pdf.setDrawColor(255, 255, 255);
-            pdf.setLineWidth(0.8);
-            pdf.line(68, 4.7, 68, 8.3);
-            pdf.line(66.2, 6.5, 69.8, 6.5);
+            pdf.setTextColor(220, 53, 69);
+            pdf.setFontSize(7);
+            pdf.text("♥", 68, 6.3, { align: "center" });
+            pdf.setDrawColor(220, 53, 69);
+            pdf.setLineWidth(0.45);
+            pdf.line(64.8, 7.1, 67.2, 8.3);
+            pdf.line(67.2, 8.3, 68, 7.8);
+            pdf.line(71.2, 7.1, 68.8, 8.3);
+            pdf.line(68.8, 8.3, 68, 7.8);
             pdf.setTextColor(21, 53, 109);
             pdf.setFontSize(6.5);
             pdf.text("DONA VIDA", 73, 7.2);
@@ -944,147 +913,6 @@
 
         function cerrarDetalle() {
             document.getElementById("detalleDonante").close();
-        }
-
-        function abrirDecision(estado) {
-            const donante = donantes.find(registro => registro.id === donanteSeleccionadoId);
-            if (!donante || donante.estadoRegistro !== "Por validar") return;
-
-            decisionPendiente = estado;
-            const accion = estado === "Aceptado" ? "aceptar" : "rechazar";
-            document.getElementById("tituloDecision").textContent = `¿Deseas ${accion} este registro?`;
-            document.getElementById("mensajeDecision").textContent =
-                `Se cambiará el estado del registro de ${donante.nombre} a “${estado}”.`;
-
-            const boton = document.getElementById("botonConfirmarDecision");
-            boton.textContent = estado === "Aceptado" ? "Sí, aceptar" : "Sí, rechazar";
-            boton.className = `btn-confirm-decision ${estado === "Aceptado" ? "btn-accept" : "btn-reject"}`;
-            document.querySelectorAll('input[name="motivoRechazo"]').forEach(opcion => opcion.checked = false);
-            document.getElementById("detalleOtroMotivo").value = "";
-            document.getElementById("observacionesRechazo").value = "";
-            document.getElementById("campoOtroMotivo").hidden = true;
-            document.getElementById("motivosRechazo").hidden = estado !== "Rechazado";
-            boton.disabled = estado === "Rechazado";
-            document.getElementById("dialogoDecision").showModal();
-        }
-
-        function actualizarMotivoRechazo() {
-            const seleccionado = document.querySelector('input[name="motivoRechazo"]:checked');
-            const esOtro = seleccionado?.value === "Otro";
-            const campoOtro = document.getElementById("campoOtroMotivo");
-            campoOtro.hidden = !esOtro;
-            if (!esOtro) document.getElementById("detalleOtroMotivo").value = "";
-
-            const explicacionCompleta = !esOtro || document.getElementById("detalleOtroMotivo").value.trim().length > 0;
-            document.getElementById("botonConfirmarDecision").disabled = !seleccionado || !explicacionCompleta;
-        }
-
-        function cancelarDecision() {
-            decisionPendiente = null;
-            document.getElementById("dialogoDecision").close();
-        }
-
-        function guardarDecisionesAdministrativas() {
-            const decisiones = Object.fromEntries(donantes.map(donante => [donante.id, {
-                estadoRegistro: donante.estadoRegistro,
-                estadoConsentimiento: donante.estadoConsentimiento,
-                activo: donante.activo,
-                fechaRevocacion: donante.fechaRevocacion,
-                motivoRechazo: donante.motivoRechazo,
-                detalleMotivoRechazo: donante.detalleMotivoRechazo,
-                observacionesRechazo: donante.observacionesRechazo,
-                fechaDecision: donante.fechaDecision,
-                administradorDecision: donante.administradorDecision
-            }]));
-            localStorage.setItem(DECISIONES_ADMIN_KEY, JSON.stringify(decisiones));
-        }
-
-        function sincronizarDecisionConRegistro(donante) {
-            try {
-                const guardados = JSON.parse(localStorage.getItem(REGISTROS_MOCK_KEY));
-                const registros = Array.isArray(guardados) ? guardados : [];
-                const indice = registros.findIndex(registro =>
-                    registro.cedula === donante.cedula && registro.codigo === donante.codigo
-                );
-                const anterior = indice === -1 ? {} : registros[indice];
-                const actualizado = {
-                    ...anterior,
-                    cedula: donante.cedula,
-                    codigo: donante.codigo,
-                    folio: donante.folio,
-                    fechaRegistro: donante.fechaRegistro,
-                    estadoRegistro: donante.estadoRegistro,
-                    estadoConsentimiento: donante.estadoConsentimiento,
-                    activo: donante.activo,
-                    fechaRevocacion: donante.fechaRevocacion || null,
-                    fechaActualizacion: new Date().toISOString()
-                };
-                if (indice === -1) registros.push(actualizado);
-                else registros[indice] = actualizado;
-                localStorage.setItem(REGISTROS_MOCK_KEY, JSON.stringify(registros));
-            } catch (error) {
-                // La decisión administrativa se conserva aunque falle la sincronización del mock compartido.
-            }
-        }
-
-        function cargarDecisionesAdministrativas() {
-            try {
-                const decisiones = JSON.parse(localStorage.getItem(DECISIONES_ADMIN_KEY));
-                if (!decisiones || typeof decisiones !== "object") return;
-                donantes.forEach(donante => {
-                    const decision = decisiones[donante.id];
-                    const estadoGuardado = typeof decision === "string" ? decision : decision?.estadoRegistro;
-                    if (["Aceptado", "Rechazado", "Por validar", "Cancelado"].includes(estadoGuardado)) {
-                        donante.estadoRegistro = estadoGuardado;
-                        if (typeof decision === "object") {
-                            donante.motivoRechazo = decision.motivoRechazo || null;
-                            donante.detalleMotivoRechazo = decision.detalleMotivoRechazo || "";
-                            donante.observacionesRechazo = decision.observacionesRechazo || "";
-                            donante.fechaDecision = decision.fechaDecision || null;
-                            donante.administradorDecision = decision.administradorDecision || null;
-                            donante.fechaRevocacion = decision.fechaRevocacion || null;
-                        }
-                        aplicarReglasEstado(donante);
-                    }
-                });
-            } catch (error) {
-                // Se conservan los estados semilla si el almacenamiento local no es válido.
-            }
-        }
-
-        function confirmarDecision() {
-            const donante = donantes.find(registro => registro.id === donanteSeleccionadoId);
-            if (!donante || !decisionPendiente) return;
-
-            const motivoSeleccionado = document.querySelector('input[name="motivoRechazo"]:checked');
-            const detalleOtro = document.getElementById("detalleOtroMotivo").value.trim();
-            const observaciones = document.getElementById("observacionesRechazo").value.trim();
-            if (decisionPendiente === "Rechazado" && (!motivoSeleccionado || (motivoSeleccionado.value === "Otro" && !detalleOtro))) {
-                actualizarMotivoRechazo();
-                return;
-            }
-
-            donante.estadoRegistro = decisionPendiente;
-            aplicarReglasEstado(donante);
-            donante.motivoRechazo = decisionPendiente === "Rechazado" ? motivoSeleccionado.value : null;
-            donante.detalleMotivoRechazo = decisionPendiente === "Rechazado" && motivoSeleccionado.value === "Otro" ? detalleOtro : "";
-            donante.observacionesRechazo = decisionPendiente === "Rechazado" ? observaciones : "";
-            donante.fechaDecision = new Date().toISOString();
-            donante.administradorDecision = "Administrador1";
-            guardarDecisionesAdministrativas();
-            sincronizarDecisionConRegistro(donante);
-            document.getElementById("dialogoDecision").close();
-            document.getElementById("detalleDonante").close();
-            renderTabla();
-
-            document.getElementById("mensajeResultadoDecision").textContent =
-                `El registro de ${donante.nombre} fue ${decisionPendiente.toLowerCase()} correctamente.`;
-            decisionPendiente = null;
-            document.getElementById("dialogoResultadoDecision").showModal();
-        }
-
-        function cerrarResultadoDecision() {
-            document.getElementById("dialogoResultadoDecision").close();
         }
 
         function abrirSalidaAdmin() {

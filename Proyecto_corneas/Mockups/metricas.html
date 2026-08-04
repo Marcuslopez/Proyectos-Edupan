@@ -109,9 +109,8 @@
             display: grid; gap: 10px; grid-template-columns: 12px 1fr auto; padding: 13px 15px;
         }
         .status-dot { border-radius: 50%; height: 12px; width: 12px; }
-        .status-dot.accepted { background: #159a70; }
-        .status-dot.pending { background: var(--gold); }
-        .status-dot.rejected { background: #e25c5c; }
+        .status-dot.active { background: #159a70; }
+        .status-dot.inactive { background: #e25c5c; }
         .status-label { color: #475569; font-size: 0.88rem; font-weight: 700; }
         .status-value { color: var(--primary); font-weight: 800; }
 
@@ -181,10 +180,10 @@
             <section class="chart-card chart-card-wide">
                 <div class="chart-heading">
                     <div>
-                        <h2>Altas y bajas de donantes</h2>
-                        <p>Comparación entre donantes con consentimiento activo y donantes que solicitaron su baja.</p>
+                        <h2>Estado de los donantes</h2>
+                        <p>Comparación entre donantes activos y donantes que solicitaron su baja.</p>
                     </div>
-                    <span class="chart-badge">Estado del consentimiento</span>
+                    <span class="chart-badge">Estado de los donantes</span>
                 </div>
                 <div class="status-chart" aria-label="Gráfica de altas y bajas de donantes">
                     <div id="graficaEstados" class="status-donut"></div>
@@ -327,8 +326,8 @@
         function renderEstados() {
             const estadosActuales = ESTADOS_SEMILLA;
             const estados = [
-                { etiqueta: "Altas", cantidad: estadosActuales.filter(estado => estado === "Activo").length, clase: "accepted" },
-                { etiqueta: "Bajas", cantidad: estadosActuales.filter(estado => estado === "Baja").length, clase: "rejected" }
+                { etiqueta: "Activos", cantidad: estadosActuales.filter(estado => estado === "Activo").length, clase: "active" },
+                { etiqueta: "Bajas", cantidad: estadosActuales.filter(estado => estado === "Baja").length, clase: "inactive" }
             ];
             const total = estados.reduce((acumulado, estado) => acumulado + estado.cantidad, 0);
             const porcentajeAltas = (estados[0].cantidad / total) * 100;

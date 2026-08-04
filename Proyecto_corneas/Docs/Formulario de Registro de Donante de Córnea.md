@@ -63,7 +63,7 @@ Permite al ciudadano ejercer su autonomía sobre qué partes de su cuerpo desea 
 | :---- | :---- | :---- | :---- |
 | **Timestamp (Fecha y Hora de registro)** | Fecha y Hora | Sistema | Auditoría y control de vigencia. |
 | **Número de Folio / Carnet** | Texto alfanumérico | Sistema | Identificador único del donante en el Banco de Córneas. |
-| **Estado del Consentimiento** | Estado (Activo / Revocado) | Sistema | La ley exige que el donante pueda arrepentirse en cualquier momento. |
+| **Estado** | Estado (Activo / Baja) | Sistema | La ley exige que el donante pueda arrepentirse en cualquier momento. |
 | **Enlace/Botón: "Revocar mi consentimiento"** | Botón / Enlace UI | Sí (Mostrar) | Obligación legal. El donante debe tener una vía fácil para dar de baja su registro. |
 
 ## **7\. Aspectos de Protección de Datos Personales (Ley 81 de 2019\)**
