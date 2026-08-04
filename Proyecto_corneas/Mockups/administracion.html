@@ -284,7 +284,7 @@
     </dialog>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         if (sessionStorage.getItem("admin_mock_authenticated") !== "true") {
             window.location.replace("index.html");
@@ -821,7 +821,21 @@
 
         function descargarCarnetPDF() {
             const donante = donantes.find(registro => registro.id === donanteSeleccionadoId);
-            if (!donante || !window.jspdf) return;
+            if (!donante) return;
+            if (!window.jspdf) {
+                alert("No fue posible cargar el generador de PDF. Verifica tu conexión e inténtalo nuevamente.");
+                return;
+            }
+
+            try {
+                generarCarnetPDF(donante);
+            } catch (error) {
+                console.error("No fue posible descargar el carnet en PDF:", error);
+                alert("Ocurrió un problema al generar el PDF del carnet. Inténtalo nuevamente.");
+            }
+        }
+
+        function generarCarnetPDF(donante) {
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: [86, 54] });
             const fecha = new Intl.DateTimeFormat("es-PA", {
