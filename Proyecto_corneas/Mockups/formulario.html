@@ -597,8 +597,10 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-    // URL de tu Web App de Google Apps Script
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxy3bV3H7xdqJlIj5_C1im_xCVXtqwGTyLt3pXBI3G6huHstdouZ5cLUuVs-D97DkWFTA/exec";
+    // Esta URL identificaba el Google Apps Script que recibía las solicitudes del formulario.
+    // Se conserva como referencia, pero se desactiva porque el mockup publicado en GitHub Pages
+    // simula actualmente la persistencia y la consulta de registros mediante localStorage.
+    // const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxy3bV3H7xdqJlIj5_C1im_xCVXtqwGTyLt3pXBI3G6huHstdouZ5cLUuVs-D97DkWFTA/exec";
     const REGISTROS_MOCK_KEY = 'registros_donacion_mock';
     const CORREOS_SIMULADOS_KEY = 'correos_carnet_mock';
     let ultimoDatosCarnet = null;
@@ -1265,12 +1267,18 @@
         }
 
         try {
+            // Este bloque enviaba el registro a Google Apps Script antes de completar la simulación.
+            // Se conserva comentado para documentar la integración anterior, pero se desactiva porque
+            // la vista de administración en GitHub Pages utiliza exclusivamente los datos de localStorage.
+            // Evitar esta espera externa permite que el mockup confirme el registro inmediatamente.
+            /*
             const response = await fetch(WEB_APP_URL, {
                 method: "POST",
                 mode: "no-cors", 
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
+            */
 
             msgDiv.className = "message success";
             if (accion === 'registrar') {
