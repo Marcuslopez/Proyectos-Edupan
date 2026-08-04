@@ -264,8 +264,7 @@
             <h3 id="tituloCarnetDetalle">Carnet del donante</h3>
             <div id="vistaCarnetAdmin"></div>
             <div id="accionesCarnetDetalle" class="card-actions">
-                <button type="button" class="btn-print" onclick="imprimirCarnet()">Imprimir</button>
-                <button type="button" class="btn-pdf" onclick="descargarCarnetPDF()">Descargar PDF</button>
+                <button type="button" class="btn-print" onclick="imprimirCarnet()">Imprimir / Guardar PDF</button>
             </div>
         </section>
         <div class="detail-footer">
@@ -284,7 +283,6 @@
     </dialog>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         if (sessionStorage.getItem("admin_mock_authenticated") !== "true") {
             window.location.replace("index.html");
@@ -817,114 +815,6 @@
                 ventanaImpresion.focus();
                 ventanaImpresion.print();
             }, 250);
-        }
-
-        function descargarCarnetPDF() {
-            const donante = donantes.find(registro => registro.id === donanteSeleccionadoId);
-            if (!donante) return;
-            if (!window.jspdf) {
-                alert("No fue posible cargar el generador de PDF. Verifica tu conexión e inténtalo nuevamente.");
-                return;
-            }
-
-            try {
-                generarCarnetPDF(donante);
-            } catch (error) {
-                console.error("No fue posible descargar el carnet en PDF:", error);
-                alert("Ocurrió un problema al generar el PDF del carnet. Inténtalo nuevamente.");
-            }
-        }
-
-        function generarCarnetPDF(donante) {
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: [86, 54] });
-            const fecha = new Intl.DateTimeFormat("es-PA", {
-                day: "2-digit", month: "2-digit", year: "numeric"
-            }).format(new Date(donante.fechaRegistro));
-
-            pdf.setFillColor(248, 250, 252);
-            pdf.rect(0, 0, 86, 13, "F");
-            pdf.setFillColor(21, 53, 109);
-            pdf.rect(0, 12, 86, 1.5, "F");
-            pdf.setTextColor(21, 53, 109);
-            pdf.setFont("helvetica", "bold");
-            pdf.setFontSize(8);
-            pdf.text("DONA ÓRGANOS PANAMÁ", 5, 7);
-            pdf.setFillColor(255, 241, 242);
-            pdf.circle(68, 6.5, 3.4, "F");
-            pdf.setTextColor(220, 53, 69);
-            pdf.setFontSize(7);
-            pdf.text("♥", 68, 6.3, { align: "center" });
-            pdf.setDrawColor(220, 53, 69);
-            pdf.setLineWidth(0.45);
-            pdf.line(64.8, 7.1, 67.2, 8.3);
-            pdf.line(67.2, 8.3, 68, 7.8);
-            pdf.line(71.2, 7.1, 68.8, 8.3);
-            pdf.line(68.8, 8.3, 68, 7.8);
-            pdf.setTextColor(21, 53, 109);
-            pdf.setFontSize(6.5);
-            pdf.text("DONA VIDA", 73, 7.2);
-            pdf.setFontSize(12);
-            pdf.text("CARNET DE DONANTE", 5, 20);
-            pdf.setFontSize(6.5);
-            pdf.text("VOLUNTAD DE DONACIÓN DE ÓRGANOS", 5, 24);
-            pdf.setFontSize(12);
-            pdf.setTextColor(100, 116, 139);
-            pdf.text("NOMBRE COMPLETO", 5, 29);
-            pdf.text("CÉDULA", 5, 40);
-            pdf.text("REGISTRO", 32, 40);
-            pdf.setTextColor(23, 37, 84);
-            pdf.setFontSize(16);
-            pdf.text(donante.nombre, 5, 36);
-            pdf.text(donante.cedula, 5, 48);
-            pdf.text(fecha, 32, 48);
-
-            const canvasQr = document.querySelector("#qrCarnetAdmin canvas");
-            const imagenQr = document.querySelector("#qrCarnetAdmin img");
-            const datosQr = canvasQr?.toDataURL("image/png") || imagenQr?.src;
-            if (datosQr) pdf.addImage(datosQr, "PNG", 65, 18, 16, 16);
-            pdf.setTextColor(100, 116, 139);
-            pdf.setFont("helvetica", "normal");
-            pdf.setFontSize(4.8);
-            pdf.text(`ID: ${donante.folio}`, 73, 36.5, { align: "center" });
-
-            pdf.setFillColor(21, 53, 109);
-            pdf.rect(0, 51.5, 86, 2.5, "F");
-
-            pdf.addPage([86, 54], "landscape");
-            pdf.setFillColor(21, 53, 109);
-            pdf.rect(0, 0, 86, 10, "F");
-            pdf.setTextColor(255, 255, 255);
-            pdf.setFont("helvetica", "bold");
-            pdf.setFontSize(9);
-            pdf.text("♥  COMPARTE TU DECISIÓN", 43, 6.5, { align: "center" });
-            pdf.setTextColor(71, 85, 105);
-            pdf.setFont("helvetica", "normal");
-            pdf.setFontSize(6.5);
-            const mensaje = "El paso más importante es informar a tu familia sobre tu decisión de ser donante. Ellos respetarán y autorizarán tu voluntad.";
-            pdf.text(pdf.splitTextToSize(mensaje, 74), 43, 16, { align: "center" });
-            pdf.setTextColor(220, 53, 69);
-            pdf.setFont("helvetica", "bold");
-            pdf.text("FAMILIAR / CONTACTO INFORMADO", 6, 27);
-            pdf.setTextColor(21, 53, 109);
-            pdf.setFontSize(5.5);
-            pdf.text("NOMBRE DE CONTACTO", 6, 32);
-            pdf.text("TELÉFONO", 47, 32);
-            pdf.setDrawColor(21, 53, 109);
-            pdf.setLineDashPattern([0.8, 0.8], 0);
-            pdf.line(6, 36, 42, 36);
-            pdf.line(47, 36, 80, 36);
-            pdf.text("NOMBRE DE CONTACTO", 6, 40);
-            pdf.text("TELÉFONO", 47, 40);
-            pdf.line(6, 44, 42, 44);
-            pdf.line(47, 44, 80, 44);
-            pdf.setLineDashPattern([], 0);
-            if (datosQr) pdf.addImage(datosQr, "PNG", 6, 45, 7, 7);
-            pdf.setTextColor(100, 116, 139);
-            pdf.setFont("helvetica", "normal");
-            pdf.setFontSize(5.2);
-            pdf.text("Escanea este código para verificar este carnet simbólico.", 80, 50, { align: "right" });
-            pdf.save(`carnet-${donante.folio}.pdf`);
         }
 
         function cerrarDetalle() {
