@@ -1226,14 +1226,14 @@
 
         if (!valido) return;
 
-        const registroPorDocumento = obtenerRegistrosMock().find(registro => registro.cedula === documento);
-        if (documento === DOCUMENTO_BLOQUEO_DEMO && registroPorDocumento && registroPorDocumento.codigo !== codigo) {
+        const donanteBloqueoDemo = DONANTES_PRUEBA.find(donante => donante.cedula === DOCUMENTO_BLOQUEO_DEMO);
+        if (documento === DOCUMENTO_BLOQUEO_DEMO && codigo !== donanteBloqueoDemo.codigo) {
             mostrarError(codigoCedula, 'errorCodigo', 'No fue posible validar los datos ingresados.');
             registrarIntentoIdentidadFallido();
             return;
         }
 
-        if (documento === DOCUMENTO_BLOQUEO_DEMO && registroPorDocumento?.codigo === codigo) {
+        if (documento === DOCUMENTO_BLOQUEO_DEMO && codigo === donanteBloqueoDemo.codigo) {
             limpiarEstadoBloqueoIdentidad();
         }
 
