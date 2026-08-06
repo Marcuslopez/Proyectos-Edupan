@@ -124,6 +124,12 @@
         .field-error { color: #c53030; display: none; font-size: 0.86rem; line-height: 1.4; margin-top: 7px; }
         .field-error.visible { display: block; }
         .input-error { border-color: #e53e3e; }
+        .identity-lock-status {
+            background: #fff7ed; border: 1px solid #fdba74; border-radius: 12px; color: #9a3412;
+            display: none; font-size: 0.92rem; font-weight: 700; line-height: 1.45; margin: 0 0 16px; padding: 13px 15px;
+        }
+        .identity-lock-status.visible { display: block; }
+        .identity-lock-status.locked { background: #fff1f2; border-color: #fda4af; color: #9f1239; }
         .captcha-box { align-items: stretch; display: grid; gap: 10px; grid-template-columns: 1fr auto; margin-bottom: 10px; }
         .captcha-code {
             align-items: center; background: repeating-linear-gradient(135deg, #eef2ff, #eef2ff 8px, #dbeafe 8px, #dbeafe 16px);
@@ -267,13 +273,14 @@
                 </div>
                 <div class="captcha-box">
                     <div id="captchaCode" class="captcha-code" aria-label="Código de seguridad" aria-live="polite"></div>
-                    <button type="button" class="captcha-refresh" onclick="generarCaptcha()" aria-label="Generar un nuevo código de seguridad" title="Generar otro código">↻</button>
+                    <button type="button" id="btnRefrescarCaptcha" class="captcha-refresh" onclick="generarCaptcha()" aria-label="Generar un nuevo código de seguridad" title="Generar otro código">↻</button>
                 </div>
                 <input type="text" id="captchaInput" placeholder="Escribe el código de 6 caracteres" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="6" aria-describedby="errorCaptcha" required>
                 <p id="errorCaptcha" class="field-error" aria-live="polite"></p>
             </div>
 
-            <button type="submit" class="btn-register">Validar y continuar</button>
+            <p id="estadoBloqueoIdentidad" class="identity-lock-status" role="status" aria-live="polite"></p>
+            <button type="submit" id="btnValidarIdentidad" class="btn-register">Validar y continuar</button>
             <button type="button" class="btn-cancel-flow" onclick="abrirDialogoSalida()">Cancelar</button>
         </form>
     </section>
@@ -603,6 +610,10 @@
     // const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxy3bV3H7xdqJlIj5_C1im_xCVXtqwGTyLt3pXBI3G6huHstdouZ5cLUuVs-D97DkWFTA/exec";
     const REGISTROS_MOCK_KEY = 'registros_donacion_mock';
     const CORREOS_SIMULADOS_KEY = 'correos_carnet_mock';
+    const BLOQUEO_IDENTIDAD_MOCK_KEY = 'bloqueo_identidad_donante_mock';
+    const DOCUMENTO_BLOQUEO_DEMO = '8-123-1234';
+    const MAX_INTENTOS_IDENTIDAD = 3;
+    const DURACION_BLOQUEO_IDENTIDAD_MS = 30 * 1000;
     let ultimoDatosCarnet = null;
     const DONANTES_PRUEBA = [
         {
@@ -707,6 +718,9 @@
     const cedulaValidacion = document.getElementById('cedulaValidacion');
     const codigoCedula = document.getElementById('codigoCedula');
     const captchaInput = document.getElementById('captchaInput');
+    const btnRefrescarCaptcha = document.getElementById('btnRefrescarCaptcha');
+    const btnValidarIdentidad = document.getElementById('btnValidarIdentidad');
+    const estadoBloqueoIdentidad = document.getElementById('estadoBloqueoIdentidad');
     const nombreInput = document.getElementById('nombre');
     const contactoNombreInput = document.getElementById('contactoNombre');
     const correoInput = document.getElementById('correo');
@@ -718,6 +732,80 @@
     const corregimientoSelect = document.getElementById('corregimiento');
     let captchaActual = '';
     let bajaConfirmada = false;
+    let intervaloBloqueoIdentidad = null;
+
+    function obtenerEstadoBloqueoIdentidad() {
+        try {
+            const estado = JSON.parse(localStorage.getItem(BLOQUEO_IDENTIDAD_MOCK_KEY));
+            return estado && typeof estado === 'object'
+                ? { intentos: Number(estado.intentos) || 0, bloqueadoHasta: Number(estado.bloqueadoHasta) || 0 }
+                : { intentos: 0, bloqueadoHasta: 0 };
+        } catch (error) {
+            return { intentos: 0, bloqueadoHasta: 0 };
+        }
+    }
+
+    function guardarEstadoBloqueoIdentidad(estado) {
+        localStorage.setItem(BLOQUEO_IDENTIDAD_MOCK_KEY, JSON.stringify(estado));
+    }
+
+    function limpiarEstadoBloqueoIdentidad() {
+        localStorage.removeItem(BLOQUEO_IDENTIDAD_MOCK_KEY);
+        estadoBloqueoIdentidad.className = 'identity-lock-status';
+        estadoBloqueoIdentidad.textContent = '';
+    }
+
+    function alternarControlesIdentidad(bloqueados) {
+        cedulaValidacion.disabled = bloqueados;
+        codigoCedula.disabled = bloqueados;
+        captchaInput.disabled = bloqueados;
+        btnRefrescarCaptcha.disabled = bloqueados;
+        btnValidarIdentidad.disabled = bloqueados;
+    }
+
+    function actualizarBloqueoIdentidad() {
+        const estado = obtenerEstadoBloqueoIdentidad();
+        const restanteMs = estado.bloqueadoHasta - Date.now();
+
+        if (restanteMs <= 0) {
+            if (estado.bloqueadoHasta) {
+                limpiarEstadoBloqueoIdentidad();
+                alternarControlesIdentidad(false);
+                generarCaptcha();
+                estadoBloqueoIdentidad.className = 'identity-lock-status visible';
+                estadoBloqueoIdentidad.textContent = 'La pausa de seguridad terminó. Ya puedes intentarlo nuevamente.';
+            }
+            if (intervaloBloqueoIdentidad) window.clearInterval(intervaloBloqueoIdentidad);
+            intervaloBloqueoIdentidad = null;
+            return false;
+        }
+
+        alternarControlesIdentidad(true);
+        const segundos = Math.ceil(restanteMs / 1000);
+        estadoBloqueoIdentidad.className = 'identity-lock-status visible locked';
+        estadoBloqueoIdentidad.textContent = `Validación pausada por seguridad. Intenta nuevamente en ${segundos} segundo${segundos === 1 ? '' : 's'}.`;
+
+        if (!intervaloBloqueoIdentidad) intervaloBloqueoIdentidad = window.setInterval(actualizarBloqueoIdentidad, 250);
+        return true;
+    }
+
+    function registrarIntentoIdentidadFallido() {
+        const estado = obtenerEstadoBloqueoIdentidad();
+        estado.intentos += 1;
+
+        if (estado.intentos >= MAX_INTENTOS_IDENTIDAD) {
+            estado.bloqueadoHasta = Date.now() + DURACION_BLOQUEO_IDENTIDAD_MS;
+            guardarEstadoBloqueoIdentidad(estado);
+            actualizarBloqueoIdentidad();
+            return;
+        }
+
+        guardarEstadoBloqueoIdentidad(estado);
+        const restantes = MAX_INTENTOS_IDENTIDAD - estado.intentos;
+        estadoBloqueoIdentidad.className = 'identity-lock-status visible';
+        estadoBloqueoIdentidad.textContent = `No fue posible validar los datos. ${restantes === 1 ? 'Queda 1 intento' : `Quedan ${restantes} intentos`} antes de la pausa temporal.`;
+        codigoCedula.focus();
+    }
 
     function actualizarDistritos() {
         const distritos = Object.keys(UBICACIONES[provinciaSelect.value] || {});
@@ -1096,6 +1184,7 @@
         });
 
         localStorage.setItem(REGISTROS_MOCK_KEY, JSON.stringify(registros));
+        localStorage.removeItem(BLOQUEO_IDENTIDAD_MOCK_KEY);
         window.location.reload();
     }
 
@@ -1108,6 +1197,7 @@
 
     function validarIdentidad(e) {
         e.preventDefault();
+        if (actualizarBloqueoIdentidad()) return;
         const documento = cedulaValidacion.value.trim().toUpperCase();
         const codigo = codigoCedula.value.trim().toUpperCase();
         const captchaIngresado = captchaInput.value.trim().toLowerCase();
@@ -1135,6 +1225,17 @@
         }
 
         if (!valido) return;
+
+        const registroPorDocumento = obtenerRegistrosMock().find(registro => registro.cedula === documento);
+        if (documento === DOCUMENTO_BLOQUEO_DEMO && registroPorDocumento && registroPorDocumento.codigo !== codigo) {
+            mostrarError(codigoCedula, 'errorCodigo', 'No fue posible validar los datos ingresados.');
+            registrarIntentoIdentidadFallido();
+            return;
+        }
+
+        if (documento === DOCUMENTO_BLOQUEO_DEMO && registroPorDocumento?.codigo === codigo) {
+            limpiarEstadoBloqueoIdentidad();
+        }
 
         document.getElementById('cedulaAlta').value = documento;
         document.getElementById('codigoCedulaAlta').value = codigo;
@@ -1164,6 +1265,7 @@
 
     crearDonantesPrueba();
     generarCaptcha();
+    actualizarBloqueoIdentidad();
 
     function abrirDialogoSalida() {
         document.getElementById('dialogoSalida').showModal();

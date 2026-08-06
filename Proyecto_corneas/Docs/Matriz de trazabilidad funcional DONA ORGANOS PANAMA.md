@@ -137,6 +137,9 @@ Credenciales demostrativas como `Administrador1` y `Administrator` quedan expres
 | IDV-009 | Validar y continuar | Decide alta o baja mediante `localStorage` | Consultar backend sin revelar datos del donante | `SUS` | P0 |
 | IDV-010 | Cancelar | Abre confirmación de salida | Mantener | `IMP` | P1 |
 | IDV-011 | Restaurar demo | Botón flotante repone donantes semilla | No incluir en producción | `EXC` | P0 |
+| IDV-012 | Tres intentos fallidos | Para la demostración, la cédula `8-123-1234` consume un intento cuando el código posterior no coincide | Pausar la entrada durante 30 segundos y mostrar cuenta regresiva | `REF/SUS` | P1 |
+| IDV-013 | Reinicio de intentos | Una verificación correcta o el final de la pausa reinicia el contador | En producción debe controlarse en servidor | `REF/SUS` | P1 |
+| IDV-014 | Errores que no cuentan | Formato inválido y CAPTCHA incorrecto no consumen intentos de identidad | Mantener separación entre validación formal y fallo de credenciales | `IMP` | P1 |
 
 La cédula y el código posterior no deben considerarse por sí solos un mecanismo fuerte de autenticación hasta que seguridad y negocio definan el proceso de identidad y baja.
 

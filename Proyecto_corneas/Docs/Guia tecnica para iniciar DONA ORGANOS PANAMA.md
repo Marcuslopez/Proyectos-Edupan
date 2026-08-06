@@ -729,6 +729,7 @@ No deben ejecutarse Node/Vite en modo de desarrollo ni `php artisan serve` en pr
 - Google Apps Script y `localStorage` no forman parte del backend productivo.
 - Se requiere logging y monitoreo técnico, pero no una vista de logs para el administrador funcional en la primera fase.
 - El contenido informativo de la pantalla de inicio puede cambiar sin afectar la funcionalidad del sistema.
+- El mockup muestra una pausa de seguridad de 30 segundos, con cuenta regresiva, después de tres códigos posteriores incorrectos para la cédula demostrativa `8-123-1234`.
 
 ---
 
@@ -752,6 +753,7 @@ Estas preguntas deben resolverse con los responsables correspondientes; no deben
 14. Definición exacta y nombre de la tercera gráfica de métricas.
 15. Plataforma final de observabilidad y alertas.
 16. Dominio, certificados, infraestructura y responsables de producción.
+17. Tiempo definitivo de la pausa de seguridad por intentos fallidos y si el tiempo será progresivo o escalonado.
 
 ---
 
