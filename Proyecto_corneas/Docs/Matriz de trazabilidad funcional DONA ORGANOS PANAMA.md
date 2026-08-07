@@ -51,6 +51,7 @@ La matriz documenta lo que actualmente muestra el mockup, pero no convierte auto
 | UI-010 | Carnet dentro del detalle | Sección inferior de detalle | Mostrar, ocultar e imprimir el carnet sin modal anidada | `IMP` | P1 |
 | UI-011 | Métricas | `metricas.html` | Presentar indicadores y gráficas administrativas | `IMP` | P1 |
 | UI-012 | Verificación pública | `verificar-donante.html` | Comprobar la vigencia de un carnet mediante QR | `SUS/VAL` | P1 |
+| UI-013 | Gestión de contenidos | `contenidos.html` | Administrar el contenido editorial publicado en el portal | `IMP/SUS` | P1 |
 
 ---
 
@@ -77,6 +78,8 @@ La matriz documenta lo que actualmente muestra el mockup, pero no convierte auto
 | NAV-017 | Detalle | Cerrar | Cerrar todo el detalle | Debe funcionar aun si el carnet está abierto | `IMP` |
 | NAV-018 | Carnet | Escanear QR | Verificación pública | Token opaco y revocable | `SUS` |
 | NAV-019 | Administración | Cerrar sesión | Confirmar y terminar sesión | Invalidar sesión y token CSRF | `IMP` |
+| NAV-020 | Administración | Gestión de contenidos | Abrir CMS interno manteniendo sesión y autorización | `IMP/SUS` |
+| NAV-021 | CMS | Vista pública | Abrir el portal para comprobar los contenidos publicados | Mantener separación entre edición autenticada y lectura pública | `IMP` |
 
 ---
 
@@ -383,6 +386,52 @@ La administración actualmente no incluye editar, aceptar ni rechazar donantes. 
 
 ---
 
+### 11.6 CMS interno de contenidos
+
+El CMS es un requisito funcional confirmado y constituye un módulo separado de la consulta de donantes. La comparación con WordPress se limita a administrar contenidos; no autoriza un constructor visual, temas, plugins, comentarios ni modificación libre de la estructura del portal.
+
+#### 11.6.1 Alcance editorial
+
+| ID | Elemento | Comportamiento del mockup | Implementación productiva | Clasificación | Prioridad |
+|---|---|---|---|---|---|
+| CMS-001 | Categorías | Aspectos legales, mitos y realidades, preguntas frecuentes | Valores controlados; ampliar solo mediante decisión documentada | `IMP` | P1 |
+| CMS-002 | Listado | Tabla con orden, categoría, título, resumen, estado y acciones | Consulta paginada o acotada desde MySQL | `IMP/SUS` | P1 |
+| CMS-003 | Crear | Formulario modal de nuevo contenido | Validar y persistir mediante Laravel | `IMP/SUS` | P1 |
+| CMS-004 | Editar | Reutiliza el formulario con los valores existentes | Autorizar, validar y actualizar mediante Laravel | `IMP/SUS` | P1 |
+| CMS-005 | Eliminar | Confirmación y eliminación del registro local | Confirmación; definir eliminación física o lógica antes de producción | `IMP/VAL` | P1 |
+| CMS-006 | Visibilidad | Alterna entre Visible y Oculto | Persistir estado; el portal solo consulta visibles | `IMP/SUS` | P1 |
+| CMS-007 | Orden | Número entero por categoría | Validar entero positivo y ordenar de forma estable | `IMP` | P1 |
+| CMS-008 | Título | Título, mito o pregunta; máximo demostrativo de 180 caracteres | Longitud definitiva validada en servidor | `IMP/VAL` | P1 |
+| CMS-009 | Contenido | Descripción o respuesta; máximo demostrativo de 1500 caracteres | Texto validado y limpiado; formato enriquecido limitado solo si se aprueba | `IMP/VAL` | P1 |
+| CMS-010 | Enlace | URL relacionada opcional | Validar protocolo y URL; enlaces legales sujetos a vigencia institucional | `IMP/VAL` | P1 |
+| CMS-011 | Buscar y filtrar | Filtro por categoría y coincidencia de texto | Mantener para operación administrativa | `IMP` | P2 |
+| CMS-012 | Resumen | Totales globales y por categoría | Derivar de la misma fuente persistente | `REF` | P2 |
+| CMS-013 | Vista pública | Abre el portal en otra pestaña | Facilitar comprobación sin exponer funciones administrativas | `REF/IMP` | P2 |
+| CMS-014 | Restaurar demostración | Repone contenidos semilla en `localStorage` | No incluir en producción | `EXC` | P0 |
+
+#### 11.6.2 Reglas de publicación y seguridad
+
+| ID | Regla | Clasificación | Prioridad |
+|---|---|---|---|
+| CMP-001 | Solo usuarios administrativos autorizados pueden crear, editar, ocultar, mostrar o eliminar | `IMP` | P0 |
+| CMP-002 | La lectura pública devuelve únicamente contenidos visibles y ordenados | `IMP` | P0 |
+| CMP-003 | Los cambios editoriales no deben alterar registro, autenticación, carnet, API de donantes ni métricas | `IMP` | P0 |
+| CMP-004 | Validar y limpiar contenido y enlaces en el servidor para impedir XSS o inyección | `IMP` | P0 |
+| CMP-005 | Blade debe escapar texto por defecto; cualquier HTML permitido utilizará una lista segura explícita | `IMP` | P0 |
+| CMP-006 | El CMS no convierte contenido legal o médico en aprobado; la validación institucional sigue siendo obligatoria | `VAL` | P0 |
+| CMP-007 | No se requiere inicialmente constructor de páginas, temas, plugins, comentarios, publicación programada, multilenguaje ni historial completo de versiones | `EXC/FUT` | P2 |
+
+#### 11.6.3 Diferencia entre mockup y producción
+
+| ID | Mockup | Producción | Clasificación |
+|---|---|---|---|
+| CMS-SIM-001 | `localStorage` conserva contenidos en un navegador | MySQL será la fuente central para todos los usuarios | `SUS` |
+| CMS-SIM-002 | Credenciales y sesión administrativas simuladas | Autenticación, sesión y autorización Laravel | `SUS` |
+| CMS-SIM-003 | Operaciones ejecutadas totalmente en JavaScript | Rutas, controladores/Form Requests, servicios y Policies Laravel | `SUS` |
+| CMS-SIM-004 | Datos editoriales semilla incluidos en JavaScript | Seeders solo para desarrollo/pruebas; contenido institucional administrado | `SUS/VAL` |
+
+---
+
 ## 12. Métricas
 
 ### 12.1 Orden y presentación
@@ -478,6 +527,12 @@ La solicitud denominó la tercera gráfica “Altas y bajas de donantes”, mien
 | Datos sensibles | Consentimiento | `sensitive_data_authorized` | Sensible | Texto versionado |
 | Consulta institucional | Consentimiento | `institutional_query_authorized` | Sensible | Instituciones/versiones |
 | Token QR | Carnet | `public_token_hash` | Seguridad | No guardar token plano si el diseño permite hash |
+| Tipo de contenido | Contenido editorial | `type` | Público/controlado | `legal`, `myth` o `faq` inicialmente |
+| Título/pregunta | Contenido editorial | `title` | Público | Validar longitud y escapar salida |
+| Descripción/respuesta | Contenido editorial | `body` | Público | Texto plano o HTML limitado y limpiado |
+| Enlace relacionado | Contenido editorial | `related_url` | Público | Opcional; URL y vigencia verificadas |
+| Visibilidad | Contenido editorial | `is_visible` | Funcional | Solo visibles en el portal |
+| Orden editorial | Contenido editorial | `sort_order` | Funcional | Entero positivo dentro del tipo |
 
 ---
 
@@ -499,6 +554,12 @@ La solicitud denominó la tercera gráfica “Altas y bajas de donantes”, mien
 | API-012 | Edad | `DonorMetricsService` | `GET /api/v1/admin/metrics/by-age` | Fecha de corte y límites |
 | API-013 | Provincia | `DonorMetricsService` | `GET /api/v1/admin/metrics/by-province` | Orden y catálogos |
 | API-014 | Enviar carnet | Job/Notification | Evento posterior al registro | Reintentos sin duplicar registro |
+| API-015 | Listar contenidos | `PublishedContentQuery` / consulta administrativa | `GET /api/v1/admin/contents` o ruta Blade | Autorización, filtros y orden |
+| API-016 | Crear contenido | `ContentManagementService` | `POST /api/v1/admin/contents` o ruta Blade | Permiso, validación y limpieza |
+| API-017 | Editar contenido | `ContentManagementService` | `PUT /api/v1/admin/contents/{id}` o ruta Blade | Permiso y actualización consistente |
+| API-018 | Eliminar contenido | `ContentManagementService` | `DELETE /api/v1/admin/contents/{id}` o ruta Blade | Confirmación y política de eliminación |
+| API-019 | Cambiar visibilidad | `ContentManagementService` | `PATCH /api/v1/admin/contents/{id}/visibility` o ruta Blade | Solo autorizados; lectura pública actualizada |
+| API-020 | Leer contenido público | `PublishedContentQuery` | Ruta/controlador del portal | Solo visibles, orden estable y salida segura |
 
 Estos endpoints son una propuesta de organización. Blade puede consumir controladores web directamente; lo importante es preservar servicios reutilizables y contratos consistentes.
 
@@ -519,6 +580,9 @@ Estos endpoints son una propuesta de organización. Blade puede consumir control
 | STA-009 | Sesión expirada | Administración | Redirigir al login sin bucle |
 | STA-010 | Impresión bloqueada | Carnet | Indicar habilitar ventana emergente |
 | STA-011 | Correo pendiente/fallido | Confirmación | Registro sigue válido; informar sin duplicarlo |
+| STA-012 | CMS sin contenidos | Gestión de contenidos/portal | Mensaje claro sin romper la estructura pública |
+| STA-013 | Guardado editorial exitoso | Gestión de contenidos | Confirmar acción y reflejar estado persistido |
+| STA-014 | Error de guardado editorial | Gestión de contenidos | Conservar formulario y permitir reintento seguro |
 
 ---
 
@@ -558,6 +622,8 @@ Estos endpoints son una propuesta de organización. Blade puede consumir control
 | SIM-011 | Métricas independientes de registros | Consultas agregadas de MySQL |
 | SIM-012 | CSV en navegador y página visible | Exportación backend según alcance aprobado |
 | SIM-013 | Videos/testimonios de muestra | Contenido autorizado o retirar |
+| SIM-014 | Contenidos del CMS en `localStorage` | Tabla `contents` en MySQL mediante Laravel |
+| SIM-015 | Restaurar contenidos de demostración | Excluir de producción; usar seeders solo en desarrollo/pruebas |
 
 ---
 
@@ -577,6 +643,7 @@ Estos endpoints son una propuesta de organización. Blade puede consumir control
 | NFR-010 | Compatibilidad | Navegadores institucionales definidos; impresión comprobada | P1 |
 | NFR-011 | Trazabilidad | Versionar textos de consentimiento y cambios de estado | P0 |
 | NFR-012 | Calidad | Pruebas de flujo, permisos, métricas y seguridad | P0 |
+| NFR-013 | Seguridad editorial | Validar, limpiar y escapar contenidos y enlaces administrables | P0 |
 
 ---
 
@@ -626,6 +693,9 @@ El primer producto funcional no se considerará equivalente al mockup hasta comp
 16. Las pruebas automatizadas cubren reglas, permisos, duplicidades, baja y métricas.
 17. Los logs no contienen datos personales o sensibles prohibidos.
 18. La aplicación se prueba en Ubuntu ARM64 con Nginx, PHP-FPM y la versión fijada de MySQL.
+19. El CMS permite crear, editar, eliminar, ordenar y mostrar u ocultar aspectos legales, mitos y preguntas frecuentes.
+20. El portal obtiene los contenidos visibles desde MySQL y no depende de `localStorage` ni de textos fijados en el código.
+21. Las operaciones editoriales exigen autorización y el contenido publicado se valida, limpia y escapa de forma segura.
 
 ---
 

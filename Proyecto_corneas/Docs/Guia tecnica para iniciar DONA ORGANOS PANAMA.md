@@ -91,8 +91,28 @@ Comportamientos ya definidos en el mockup:
 - Impresión o guardado del carnet como PDF.
 - Exportación de reportes.
 - Dashboard de indicadores y gráficas.
+- Gestión de contenidos informativos del portal mediante un CMS interno limitado.
 
-En la definición actual, la administración es principalmente de consulta. No debe suponerse que puede editar datos, aprobar o rechazar registros si esa capacidad no ha sido autorizada posteriormente.
+En la definición actual, la administración de **donantes** es principalmente de consulta. No debe suponerse que puede editar datos, aprobar o rechazar registros si esa capacidad no ha sido autorizada posteriormente. Esta restricción no impide la edición de contenido editorial mediante el CMS, que constituye un módulo separado y confirmado.
+
+### CMS interno de contenidos
+
+Se requiere un módulo administrativo limitado, similar a WordPress únicamente en su capacidad de mantener contenido editorial. No se requiere un constructor visual de páginas, sistema de temas, comentarios, plugins ni edición libre de la estructura del portal.
+
+Alcance inicial confirmado:
+
+- Categorías administrables: aspectos legales, mitos y realidades, y preguntas frecuentes.
+- Crear, consultar, editar y eliminar contenidos.
+- Mostrar u ocultar un contenido sin eliminarlo.
+- Definir el orden de presentación dentro de cada categoría.
+- Mantener título o pregunta, descripción o respuesta y enlace relacionado opcional.
+- Buscar y filtrar contenidos en Administración.
+- Reflejar en el portal público únicamente los contenidos visibles y en el orden establecido.
+- Restringir todas las operaciones de escritura a usuarios administrativos autorizados.
+
+El mockup lo demuestra mediante `contenidos.html` y `assets/contenidos-cms.js`, con persistencia en `localStorage`. En producción, los contenidos deben persistirse en MySQL mediante Laravel; `localStorage`, el botón para restaurar la demostración y los datos editoriales semilla no forman parte del comportamiento productivo.
+
+El contenido legal y médico continuará sujeto a validación institucional aunque el CMS permita editarlo. El sistema debe validar y limpiar cualquier contenido enriquecido antes de mostrarlo para impedir inyección de HTML o scripts. Para la primera versión puede utilizarse texto plano o formato enriquecido limitado; no se requiere un editor visual avanzado.
 
 ### Estado del donante
 
@@ -122,6 +142,8 @@ Proyecto_corneas/Mockups/
 | `index.html` | Portal público, información, acceso al formulario y acceso administrativo simulado |
 | `formulario.html` | Registro del donante, validaciones, confirmación y carnet |
 | `administracion.html` | Listado, filtros, detalle y carnet del donante |
+| `contenidos.html` | CMS simulado: listado, creación, edición, visibilidad, orden y eliminación de contenido editorial |
+| `assets/contenidos-cms.js` | Datos semilla, persistencia local y proyección del contenido visible en el portal; sustituir en producción |
 | `metricas.html` | Orden y presentación esperada de las gráficas |
 | `verificar-donante.html` | Concepto de verificación mediante QR |
 | `correos-simulados.html` | Ejemplo demostrativo de comunicación al donante |
@@ -275,6 +297,7 @@ Servicios iniciales sugeridos:
 - `DonorMetricsService`
 - `DonorExportService`
 - `ConsentService`
+- `ContentManagementService`
 
 El registro de un donante, sus contactos, preferencias y consentimiento debe ejecutarse dentro de una transacción de MySQL.
 
@@ -285,6 +308,7 @@ Clases sugeridas:
 - `DonorFilterQuery`
 - `DonorMetricsQuery`
 - `DonorVerificationQuery`
+- `PublishedContentQuery`
 
 Las métricas deben agregarse en MySQL. El navegador recibirá series ya calculadas y Chart.js se limitará a representarlas.
 
@@ -323,9 +347,18 @@ GET    /api/v1/admin/metrics/registrations-and-deactivations
 GET    /api/v1/admin/metrics/by-age
 GET    /api/v1/admin/metrics/by-province
 GET    /api/v1/admin/donors/export
+
+GET    /api/v1/admin/contents
+POST   /api/v1/admin/contents
+GET    /api/v1/admin/contents/{content}
+PUT    /api/v1/admin/contents/{content}
+DELETE /api/v1/admin/contents/{content}
+PATCH  /api/v1/admin/contents/{content}/visibility
 ```
 
 El cambio de estado, si queda autorizado como operación administrativa o de autoservicio, debe definirse expresamente antes de agregar un endpoint de escritura.
+
+Los endpoints del CMS son una referencia si se decide exponer JSON. Con Blade también pueden implementarse como rutas web protegidas, manteniendo las mismas reglas de autorización, validación y persistencia.
 
 ### Convenciones de respuesta
 
@@ -416,6 +449,21 @@ Estas respuestas son datos sensibles. Antes de incluirlas debe confirmarse si re
 - Fecha de emisión.
 - Vigencia o revocación.
 - No almacenar necesariamente el PDF si puede generarse de manera reproducible.
+
+### `contents`
+
+- Identificador interno.
+- Tipo controlado: `legal`, `myth` o `faq`, con nombres visibles en español.
+- Título o pregunta.
+- Contenido o respuesta.
+- Enlace relacionado opcional y validado.
+- Indicador de visibilidad.
+- Orden de presentación dentro de la categoría.
+- Usuario creador y último usuario que modificó, si el modelo de auditoría inicial lo contempla.
+- Fechas de creación y modificación.
+- Eliminación lógica recomendada si se requiere recuperación; la recuperación no forma parte del alcance confirmado del primer incremento.
+
+La lectura pública debe devolver únicamente contenidos visibles y ordenados. Los tipos deben validarse en servidor y no aceptarse como texto arbitrario.
 
 ### Catálogos geográficos
 
@@ -729,6 +777,8 @@ No deben ejecutarse Node/Vite en modo de desarrollo ni `php artisan serve` en pr
 - Google Apps Script y `localStorage` no forman parte del backend productivo.
 - Se requiere logging y monitoreo técnico, pero no una vista de logs para el administrador funcional en la primera fase.
 - El contenido informativo de la pantalla de inicio puede cambiar sin afectar la funcionalidad del sistema.
+- Se requiere un CMS interno limitado para administrar aspectos legales, mitos y preguntas frecuentes: crear, editar, eliminar, ordenar y mostrar u ocultar.
+- El CMS no es un constructor visual de páginas ni una instalación de WordPress; se implementará dentro de Laravel y persistirá en MySQL.
 - El mockup muestra una pausa de seguridad de 30 segundos, con cuenta regresiva, después de tres códigos posteriores incorrectos para la cédula demostrativa `8-123-1234`.
 
 ---
@@ -754,6 +804,8 @@ Estas preguntas deben resolverse con los responsables correspondientes; no deben
 15. Plataforma final de observabilidad y alertas.
 16. Dominio, certificados, infraestructura y responsables de producción.
 17. Tiempo definitivo de la pausa de seguridad por intentos fallidos y si el tiempo será progresivo o escalonado.
+18. Si el CMS utilizará texto plano o un editor de formato enriquecido limitado.
+19. Si la eliminación editorial será lógica y recuperable o definitiva.
 
 ---
 
@@ -789,6 +841,7 @@ Estas preguntas deben resolverse con los responsables correspondientes; no deben
 - Listado, detalle, filtros y paginación.
 - Exportación.
 - Carnet y verificación.
+- CMS interno: contenidos, visibilidad, orden, autorización e integración con el portal.
 
 ### Fase 4: métricas
 
