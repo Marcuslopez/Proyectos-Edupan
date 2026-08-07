@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de contenidos - DONA ÓRGANOS PANAMÁ</title>
+    <style>
+        :root {
+            --primary: #1d1b84; --primary-light: #5b87e6; --bg: #f3f7fc; --card: #fff;
+            --text: #1e293b; --muted: #64748b; --border: #dbe4f0; --success: #047857;
+            --success-bg: #ecfdf5; --danger: #be123c; --danger-bg: #fff1f2;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--text); font-family: "Segoe UI", system-ui, sans-serif; min-height: 100vh; }
+        button, input, select, textarea { font: inherit; }
+        button, a { -webkit-tap-highlight-color: transparent; }
+        .admin-header { align-items: center; background: linear-gradient(135deg, #171568, var(--primary)); color: white; display: flex; justify-content: space-between; min-height: 78px; padding: 16px max(24px, calc((100vw - 1400px) / 2)); }
+        .brand small { color: #bfdbfe; display: block; font-size: .72rem; font-weight: 700; letter-spacing: .12em; margin-bottom: 4px; text-transform: uppercase; }
+        .brand strong { font-size: 1.15rem; }
+        .header-actions { align-items: center; display: flex; gap: 10px; }
+        .header-link { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.35); border-radius: 50px; color: white; padding: 9px 16px; text-decoration: none; }
+        main { margin: 0 auto; max-width: 1400px; padding: 38px 24px 60px; }
+        .page-heading { align-items: flex-end; display: flex; gap: 20px; justify-content: space-between; margin-bottom: 24px; }
+        .page-heading h1 { color: var(--primary); font-size: clamp(1.8rem, 3vw, 2.5rem); margin-bottom: 7px; }
+        .page-heading p { color: var(--muted); line-height: 1.55; max-width: 760px; }
+        .heading-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+        .btn { border: 0; border-radius: 11px; cursor: pointer; font-weight: 750; padding: 11px 17px; text-decoration: none; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-secondary { background: #e8eef8; color: var(--primary); }
+        .btn-danger { background: var(--danger-bg); color: var(--danger); }
+        .btn:hover { filter: brightness(.96); }
+        .summary { display: grid; gap: 14px; grid-template-columns: repeat(4, 1fr); margin-bottom: 20px; }
+        .summary-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 17px; }
+        .summary-card span { color: var(--muted); display: block; font-size: .8rem; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; }
+        .summary-card strong { color: var(--primary); font-size: 1.65rem; }
+        .toolbar { align-items: end; background: var(--card); border: 1px solid var(--border); border-radius: 18px; display: grid; gap: 14px; grid-template-columns: 1fr 1fr auto; margin-bottom: 18px; padding: 18px; }
+        .field label { color: #475569; display: block; font-size: .8rem; font-weight: 750; margin-bottom: 6px; }
+        .field input, .field select, .field textarea { background: white; border: 2px solid var(--border); border-radius: 11px; outline: none; padding: 10px 12px; width: 100%; }
+        .field textarea { line-height: 1.55; min-height: 145px; resize: vertical; }
+        .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--primary-light); }
+        .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 10px 30px rgba(29,27,132,.06); overflow: hidden; }
+        .table-scroll { overflow-x: auto; }
+        table { border-collapse: collapse; min-width: 980px; width: 100%; }
+        thead { background: #eef3fb; }
+        th { color: #475569; font-size: .76rem; letter-spacing: .04em; padding: 14px 16px; text-align: left; text-transform: uppercase; }
+        td { border-top: 1px solid #edf1f7; padding: 14px 16px; vertical-align: middle; }
+        tbody tr:hover { background: #f8fbff; }
+        .title-cell { color: var(--primary); font-weight: 750; max-width: 330px; }
+        .excerpt { color: var(--muted); font-size: .86rem; line-height: 1.45; max-width: 440px; }
+        .badge { border-radius: 50px; display: inline-block; font-size: .76rem; font-weight: 750; padding: 6px 10px; }
+        .badge-visible { background: var(--success-bg); color: var(--success); }
+        .badge-hidden { background: #f1f5f9; color: #64748b; }
+        .actions { display: flex; flex-wrap: wrap; gap: 6px; }
+        .action-btn { background: #eef2ff; border: 0; border-radius: 8px; color: var(--primary); cursor: pointer; font-size: .78rem; font-weight: 750; padding: 7px 10px; }
+        .action-btn.delete { background: var(--danger-bg); color: var(--danger); }
+        .empty { color: var(--muted); padding: 38px !important; text-align: center; }
+        .notice { background: #eef6ff; border: 1px solid #bfdbfe; border-radius: 14px; color: #1e40af; line-height: 1.5; margin-bottom: 18px; padding: 14px 17px; }
+        dialog { border: 0; border-radius: 22px; box-shadow: 0 24px 70px rgba(15,23,42,.3); margin: auto; max-height: 92vh; max-width: 760px; overflow-y: auto; width: calc(100% - 32px); }
+        dialog::backdrop { backdrop-filter: blur(3px); background: rgba(15,23,42,.62); }
+        .dialog-header { align-items: center; background: linear-gradient(135deg, #eef4ff, #f8fbff); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; padding: 22px 26px; }
+        .dialog-header h2 { color: var(--primary); }
+        .dialog-close { background: white; border: 1px solid var(--border); border-radius: 50%; color: #475569; cursor: pointer; font-size: 1.2rem; height: 38px; width: 38px; }
+        .dialog-body { display: grid; gap: 17px; padding: 25px 26px; }
+        .form-row { display: grid; gap: 15px; grid-template-columns: 1fr 160px; }
+        .switch-row { align-items: center; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; display: flex; justify-content: space-between; padding: 13px 15px; }
+        .switch-row small { color: var(--muted); display: block; margin-top: 3px; }
+        .switch { accent-color: var(--primary); height: 22px; width: 22px; }
+        .dialog-actions { border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; padding: 18px 26px 24px; }
+        .message { border-radius: 10px; display: none; font-weight: 650; padding: 10px 12px; }
+        .message.show { background: var(--success-bg); color: var(--success); display: block; }
+        @media (max-width: 800px) {
+            .page-heading { align-items: flex-start; flex-direction: column; }
+            .summary { grid-template-columns: repeat(2, 1fr); }
+            .toolbar { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 540px) {
+            main { padding: 28px 14px 50px; }
+            .admin-header { align-items: flex-start; flex-direction: column; gap: 12px; }
+            .summary { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .dialog-actions { flex-direction: column-reverse; }
+            .dialog-actions .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <div class="brand">
+            <small>DONA ÓRGANOS PANAMÁ</small>
+            <strong>Gestión de contenidos</strong>
+        </div>
+        <div class="header-actions">
+            <a class="header-link" href="administracion.html">← Donantes</a>
+            <a class="header-link" href="index.html" target="_blank" rel="noopener">Vista pública ↗</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="page-heading">
+            <div>
+                <h1>Contenidos informativos</h1>
+                <p>Simulación del CMS que permitirá mantener los textos públicos sin modificar el código ni realizar un nuevo despliegue.</p>
+            </div>
+            <div class="heading-actions">
+                <button type="button" class="btn btn-secondary" onclick="confirmarRestauracion()">Restaurar demostración</button>
+                <button type="button" class="btn btn-primary" onclick="abrirFormulario()">＋ Nuevo contenido</button>
+            </div>
+        </div>
+
+        <div class="notice"><strong>Modo mockup:</strong> los cambios se guardan únicamente en este navegador mediante localStorage. En producción se almacenarán en MySQL y se aplicarán permisos administrativos.</div>
+
+        <section class="summary" aria-label="Resumen de contenidos">
+            <div class="summary-card"><span>Total</span><strong id="resumenTotal">0</strong></div>
+            <div class="summary-card"><span>Aspectos legales</span><strong id="resumenLegal">0</strong></div>
+            <div class="summary-card"><span>Mitos</span><strong id="resumenMitos">0</strong></div>
+            <div class="summary-card"><span>Preguntas frecuentes</span><strong id="resumenFaq">0</strong></div>
+        </section>
+
+        <section class="toolbar" aria-label="Filtros de contenidos">
+            <div class="field">
+                <label for="filtroTipo">Categoría</label>
+                <select id="filtroTipo" onchange="renderizar()">
+                    <option value="">Todas las categorías</option>
+                    <option value="legal">Aspectos legales</option>
+                    <option value="mito">Mitos y realidades</option>
+                    <option value="faq">Preguntas frecuentes</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="filtroTexto">Buscar</label>
+                <input id="filtroTexto" type="search" placeholder="Título o contenido" oninput="renderizar()">
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="limpiarFiltros()">Limpiar filtros</button>
+        </section>
+
+        <section class="table-card" aria-label="Listado de contenidos">
+            <div class="table-scroll">
+                <table>
+                    <thead><tr><th>Orden</th><th>Categoría</th><th>Título</th><th>Contenido</th><th>Estado</th><th>Acciones</th></tr></thead>
+                    <tbody id="tablaContenidos"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <dialog id="dialogoContenido" aria-labelledby="tituloDialogo">
+        <form id="formContenido" onsubmit="guardarFormulario(event)">
+            <div class="dialog-header">
+                <h2 id="tituloDialogo">Nuevo contenido</h2>
+                <button type="button" class="dialog-close" onclick="cerrarFormulario()" aria-label="Cerrar">×</button>
+            </div>
+            <div class="dialog-body">
+                <input type="hidden" id="contenidoId">
+                <div class="form-row">
+                    <div class="field">
+                        <label for="contenidoTipo">Categoría *</label>
+                        <select id="contenidoTipo" required>
+                            <option value="legal">Aspectos legales</option>
+                            <option value="mito">Mitos y realidades</option>
+                            <option value="faq">Preguntas frecuentes</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="contenidoOrden">Orden *</label>
+                        <input id="contenidoOrden" type="number" min="1" step="1" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="contenidoTitulo">Título o pregunta *</label>
+                    <input id="contenidoTitulo" maxlength="180" required placeholder="Escribe el título que verá el público">
+                </div>
+                <div class="field">
+                    <label for="contenidoTexto">Descripción o respuesta *</label>
+                    <textarea id="contenidoTexto" maxlength="1500" required placeholder="Escribe el contenido informativo"></textarea>
+                </div>
+                <div class="field">
+                    <label for="contenidoEnlace">Enlace relacionado (opcional)</label>
+                    <input id="contenidoEnlace" type="url" placeholder="https://...">
+                </div>
+                <label class="switch-row" for="contenidoVisible">
+                    <span><strong>Visible en el portal</strong><small>Si se desactiva, permanece guardado pero no aparece públicamente.</small></span>
+                    <input class="switch" id="contenidoVisible" type="checkbox" checked>
+                </label>
+                <p id="mensajeFormulario" class="message" role="status"></p>
+            </div>
+            <div class="dialog-actions">
+                <button type="button" class="btn btn-secondary" onclick="cerrarFormulario()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar contenido</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script src="assets/contenidos-cms.js"></script>
+    <script>
+        "use strict";
+
+        if (sessionStorage.getItem("admin_mock_authenticated") !== "true") {
+            window.location.replace("index.html");
+        }
+
+        const nombresTipo = { legal: "Aspectos legales", mito: "Mitos y realidades", faq: "Preguntas frecuentes" };
+        let contenidos = DonaOrganosCMS.obtener();
+
+        function renderizar() {
+            contenidos = DonaOrganosCMS.obtener();
+            const tipo = document.getElementById("filtroTipo").value;
+            const texto = document.getElementById("filtroTexto").value.trim().toLocaleLowerCase("es");
+            const filtrados = contenidos
+                .filter(item => !tipo || item.tipo === tipo)
+                .filter(item => !texto || `${item.titulo} ${item.contenido}`.toLocaleLowerCase("es").includes(texto))
+                .sort((a, b) => a.tipo.localeCompare(b.tipo, "es") || Number(a.orden) - Number(b.orden));
+
+            const tabla = document.getElementById("tablaContenidos");
+            if (!filtrados.length) {
+                tabla.innerHTML = '<tr><td class="empty" colspan="6">No existen contenidos que coincidan con los filtros.</td></tr>';
+            } else {
+                tabla.innerHTML = filtrados.map(item => `
+                    <tr>
+                        <td><strong>${Number(item.orden)}</strong></td>
+                        <td>${DonaOrganosCMS.escapar(nombresTipo[item.tipo])}</td>
+                        <td class="title-cell">${DonaOrganosCMS.escapar(item.titulo)}</td>
+                        <td class="excerpt">${DonaOrganosCMS.escapar(item.contenido.slice(0, 145))}${item.contenido.length > 145 ? "…" : ""}</td>
+                        <td><span class="badge ${item.visible ? "badge-visible" : "badge-hidden"}">${item.visible ? "Visible" : "Oculto"}</span></td>
+                        <td><div class="actions">
+                            <button type="button" class="action-btn" onclick="editarContenido(${Number(item.id)})">Editar</button>
+                            <button type="button" class="action-btn" onclick="alternarVisibilidad(${Number(item.id)})">${item.visible ? "Ocultar" : "Mostrar"}</button>
+                            <button type="button" class="action-btn delete" onclick="eliminarContenido(${Number(item.id)})">Eliminar</button>
+                        </div></td>
+                    </tr>`).join("");
+            }
+
+            document.getElementById("resumenTotal").textContent = contenidos.length;
+            document.getElementById("resumenLegal").textContent = contenidos.filter(item => item.tipo === "legal").length;
+            document.getElementById("resumenMitos").textContent = contenidos.filter(item => item.tipo === "mito").length;
+            document.getElementById("resumenFaq").textContent = contenidos.filter(item => item.tipo === "faq").length;
+        }
+
+        function abrirFormulario(item = null) {
+            const form = document.getElementById("formContenido");
+            form.reset();
+            document.getElementById("mensajeFormulario").className = "message";
+            document.getElementById("contenidoId").value = item?.id ?? "";
+            document.getElementById("contenidoTipo").value = item?.tipo ?? "legal";
+            document.getElementById("contenidoTitulo").value = item?.titulo ?? "";
+            document.getElementById("contenidoTexto").value = item?.contenido ?? "";
+            document.getElementById("contenidoEnlace").value = item?.enlace ?? "";
+            document.getElementById("contenidoVisible").checked = item?.visible ?? true;
+            document.getElementById("contenidoOrden").value = item?.orden ?? siguienteOrden("legal");
+            document.getElementById("tituloDialogo").textContent = item ? "Editar contenido" : "Nuevo contenido";
+            document.getElementById("dialogoContenido").showModal();
+            document.getElementById("contenidoTitulo").focus();
+        }
+
+        function cerrarFormulario() {
+            document.getElementById("dialogoContenido").close();
+        }
+
+        function siguienteOrden(tipo) {
+            const ordenes = contenidos.filter(item => item.tipo === tipo).map(item => Number(item.orden) || 0);
+            return Math.max(0, ...ordenes) + 1;
+        }
+
+        document.getElementById("contenidoTipo").addEventListener("change", event => {
+            if (!document.getElementById("contenidoId").value) {
+                document.getElementById("contenidoOrden").value = siguienteOrden(event.target.value);
+            }
+        });
+
+        function guardarFormulario(event) {
+            event.preventDefault();
+            const idActual = Number(document.getElementById("contenidoId").value);
+            const registro = {
+                id: idActual || Date.now(),
+                tipo: document.getElementById("contenidoTipo").value,
+                titulo: document.getElementById("contenidoTitulo").value.trim(),
+                contenido: document.getElementById("contenidoTexto").value.trim(),
+                enlace: document.getElementById("contenidoEnlace").value.trim(),
+                visible: document.getElementById("contenidoVisible").checked,
+                orden: Number(document.getElementById("contenidoOrden").value)
+            };
+
+            if (!registro.titulo || !registro.contenido || registro.orden < 1) return;
+            const posicion = contenidos.findIndex(item => Number(item.id) === idActual);
+            if (posicion >= 0) contenidos[posicion] = registro;
+            else contenidos.push(registro);
+            DonaOrganosCMS.guardar(contenidos);
+            renderizar();
+
+            const mensaje = document.getElementById("mensajeFormulario");
+            mensaje.textContent = "Contenido guardado. La vista pública reflejará el cambio al abrirse o actualizarse.";
+            mensaje.className = "message show";
+            setTimeout(cerrarFormulario, 650);
+        }
+
+        function editarContenido(id) {
+            const item = contenidos.find(registro => Number(registro.id) === Number(id));
+            if (item) abrirFormulario(item);
+        }
+
+        function alternarVisibilidad(id) {
+            contenidos = contenidos.map(item => Number(item.id) === Number(id) ? { ...item, visible: !item.visible } : item);
+            DonaOrganosCMS.guardar(contenidos);
+            renderizar();
+        }
+
+        function eliminarContenido(id) {
+            const item = contenidos.find(registro => Number(registro.id) === Number(id));
+            if (!item || !confirm(`¿Deseas eliminar “${item.titulo}”?`)) return;
+            contenidos = contenidos.filter(registro => Number(registro.id) !== Number(id));
+            DonaOrganosCMS.guardar(contenidos);
+            renderizar();
+        }
+
+        function confirmarRestauracion() {
+            if (!confirm("Se reemplazarán los cambios locales por los contenidos iniciales de la demostración. ¿Deseas continuar?")) return;
+            contenidos = DonaOrganosCMS.restaurar();
+            limpiarFiltros();
+        }
+
+        function limpiarFiltros() {
+            document.getElementById("filtroTipo").value = "";
+            document.getElementById("filtroTexto").value = "";
+            renderizar();
+        }
+
+        renderizar();
+    </script>
+</body>
+</html>

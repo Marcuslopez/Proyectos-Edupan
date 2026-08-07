@@ -914,6 +914,7 @@
         </div>
     </footer>
 
+    <script src="assets/contenidos-cms.js"></script>
     <script>
         function accederAdministracion() {
             document.getElementById("dialogoLoginAdmin").showModal();
@@ -964,33 +965,37 @@
             });
         });
 
-        document.querySelectorAll(".info-card").forEach(card => {
-            function alternarTarjeta() {
-                const quedaraActiva = !card.classList.contains("active");
+        function activarTarjetasLegales() {
+            document.querySelectorAll(".info-card:not([data-cms-activated])").forEach(card => {
+                card.dataset.cmsActivated = "true";
 
-                document.querySelectorAll(".info-card").forEach(otherCard => {
-                    otherCard.classList.remove("active");
-                    otherCard.setAttribute("aria-expanded", "false");
+                function alternarTarjeta() {
+                    const quedaraActiva = !card.classList.contains("active");
+
+                    document.querySelectorAll(".info-card").forEach(otherCard => {
+                        otherCard.classList.remove("active");
+                        otherCard.setAttribute("aria-expanded", "false");
+                    });
+
+                    if (quedaraActiva) {
+                        card.classList.add("active");
+                        card.setAttribute("aria-expanded", "true");
+                    }
+                }
+
+                card.addEventListener("click", function(event) {
+                    if (event.target.closest("a")) return;
+                    alternarTarjeta();
                 });
 
-                if (quedaraActiva) {
-                    card.classList.add("active");
-                    card.setAttribute("aria-expanded", "true");
-                }
-            }
-
-            card.addEventListener("click", function(event) {
-                if (event.target.closest("a")) return;
-                alternarTarjeta();
+                card.addEventListener("keydown", function(event) {
+                    if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        alternarTarjeta();
+                    }
+                });
             });
-
-            card.addEventListener("keydown", function(event) {
-                if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    alternarTarjeta();
-                }
-            });
-        });
+        }
 
         function toggleAdditionalItems(sectionId, button) {
             const section = document.getElementById(sectionId);
@@ -1008,6 +1013,11 @@
                 : button.dataset.collapseLabel;
             button.querySelector(".toggle-symbol").textContent = expanded ? "＋" : "−";
         }
+
+        DonaOrganosCMS.renderPublico();
+        window.addEventListener("storage", event => {
+            if (event.key === DonaOrganosCMS.STORAGE_KEY) DonaOrganosCMS.renderPublico();
+        });
     </script>
 
 </body>

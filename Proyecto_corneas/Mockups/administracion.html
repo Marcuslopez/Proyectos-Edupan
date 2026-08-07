@@ -39,6 +39,7 @@
         .page-heading { align-items: end; display: flex; justify-content: space-between; margin-bottom: 26px; }
         .page-heading h1 { color: var(--primary); font-size: clamp(1.8rem, 3vw, 2.5rem); margin-bottom: 7px; }
         .page-heading p { color: var(--muted); }
+        .admin-shortcuts { display: flex; flex-wrap: wrap; gap: 10px; }
         .btn-metrics {
             align-items: center; background: var(--primary); border-radius: 50px; color: white;
             display: inline-flex; font-weight: 750; gap: 9px; padding: 12px 22px; text-decoration: none;
@@ -182,7 +183,10 @@
                 <h1>Registro de donantes</h1>
                 <p>Consulta y revisa las voluntades registradas en el sistema.</p>
             </div>
-            <a href="metricas.html" class="btn-metrics"><span aria-hidden="true">▥</span> Métricas</a>
+            <div class="admin-shortcuts">
+                <a href="contenidos.html" class="btn-metrics"><span aria-hidden="true">✎</span> Gestión de contenidos</a>
+                <a href="metricas.html" class="btn-metrics"><span aria-hidden="true">▥</span> Métricas</a>
+            </div>
         </div>
 
         <section class="filters" aria-label="Filtros de donantes">
