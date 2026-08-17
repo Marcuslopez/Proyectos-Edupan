@@ -91,10 +91,17 @@ button, a { -webkit-tap-highlight-color: transparent; }
   max-height: 1em;
   margin-left: 0.12em;
   object-fit: contain;
+  transform-origin: center;
+  transition: transform 220ms ease, filter 220ms ease;
   vertical-align: -0.12em;
 }
+.institutional h1 .hero-gift-icon:hover {
+  filter: drop-shadow(0 8px 10px rgba(8, 58, 104, 0.22));
+  transform: scale(1.18);
+}
 .institutional .lead { max-width: 650px; color: var(--muted); font-size: 1.15rem; line-height: 1.7; }
-.institutional .trust-panel { padding: 32px; border-radius: 10px; color: white; background: var(--blue); box-shadow: var(--shadow); }
+.institutional .trust-panel { padding: 32px; border-radius: 10px; color: white; background: var(--blue); box-shadow: var(--shadow); transform-origin: center; transition: transform 260ms ease, box-shadow 260ms ease; }
+.institutional .trust-panel:hover,.institutional .trust-panel:focus-visible { outline: none; transform: scale(1.035); box-shadow: 0 24px 50px rgba(8,58,104,.25); }
 .institutional .trust-panel h2 { margin-top: 0; font-size: 1.7rem; }
 .institutional .checklist { display: grid; gap: 16px; padding: 0; list-style: none; }
 .institutional .checklist li { display: flex; gap: 12px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,.16); line-height: 1.5; }
@@ -224,6 +231,13 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .combined .admin-form-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .combined .admin-form-actions button { min-height: 44px; border: 0; border-radius: 999px; font: inherit; font-weight: 800; cursor: pointer; }
 .combined .admin-submit { color: white; background: #083a68; }.combined .admin-cancel { color: #41566c; background: #eaf0f5; }
+
+@media (prefers-reduced-motion: reduce) {
+  .institutional .trust-panel,
+  .institutional h1 .hero-gift-icon {
+    transition: none;
+  }
+}
 
 @media (max-width: 850px) {
   .nav-links { display: none; }
