@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DONA ÓRGANOS PANAMÁ - Córneas y Tejidos</title>
+    <title>DONA ÓRGANOS PANAMÁ</title>
     <style>
         :root {
             --primary-gradient-start: #bcd6ec;
@@ -122,7 +122,7 @@
         }
 
         /* --- SECCIÓN HERO / INICIO --- */
-        #inicio {
+        .legacy-home-hero {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -133,13 +133,13 @@
             justify-content: center;
         }
 
-        .hero-content h1 {
+        .legacy-home-hero .hero-content h1 {
             font-size: 2.8rem;
             color: var(--dark-blue-text);
             margin-bottom: 15px;
         }
 
-        .hero-content p {
+        .legacy-home-hero .hero-content p {
             font-size: 1.2rem;
             max-width: 700px;
             margin-bottom: 30px;
@@ -564,41 +564,67 @@
             #btn-back-to-top { bottom: 20px; right: 20px; width: 45px; height: 45px; }
         }
     </style>
+    <link rel="stylesheet" href="formexample/styles.css?v=20260817-5">
+    <style>
+        .combined .hero {
+            max-width: none;
+            margin: 0;
+        }
+    </style>
 </head>
-<body>
+<body class="institutional combined">
 
     <button id="btn-back-to-top" title="Volver al inicio">↑</button>
 
-    <header>
-        <div class="nav-container">
-            <a href="#inicio" class="logo">DONA ÓRGANOS PANAMÁ</a>
-            <nav>
-                <ul>
-                    <li><a href="#inicio">Inicio</a></li>
-                    <li><a href="#corneas">Córneas</a></li>
-                    <li><a href="#saber">Aspectos Legales</a></li>
-                    <li><a href="#mitos">Mitos</a></li>
-                    <li><a href="#faqs">Preguntas frecuentes</a></li>
-                    <li><a href="#historias">Testimonios</a></li>
-                </ul>
+    <div class="topline">
+        <div class="wrap">
+            <span class="topline-brand"><span class="topline-heart" aria-hidden="true">♥</span>DONA ÓRGANOS PANAMÁ</span>
+            <span>Panamá · Atención: 503-6033</span>
+        </div>
+    </div>
+
+    <header class="site-header">
+        <div class="wrap nav">
+            <a class="nav-donor-mark" href="#inicio" aria-label="Ir al inicio">
+                <img src="formexample/icono-donacion-manos-corazon.png" alt="" width="48" height="48">
+            </a>
+            <nav class="nav-links" aria-label="Principal">
+                <a href="#inicio">Inicio</a>
+                <a href="#saber">Aspectos Legales</a>
+                <a href="#mitos">Mitos</a>
+                <a href="#faqs">Preguntas frecuentes</a>
+                <a href="#historias">Testimonios</a>
             </nav>
             <div class="nav-actions">
-                <button type="button" class="admin-icon-button" onclick="accederAdministracion()" aria-label="Acceso de administración" title="Acceso de administración">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <circle cx="12" cy="8" r="4"></circle>
-                        <path d="M5 21v-2a7 7 0 0 1 14 0v2"></path>
-                        <path d="m18 10 1.5 1.5L22 9"></path>
-                    </svg>
+                <a class="button button-primary" href="formulario.html">Registrarme</a>
+                <button type="button" class="admin-link" onclick="accederAdministracion()" aria-label="Acceso de administración">
+                    <span aria-hidden="true">🔒</span><span>Administración</span>
                 </button>
             </div>
         </div>
     </header>
 
-    <section id="inicio">
-        <div class="hero-content">
-            <h1>Regala Visión, Transforma Vidas</h1>
-            <p>Concientización sobre la donación de tejido corneal en Panamá para devolver la luz y la autonomía a quienes más lo necesitan.</p>
-            <a href="formulario.html" class="btn-cta">Haz click para acceder</a>
+    <main>
+    <section class="hero" id="inicio">
+        <div class="wrap hero-grid">
+            <div>
+                <p class="eyebrow">Información clara. Decisión segura.</p>
+                <h1>
+                    Donar órganos es
+                    <span>regalar un futuro.</span>
+                    <img class="hero-gift-icon" src="formexample/icono-regalo-mano.png" alt="" aria-hidden="true" style="font-size: 120%">
+                </h1>
+                <p class="lead">Conoce el proceso, resuelve tus dudas y registra tu voluntad de manera sencilla. Tu decisión será tratada con respeto, confidencialidad y respaldo institucional.</p>
+            </div>
+            <aside class="trust-panel">
+                <h2>Pasos a seguir para registrar tu voluntad</h2>
+                <ul class="checklist">
+                    <li><b>✓</b><span>Ingresa los datos solicitados de tu cédula para iniciar de forma segura tu registro.</span></li>
+                    <li><b>✓</b><span>Registra tus datos, contacto(s) de confianza y las preferencias de donación.</span></li>
+                    <li><b>✓</b><span>Podrás modificar en cualquier momento tu voluntad siguiendo el procedimiento establecido.</span></li>
+                    <li><b>✓</b><span>Ten presente comunicar tu decisión a familiares o contacto(s) de confianza.</span></li>
+                </ul>
+            </aside>
         </div>
     </section>
 
@@ -623,7 +649,7 @@
         </form>
     </dialog>
 
-    <section id="corneas" style="padding-top: 20px;">
+    <section id="corneas" style="padding-top: 20px;" hidden>
         <div class="cornea-showcase">
             <p class="showcase-eyebrow">El impacto de una decisión solidaria</p>
             <h2>Donar es un acto de amor que trasciende la vida.</h2>
@@ -671,8 +697,8 @@
         </div>
     </section>
 
-    <section id="saber">
-        <h2 class="section-title">Aspectos Legales Importantes</h2>
+    <section id="saber" class="protected-section">
+        <h2 class="section-title protected-title">Aspectos Legales Importantes</h2>
         <p class="legal-instruction">Pasa el cursor o selecciona una ilustración para conocer cada aspecto.</p>
         <div class="info-grid">
             <article class="info-card" tabindex="0" role="button" aria-expanded="false">
@@ -726,8 +752,8 @@
         </div>
     </section>
 
-    <section id="mitos">
-        <h2 class="section-title">Mitos y Tabúes Desmentidos</h2>
+    <section id="mitos" class="protected-section">
+        <h2 class="section-title protected-title">Mitos y Tabúes Desmentidos</h2>
         <div class="accordion-container">
             <details class="myth-item">
                 <summary>Mito: "Si soy donante, el equipo médico no me va a salvar la vida"</summary>
@@ -807,8 +833,8 @@
         </button>
     </section>
 
-    <section id="faqs">
-        <h2 class="section-title">Preguntas Frecuentes</h2>
+    <section id="faqs" class="protected-section">
+        <h2 class="section-title protected-title">Preguntas Frecuentes</h2>
         <div class="accordion-container">
             <details class="faq-item">
                 <summary>¿Qué órganos y tejidos se pueden donar?</summary>
@@ -875,8 +901,8 @@
         </button>
     </section>
 
-    <section id="historias">
-        <h2 class="section-title">Historias Personales</h2>
+    <section id="historias" class="protected-section">
+        <h2 class="section-title protected-title">Historias Personales</h2>
         <div class="stories-container">
             <div>
                 <div class="video-placeholder">
@@ -896,6 +922,8 @@
             </div>
         </div>
     </section>
+
+    </main>
 
     <footer id="contacto">
         <div class="footer-container">
